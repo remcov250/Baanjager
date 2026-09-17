@@ -4,6 +4,8 @@
 
 *(English below.)*
 
+[![CI](https://github.com/remcov250/Baanjager/actions/workflows/ci.yml/badge.svg)](https://github.com/remcov250/Baanjager/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Baanjager is de Nederlandse variant van een self-hosted vacaturetracker, geïnspireerd door
 [JobSync](https://github.com/Gsync/jobsync) — een prima project, maar gebouwd op de
 Amerikaanse markt: salary range, remote/onsite, klaar. Hier draait het om de dingen waar
@@ -41,7 +43,7 @@ Gebouwd voor de telefoon eerst, omdat je een vacature meestal in de trein ziet.
 Je hebt Docker nodig, verder niets.
 
 ```bash
-git clone <deze repository>
+git clone https://github.com/remcov250/Baanjager.git
 cd baanjager
 docker compose up -d
 ```
@@ -62,7 +64,7 @@ De MCP-server praat via stdio met de assistent en via de REST-API met de app. Hi
 dus op de machine waar de assistent draait, en de app mag ergens anders staan.
 
 ```bash
-git clone <deze repository> && cd baanjager && npm ci
+git clone https://github.com/remcov250/Baanjager.git && cd baanjager && npm ci
 claude mcp add baanjager \
   -e BAANJAGER_URL=http://localhost:3000 \
   -e BAANJAGER_TOKEN=<je API_TOKEN> \
