@@ -17,19 +17,19 @@ export default async function SourcesPage({
     <div className="space-y-6">
       <div>
         <h1>{t("sources.title")}</h1>
-        <p className="mt-1 max-w-3xl text-sm text-stone-600">{t("sources.intro")}</p>
+        <p className="mt-1 max-w-3xl text-sm text-muted">{t("sources.intro")}</p>
       </div>
 
       {params.saved ? <p className="notice">{t("common.saved")}</p> : null}
       {params.error ? <p className="notice">{t("common.validationError")}</p> : null}
 
       {sources.length === 0 ? (
-        <p className="card text-sm text-stone-600">{t("sources.empty")}</p>
+        <p className="card text-sm text-muted">{t("sources.empty")}</p>
       ) : (
         LAYERS.filter((layer) => sources.some((s) => s.layer === layer)).map((layer) => (
           <section key={layer} className="card space-y-2">
             <h2>{t(`layer.${layer}`)}</h2>
-            <ul className="divide-y divide-stone-100">
+            <ul className="divide-y divide-line-soft">
               {sources
                 .filter((s) => s.layer === layer)
                 .map((s) => (
@@ -43,9 +43,9 @@ export default async function SourcesPage({
                         ) : (
                           s.label
                         )}
-                        {s.cadence ? <span className="ml-2 badge bg-stone-100 text-stone-600">{s.cadence}</span> : null}
+                        {s.cadence ? <span className="ml-2 badge bg-surface-2 text-muted">{s.cadence}</span> : null}
                       </p>
-                      {s.note ? <p className="text-xs text-stone-500">{s.note}</p> : null}
+                      {s.note ? <p className="text-xs text-muted">{s.note}</p> : null}
                     </div>
                     <form action={toggleSourceAction}>
                       <input type="hidden" name="id" value={s.id} />
@@ -54,7 +54,7 @@ export default async function SourcesPage({
                     </form>
                     <form action={deleteSourceAction}>
                       <input type="hidden" name="id" value={s.id} />
-                      <button className="btn btn-sm text-rose-700">{t("common.delete")}</button>
+                      <button className="btn btn-sm text-rose-700 dark:text-rose-300">{t("common.delete")}</button>
                     </form>
                   </li>
                 ))}

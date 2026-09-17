@@ -16,7 +16,7 @@ export default async function SetupPage({
   return (
     <div className="card">
       <h1>{APP_NAME}</h1>
-      <p className="mt-1 text-sm text-stone-500">{t("setup.intro")}</p>
+      <p className="mt-1 text-sm text-muted">{t("setup.intro")}</p>
       <form action={setup} className="mt-6 space-y-4">
         <div>
           <label htmlFor="username">{t("setup.username")}</label>
@@ -32,7 +32,7 @@ export default async function SetupPage({
           <label htmlFor="password_repeat">{t("setup.passwordRepeat")}</label>
           <input id="password_repeat" type="password" name="password_repeat" autoComplete="new-password" required />
         </div>
-        {error ? <p className="text-sm text-rose-700">{t(`setup.error.${error}`)}</p> : null}
+        {error ? <p className="text-sm text-rose-700 dark:text-rose-300">{t(`setup.error.${error}`)}</p> : null}
         <button className="btn btn-primary w-full justify-center">{t("setup.submit")}</button>
       </form>
     </div>

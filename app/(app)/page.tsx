@@ -55,7 +55,7 @@ export default async function DashboardPage() {
           <h1 className="sm:hidden">{t(greetingKey(now.getHours()))}</h1>
           <span className="text-muted">
             <span className="hidden sm:inline">{dateLabel} · </span>
-            {t("dashboard.waiting", { n: d.attention.length })}
+            {t("dashboard.waiting", { n: d.attentionTotal })}
           </span>
         </div>
         <Link href="/vacancies/new" className="btn btn-primary ml-auto hidden sm:inline-flex">
@@ -67,7 +67,7 @@ export default async function DashboardPage() {
       <section className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <div className="card order-1 flex flex-col gap-1.5 border-accent-line bg-accent-tint sm:order-3">
           <span className="label text-accent">{t("dashboard.needsYou")}</span>
-          <span className="stat text-accent">{d.attention.length}</span>
+          <span className="stat text-accent">{d.attentionTotal}</span>
           <span className="hidden text-[13px] text-accent-fg sm:block">{t("dashboard.needsYouHint")}</span>
         </div>
         <div className="card order-2 flex flex-col gap-1.5 sm:order-1">

@@ -16,8 +16,8 @@ reporting on this repository instead.
   verwijdert ze allemaal.
 - **Login rate-limiting**: 10 pogingen per 15 minuten, per IP als `TRUST_PROXY=true`,
   anders globaal. In-memory, dus per container.
-- **Cookies**: `HttpOnly`, `SameSite=Lax`, `Secure` als `TRUST_PROXY=true` of de proxy
-  `X-Forwarded-Proto: https` meestuurt.
+- **Cookies**: `HttpOnly`, `SameSite=Lax`, `Secure` als de proxy `X-Forwarded-Proto: https`
+  meestuurt of `COOKIE_SECURE=true` gezet is.
 - **Security-headers** op elke response: CSP (alleen eigen origin, `frame-ancestors 'none'`),
   `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`.
   `script-src` staat `'unsafe-inline'` toe omdat Next.js dat nodig heeft voor hydratie.

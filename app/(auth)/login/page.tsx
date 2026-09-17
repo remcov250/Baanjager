@@ -17,7 +17,7 @@ export default async function LoginPage({
   return (
     <div className="card">
       <h1>{APP_NAME}</h1>
-      <p className="mt-1 text-sm text-stone-500">{t("app.tagline")}</p>
+      <p className="mt-1 text-sm text-muted">{t("app.tagline")}</p>
       <form action={login} className="mt-6 space-y-4">
         <input type="hidden" name="next" value={params.next ?? "/"} />
         <div>
@@ -28,8 +28,8 @@ export default async function LoginPage({
           <label htmlFor="password">{t("login.password")}</label>
           <input id="password" type="password" name="password" autoComplete="current-password" required />
         </div>
-        {params.error === "wrong" ? <p className="text-sm text-rose-700">{t("login.wrong")}</p> : null}
-        {params.error === "rate" ? <p className="text-sm text-rose-700">{t("login.rate")}</p> : null}
+        {params.error === "wrong" ? <p className="text-sm text-rose-700 dark:text-rose-300">{t("login.wrong")}</p> : null}
+        {params.error === "rate" ? <p className="text-sm text-rose-700 dark:text-rose-300">{t("login.rate")}</p> : null}
         <button className="btn btn-primary w-full justify-center">{t("login.submit")}</button>
       </form>
     </div>

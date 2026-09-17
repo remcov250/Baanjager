@@ -71,5 +71,7 @@ export function vacanciesToCsv(rows: Vacancy[]): string {
     created_at: v.createdAt,
     updated_at: v.updatedAt,
   }));
-  return Papa.unparse(data, { columns: [...EXPORT_COLUMNS], newline: "\n" });
+  // escapeFormulae: a vacancy text (or a title) can start with "=", "+", "-" or
+  // "@"; a spreadsheet would run that as a formula when the export is opened.
+  return Papa.unparse(data, { columns: [...EXPORT_COLUMNS], newline: "\n", escapeFormulae: true });
 }

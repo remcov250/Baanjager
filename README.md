@@ -95,8 +95,9 @@ vacatures (zelfde werkgever + titel) worden overgeslagen, niet overschreven.
 - Container draait als een gebruiker zonder rechten, met een healthcheck.
 - API alleen aan als `API_TOKEN` gezet is; vergelijking in constante tijd.
 - Er is bewust geen delete. Afgevallen is een status, niet een verwijderknop.
-- Zet `TRUST_PROXY=true` achter een reverse proxy met HTTPS, zodat de cookie de
-  Secure-vlag krijgt en rate-limiting per echt IP werkt.
+- Zet `TRUST_PROXY=true` achter een reverse proxy, zodat rate-limiting per echt IP werkt.
+  De cookie krijgt de Secure-vlag zodra de proxy `X-Forwarded-Proto: https` meestuurt
+  (of met `COOKIE_SECURE=true`).
 
 Zie [SECURITY.md](SECURITY.md) voor hoe je iets meldt.
 

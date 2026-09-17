@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { LOCALE_COOKIE } from "@/lib/constants";
 import en from "@/messages/en.json";
 import nl from "@/messages/nl.json";
 
@@ -19,7 +20,7 @@ export function defaultLocale(): Locale {
 }
 
 export async function getLocale(): Promise<Locale> {
-  const fromCookie = (await cookies()).get("locale")?.value;
+  const fromCookie = (await cookies()).get(LOCALE_COOKIE)?.value;
   return isLocale(fromCookie) ? fromCookie : defaultLocale();
 }
 

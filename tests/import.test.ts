@@ -117,6 +117,11 @@ describe("rowToVacancy", () => {
   it("rejects a row without employer or title", () => {
     expect(rowToVacancy({ werkgever: "Acme" })).toBeNull();
   });
+  it("leaves office days empty when the column is blank", () => {
+    expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "" })?.officeDays).toBeNull();
+    expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "0" })?.officeDays).toBe(0);
+    expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "3" })?.officeDays).toBe(3);
+  });
 });
 
 describe("importRows + parseCsv", () => {

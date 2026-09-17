@@ -24,9 +24,19 @@ import { THEME_COOKIE, isTheme } from "@/lib/theme";
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
+// Only a path on this origin may be the post-login destination. A leading "//"
+// is a protocol-relative URL, and browsers read "/\host" the same way, so the
+// value is parsed against a fixed origin and rejected if it ends up elsewhere.
 function safeNext(value: FormDataEntryValue | null): string {
   const next = String(value ?? "/");
-  return next.startsWith("/") && !next.startsWith("//") ? next : "/";
+  if (!next.startsWith("/") || /^\/[\/\\]/.test(next)) return "/";
+  try {
+    const url = new URL(next, "http://localhost");
+    if (url.origin !== "http://localhost") return "/";
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return "/";
+  }
 }
 
 export async function setLocale(formData: FormData) {

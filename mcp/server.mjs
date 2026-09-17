@@ -21,6 +21,7 @@ const VERDICTS = ["pending", "match", "possible", "weak", "no_match", "na"];
 const STATUSES = ["new", "in_progress", "applied", "interview", "offer", "on_hold", "rejected", "dropped"];
 const CONTRACTS = ["unknown", "permanent", "fixed_term", "secondment", "freelance", "internship"];
 const RULE_KINDS = ["knockout", "heavy_negative", "heavy_positive", "open_question"];
+const FEEDBACK = ["yes", "no", "partly"];
 const PROFILE_KEYS = ["skills", "experience", "education", "requirements", "preferences"];
 
 async function api(method, path, body) {
@@ -77,6 +78,9 @@ const vacancyFields = {
   statusNote: z.string().optional(),
   appliedOn: date,
   closedOn: date,
+  feedbackCorrect: z.enum(FEEDBACK).optional().describe("After a rejection or interview: was the verdict right?"),
+  feedbackMissed: z.string().optional().describe("What was missed or weighed wrongly"),
+  feedbackInsight: z.string().optional().describe("The lesson for the criteria; turn it into a rule with add_rule"),
   vacancyText: z.string().optional().describe("Full posting text"),
 };
 

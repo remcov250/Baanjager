@@ -18,7 +18,7 @@ export default async function ProfilePage({
     <div className="space-y-6">
       <div>
         <h1>{t("profile.title")}</h1>
-        <p className="mt-1 max-w-3xl text-sm text-stone-600">{t("profile.intro")}</p>
+        <p className="mt-1 max-w-3xl text-sm text-muted">{t("profile.intro")}</p>
       </div>
 
       <p className="notice">🔒 {t("profile.privacy")}</p>

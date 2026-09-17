@@ -10,6 +10,7 @@ import {
   type Verdict,
 } from "@/db/schema";
 import { getDb, schema } from "@/lib/db";
+import { importRows, parseCsv, type ImportResult } from "@/lib/import";
 
 const { vacancies } = schema;
 
@@ -126,6 +127,18 @@ export function vacancyExists(employer: string, title: string): boolean {
     )
     .get();
   return Boolean(row);
+}
+
+// One transaction for the whole file: a thousand rows is one commit instead of a
+// thousand, and a failure halfway leaves nothing behind. Shared by the settings
+// page and the API so both import exactly the same way.
+export function importVacanciesCsv(text: string): ImportResult {
+  const rows = parseCsv(text);
+  return getDb().transaction(() =>
+    importRows(rows, vacancyExists, (v) => {
+      createVacancy(v);
+    }),
+  );
 }
 
 export function vacancyOptions(): { id: number; employer: string; title: string }[] {

@@ -125,6 +125,10 @@
   .chip-on {
     @apply border-fg bg-fg text-bg;
   }
+  /* The radio/checkbox inside a chip is sr-only, so the chip itself has to show keyboard focus. */
+  .chip:has(:focus-visible) {
+    @apply ring-2 ring-accent ring-offset-2 ring-offset-bg;
+  }
   .stat {
     @apply font-display text-[30px] font-semibold leading-none sm:text-[32px];
   }

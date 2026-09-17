@@ -13,7 +13,8 @@ export function middleware(request: NextRequest) {
   }
   const login = request.nextUrl.clone();
   login.pathname = "/login";
-  login.search = pathname === "/" ? "" : `?next=${encodeURIComponent(pathname)}`;
+  login.search =
+    pathname === "/" ? "" : `?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
   return NextResponse.redirect(login);
 }
 

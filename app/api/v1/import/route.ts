@@ -1,6 +1,5 @@
 import { json, requireApi } from "@/lib/api";
-import { importRows, parseCsv } from "@/lib/import";
-import { createVacancy, vacancyExists } from "@/lib/vacancies";
+import { importVacanciesCsv } from "@/lib/vacancies";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +11,5 @@ export async function POST(request: Request) {
   const text = await request.text();
   if (!text.trim()) return json({ error: "empty body; send CSV as text/csv" }, 400);
   if (text.length > MAX_BYTES) return json({ error: "too large" }, 413);
-  const result = importRows(parseCsv(text), vacancyExists, (v) => {
-    createVacancy(v);
-  });
-  return json(result);
+  return json(importVacanciesCsv(text));
 }

@@ -14,11 +14,19 @@ const emptyToNull = (value: unknown) =>
 const text = (max: number) =>
   z.preprocess(emptyToNull, z.string().trim().max(max).nullable().optional());
 
+// The shape alone lets "2026-02-30" through (Date.parse rolls it into March);
+// round-tripping through a UTC date catches that.
+const isRealDate = (value: string) => {
+  const time = Date.parse(`${value}T00:00:00Z`);
+  return !Number.isNaN(time) && new Date(time).toISOString().slice(0, 10) === value;
+};
+
 const isoDate = z.preprocess(
   emptyToNull,
   z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "expected YYYY-MM-DD")
+    .refine(isRealDate, "not a calendar date")
     .nullable()
     .optional(),
 );

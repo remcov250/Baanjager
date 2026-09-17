@@ -25,6 +25,11 @@ describe("vacancyInput", () => {
     expect(vacancyInput.safeParse({ employer: "A", title: "B", foundOn: "yesterday" }).success).toBe(false);
     expect(vacancyInput.safeParse({ employer: "A", title: "B", officeDays: 9 }).success).toBe(false);
   });
+  it("rejects dates that look right but don't exist", () => {
+    expect(vacancyInput.safeParse({ employer: "A", title: "B", foundOn: "2026-02-30" }).success).toBe(false);
+    expect(vacancyInput.safeParse({ employer: "A", title: "B", foundOn: "2026-13-01" }).success).toBe(false);
+    expect(vacancyInput.safeParse({ employer: "A", title: "B", foundOn: "2028-02-29" }).success).toBe(true);
+  });
   it("patch allows partial updates", () => {
     expect(vacancyPatch.safeParse({ status: "applied" }).success).toBe(true);
   });

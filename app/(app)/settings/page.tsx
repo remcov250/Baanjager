@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { changePassword } from "@/app/actions";
 import { importCsvAction } from "@/app/(app)/settings/actions";
 import { Field } from "@/components/ui";
@@ -5,6 +6,8 @@ import { ThemeSwitch } from "@/components/shell";
 import { MIN_PASSWORD_LENGTH, requireSession } from "@/lib/auth";
 import { getTheme } from "@/lib/theme";
 import { getT } from "@/lib/i18n";
+
+const PASSWORD_MESSAGES = ["changed", "wrong", "short", "mismatch"] as const;
 
 export default async function SettingsPage({
   searchParams,
@@ -17,16 +20,30 @@ export default async function SettingsPage({
   const apiEnabled = Boolean(process.env.API_TOKEN);
   const theme = await getTheme();
 
-  const passwordMessage = {
-    changed: t("settings.passwordChanged"),
-    wrong: t("settings.passwordWrong"),
-    short: t("settings.passwordShort"),
-    mismatch: t("settings.passwordMismatch"),
-  }[params.password ?? ""];
+  // A plain object lookup would also hit inherited names ("constructor",
+  // "__proto__") and try to render them; only the known codes get a message.
+  const passwordCode = PASSWORD_MESSAGES.find((code) => code === params.password);
+  const passwordMessage = passwordCode
+    ? {
+        changed: t("settings.passwordChanged"),
+        wrong: t("settings.passwordWrong"),
+        short: t("settings.passwordShort"),
+        mismatch: t("settings.passwordMismatch"),
+      }[passwordCode]
+    : undefined;
 
   return (
     <div className="space-y-6">
       <h1>{t("settings.title")}</h1>
+
+      {/* The phone tab bar has no room for Bronnen; this is its way in. */}
+      <section className="card space-y-3 md:hidden">
+        <h2>{t("nav.sources")}</h2>
+        <p className="text-sm text-muted">{t("sources.intro")}</p>
+        <Link href="/sources" className="btn">
+          {t("nav.sources")}
+        </Link>
+      </section>
 
       <section className="card space-y-3">
         <h2>{t("settings.appearance")}</h2>
@@ -35,8 +52,8 @@ export default async function SettingsPage({
 
       <section className="card space-y-3">
         <h2>{t("settings.import")}</h2>
-        <p className="text-sm text-stone-600">{t("settings.importHelp")}</p>
-        <p className="text-xs text-stone-500">{t("settings.importLegacyHelp")}</p>
+        <p className="text-sm text-muted">{t("settings.importHelp")}</p>
+        <p className="text-xs text-muted">{t("settings.importLegacyHelp")}</p>
         {params.import === "done" ? (
           <p className="notice">
             {t("settings.importResult", { added: params.added ?? "0", skipped: params.skipped ?? "0" })}
@@ -55,7 +72,7 @@ export default async function SettingsPage({
 
       <section className="card space-y-3">
         <h2>{t("settings.export")}</h2>
-        <p className="text-sm text-stone-600">{t("settings.exportHelp")}</p>
+        <p className="text-sm text-muted">{t("settings.exportHelp")}</p>
         <a href="/settings/export" className="btn">
           {t("settings.exportButton")}
         </a>
@@ -63,15 +80,15 @@ export default async function SettingsPage({
 
       <section className="card space-y-3">
         <h2>{t("settings.api")}</h2>
-        <p className={`text-sm ${apiEnabled ? "text-green-800" : "text-stone-600"}`}>
+        <p className={`text-sm ${apiEnabled ? "text-green-800 dark:text-green-300" : "text-muted"}`}>
           {apiEnabled ? t("settings.apiEnabled") : t("settings.apiDisabled")}
         </p>
-        <p className="text-xs text-stone-500">{t("settings.apiHelp")}</p>
+        <p className="text-xs text-muted">{t("settings.apiHelp")}</p>
       </section>
 
       <section className="card space-y-3">
         <h2>{t("settings.account")}</h2>
-        <p className="text-sm text-stone-600">{t("settings.loggedInAs", { name: session.username })}</p>
+        <p className="text-sm text-muted">{t("settings.loggedInAs", { name: session.username })}</p>
         {passwordMessage ? <p className="notice">{passwordMessage}</p> : null}
         <form action={changePassword} className="grid max-w-md gap-3">
           <Field label={t("settings.currentPassword")}>

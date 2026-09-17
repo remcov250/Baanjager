@@ -40,8 +40,9 @@ export function createRule(input: {
   return getDb().insert(rules).values(input).returning().get();
 }
 
-export function setRuleRetired(id: number, retired: boolean): void {
-  getDb()
+// Returns false when no rule has that id.
+export function setRuleRetired(id: number, retired: boolean): boolean {
+  const result = getDb()
     .update(rules)
     .set({
       retiredAt: retired ? sql`(datetime('now'))` : null,
@@ -49,4 +50,5 @@ export function setRuleRetired(id: number, retired: boolean): void {
     })
     .where(eq(rules.id, id))
     .run();
+  return result.changes > 0;
 }

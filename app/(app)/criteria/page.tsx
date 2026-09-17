@@ -21,7 +21,7 @@ export default async function CriteriaPage({
     <div className="space-y-6">
       <div>
         <h1>{t("criteria.title")}</h1>
-        <p className="mt-1 max-w-3xl text-sm text-stone-600">{t("criteria.intro")}</p>
+        <p className="mt-1 max-w-3xl text-sm text-muted">{t("criteria.intro")}</p>
       </div>
 
       {params.saved ? <p className="notice">{t("common.saved")}</p> : null}
@@ -29,7 +29,7 @@ export default async function CriteriaPage({
 
       <section className="card">
         <h2>{t("criteria.order")}</h2>
-        <p className="mt-1 text-sm text-stone-600">{t("criteria.orderHelp")}</p>
+        <p className="mt-1 text-sm text-muted">{t("criteria.orderHelp")}</p>
       </section>
 
       {RULE_KINDS.map((kind) => {
@@ -38,18 +38,18 @@ export default async function CriteriaPage({
           <section key={kind} className="card space-y-3">
             <div>
               <h2>{t(`ruleKind.${kind}`)}</h2>
-              <p className="text-xs text-stone-500">{t(`ruleKind.${kind}Help`)}</p>
+              <p className="text-xs text-muted">{t(`ruleKind.${kind}Help`)}</p>
             </div>
             {ofKind.length === 0 ? (
-              <p className="text-sm text-stone-400">{t("common.none")}</p>
+              <p className="text-sm text-muted-2">{t("common.none")}</p>
             ) : (
-              <ul className="divide-y divide-stone-100">
+              <ul className="divide-y divide-line-soft">
                 {ofKind.map((r) => (
                   <li key={r.id} className={`flex flex-wrap items-start gap-3 py-2 ${r.retiredAt ? "opacity-50" : ""}`}>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm">{r.text}</p>
-                      {r.rationale ? <p className="mt-0.5 text-xs text-stone-500">{r.rationale}</p> : null}
-                      <p className="mt-0.5 text-xs text-stone-400">
+                      {r.rationale ? <p className="mt-0.5 text-xs text-muted">{r.rationale}</p> : null}
+                      <p className="mt-0.5 text-xs text-muted-2">
                         {t("criteria.sourceVacancy")}:{" "}
                         {r.sourceVacancyId ? (
                           <Link href={`/vacancies/${r.sourceVacancyId}`} className="hover:underline">
@@ -75,7 +75,7 @@ export default async function CriteriaPage({
       })}
 
       <p className="text-sm">
-        <Link href={showRetired ? "/criteria" : "/criteria?retired=1"} className="text-stone-500 hover:text-ink">
+        <Link href={showRetired ? "/criteria" : "/criteria?retired=1"} className="text-muted hover:text-fg">
           {showRetired ? t("criteria.hideRetired") : t("criteria.showRetired")}
         </Link>
       </p>

@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { RULE_KINDS } from "@/db/schema";
 import { requireSession } from "@/lib/auth";
 import { createRule } from "@/lib/rules";
 import { createVacancy, getVacancy, updateVacancy } from "@/lib/vacancies";
@@ -47,9 +46,7 @@ export async function createRuleFromVacancyAction(formData: FormData) {
     rationale: formData.get("rationale"),
     sourceVacancyId: id,
   });
-  if (!parsed.success || !(RULE_KINDS as readonly string[]).includes(parsed.data.kind)) {
-    redirect(`/vacancies/${id}?error=rule`);
-  }
+  if (!parsed.success) redirect(`/vacancies/${id}?error=rule`);
   createRule(parsed.data);
   revalidatePath("/criteria");
   revalidatePath(`/vacancies/${id}`);

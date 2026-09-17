@@ -1,4 +1,4 @@
-import { asc, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { LAYERS, type Layer, type Source } from "@/db/schema";
 import { getDb, schema } from "@/lib/db";
 
@@ -6,11 +6,11 @@ const { sources } = schema;
 
 const layerOrder = Object.fromEntries(LAYERS.map((l, i) => [l, i]));
 
+// Ordered by distance layer (local first), not alphabetically, so it's sorted here.
 export function listSources(): Source[] {
   return getDb()
     .select()
     .from(sources)
-    .orderBy(asc(sources.layer), asc(sources.id))
     .all()
     .sort((a, b) => layerOrder[a.layer] - layerOrder[b.layer] || a.id - b.id);
 }

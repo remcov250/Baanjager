@@ -94,10 +94,6 @@ export function Select<T extends string>({
   );
 }
 
-export function formatDate(value: string | null | undefined): string {
-  return value ? value : "—";
-}
-
 // "12 sep" style, locale aware; falls back to the raw value for odd input.
 export function shortDate(value: string | null | undefined, locale: string): string {
   if (!value) return "—";

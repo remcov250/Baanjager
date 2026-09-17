@@ -144,7 +144,9 @@ export function rowToVacancy(row: RawRow): NewVacancy | null {
   const explicitNote = pick(row, "status_note");
   if (explicitNote) noteParts.unshift(explicitNote);
 
-  const officeDays = Number(pick(row, "office_days"));
+  // Number("") is 0, which would turn an empty column into "0 office days".
+  const officeDaysText = pick(row, "office_days");
+  const officeDays = officeDaysText ? Number(officeDaysText) : NaN;
 
   return {
     employer,

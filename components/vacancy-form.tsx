@@ -134,7 +134,7 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
         <section className="card flex flex-col gap-2">
           <h2>{t("vacancy.text")}</h2>
           <Field label="" help={t("vacancy.vacancyTextHelp")}>
-            <textarea name="vacancyText" defaultValue={v?.vacancyText ?? ""} maxLength={100000} className="min-h-[12rem] font-mono text-base sm:text-[13px]" />
+            <textarea name="vacancyText" aria-label={t("vacancy.text")} defaultValue={v?.vacancyText ?? ""} maxLength={100000} className="min-h-[12rem] font-mono text-base sm:text-[13px]" />
           </Field>
         </section>
       </div>

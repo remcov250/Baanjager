@@ -14,8 +14,11 @@ services:
       - baanjager-data:/data
     environment:
       DEFAULT_LOCALE: nl
-      # Set to "true" when a reverse proxy in front of this does HTTPS, so the
-      # session cookie gets the Secure flag and login rate limiting sees real IPs.
+      # Dates default to "today" in this zone; without it the container is on UTC.
+      TZ: Europe/Amsterdam
+      # Set to "true" behind a reverse proxy, so login rate limiting keys on the
+      # real client address (X-Forwarded-For). The session cookie gets its Secure
+      # flag from X-Forwarded-Proto: https, or from COOKIE_SECURE=true.
       TRUST_PROXY: "false"
       # Leave empty to keep the REST API and MCP off. Generate one with:
       #   openssl rand -hex 32

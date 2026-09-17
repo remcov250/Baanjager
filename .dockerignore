@@ -9,5 +9,9 @@ tests
 .env
 .env.*
 .claude
+design
+.e2e-data
+test-results
+playwright-report
 *.md
 !README.md

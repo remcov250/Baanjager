@@ -13,7 +13,9 @@ export type Dashboard = {
   byVerdict: Record<Verdict, number>;
   droppedByLayer: Record<Layer, number>;
   closed: number;
+  // The list is capped for the page; the count is not, so the tile stays honest.
   attention: Attention[];
+  attentionTotal: number;
   latestRules: RuleWithSource[];
   activeRules: number;
 };
@@ -52,6 +54,7 @@ export function dashboard(now = new Date()): Dashboard {
 
   silent.sort((a, b) => (b.kind === "silent" && a.kind === "silent" ? b.days - a.days : 0));
   const rules = listRules(false);
+  const attention = [...silent, ...assess, ...feedback];
 
   return {
     total: all.length,
@@ -59,7 +62,8 @@ export function dashboard(now = new Date()): Dashboard {
     byVerdict,
     droppedByLayer,
     closed: byStatus.dropped + byStatus.rejected,
-    attention: [...silent, ...assess, ...feedback].slice(0, 6),
+    attention: attention.slice(0, 6),
+    attentionTotal: attention.length,
     latestRules: rules.slice(0, 3),
     activeRules: rules.length,
   };
