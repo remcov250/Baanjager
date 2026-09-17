@@ -1,5 +1,6 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
@@ -11,6 +12,7 @@ import {
   createUser,
   destroySession,
   findUser,
+  hashPassword,
   loginAllowed,
   requireSession,
   userCount,
@@ -68,9 +70,7 @@ export async function login(formData: FormData) {
 
   // Verify against a real hash even when the user doesn't exist, so a missing
   // username and a wrong password take the same time.
-  const ok = user
-    ? verifyPassword(password, user.passwordHash)
-    : verifyPassword(password, DUMMY_HASH) && false;
+  const ok = verifyPassword(password, user?.passwordHash ?? DUMMY_HASH) && Boolean(user);
   if (!user || !ok) redirect(`/login?error=wrong${suffix}`);
 
   await clearLoginAttempts();
@@ -101,7 +101,6 @@ export async function changePassword(formData: FormData) {
   redirect("/settings?password=changed");
 }
 
-// A valid scrypt hash of a random string; only its shape matters.
-const DUMMY_HASH =
-  "scrypt$5f3a9c1e7b2d4a6c8e0f1a3b5c7d9e1f$" +
-  "b1c4e7a2d5f8093c6b1e4a7d0c3f6b9e2a5d8c1f4b7e0a3d6c9f2b5e8a1d4c7f0b3e6a9d2c5f8b1e4a7d0c3f6b9e2a5d8c1f4b7e0a3d6c9f2b5e8a1d4c7f0b3e6";
+// A real scrypt hash of a random value, computed once per process; it only
+// exists so the unknown-user path does the same amount of work.
+const DUMMY_HASH = hashPassword(randomBytes(32).toString("hex"));

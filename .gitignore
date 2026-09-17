@@ -17,3 +17,8 @@ data/
 
 # Per-machine Claude Code overrides
 .claude/settings.local.json
+
+# Playwright
+.e2e-data/
+playwright-report/
+test-results/

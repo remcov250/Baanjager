@@ -1,7 +1,7 @@
 import { STATUSES } from "@/db/schema";
 import { json, requireApi } from "@/lib/api";
 import { listRules } from "@/lib/rules";
-import { listVacancies } from "@/lib/vacancies";
+import { listVacancySummaries } from "@/lib/vacancies";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const denied = requireApi(request);
   if (denied) return denied;
 
-  const all = listVacancies({ closed: true });
+  const all = listVacancySummaries({ closed: true });
   const byStatus = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<string, number>;
   for (const v of all) byStatus[v.status] += 1;
 

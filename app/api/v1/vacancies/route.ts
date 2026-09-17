@@ -1,5 +1,5 @@
 import { json, readJson, requireApi } from "@/lib/api";
-import { createVacancy, listVacancies } from "@/lib/vacancies";
+import { createVacancy, listVacancySummaries } from "@/lib/vacancies";
 import { vacancyInput } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const p = url.searchParams;
   return json(
-    listVacancies({
+    listVacancySummaries({
       q: p.get("q") ?? undefined,
       layer: p.get("layer") ?? undefined,
       verdict: p.get("verdict") ?? undefined,

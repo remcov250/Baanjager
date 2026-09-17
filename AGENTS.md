@@ -48,9 +48,12 @@ tool schema in `mcp/server.mjs`.
 
 ## Verifying
 
-The unit tests cover the import mapping and validation. There are no browser tests yet;
-after a UI change, run `npm run dev`, go through setup → add a vacancy → set a verdict →
-make a rule from it → check the criteria page, on a narrow viewport.
+The unit tests cover the import mapping, validation and language-file parity. The
+Playwright suite (`npm run build && npm run test:e2e`) walks the real flow in Chromium on a
+phone profile first, then desktop: setup → add a vacancy → verdict → rule from it →
+filters → auth → API. It also asserts no page scrolls sideways at phone width. Run it after
+any UI change; it needs a production build and starts its own server on port 3711 with a
+throwaway database in `.e2e-data/`.
 
 `docker compose up --build` is the real acceptance test: it must build, start, answer
 `/api/health`, and show `/setup` on first visit.

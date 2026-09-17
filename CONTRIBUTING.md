@@ -18,6 +18,8 @@ Node 22. De database wordt bij de eerste start aangemaakt in `./data/`.
 npm test              # unit tests (vitest)
 npx tsc --noEmit      # typecheck
 npm run build         # productie-build, doet Docker ook
+npm run test:e2e      # Playwright: mobiel én desktop, tegen de build hierboven
+                      # (eerste keer: npx playwright install chromium)
 ```
 
 ## Hoe het in elkaar zit

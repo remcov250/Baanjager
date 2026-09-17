@@ -1,3 +1,4 @@
+import { cloneElement, useId } from "react";
 import type { Status, Verdict } from "@/db/schema";
 import type { Translate } from "@/lib/i18n";
 
@@ -9,13 +10,18 @@ export function Field({
 }: {
   label: string;
   help?: string;
-  children: React.ReactNode;
+  children: React.ReactElement<{ id?: string }>;
   className?: string;
 }) {
+  // Explicit htmlFor/id rather than wrapping the control in the label: a
+  // wrapped <select> gets its selected option appended to its accessible
+  // name, which confuses screen readers and getByLabel alike.
+  const generated = useId();
+  const id = children.props.id ?? generated;
   return (
     <div className={className}>
-      <label>{label}</label>
-      {children}
+      {label ? <label htmlFor={id}>{label}</label> : null}
+      {cloneElement(children, { id })}
       {help ? <p className="help">{help}</p> : null}
     </div>
   );
@@ -56,6 +62,7 @@ export function Select<T extends string>({
   t,
   prefix,
   defaultValue,
+  id,
 }: {
   name: string;
   value?: T;
@@ -63,9 +70,10 @@ export function Select<T extends string>({
   options: readonly T[];
   t: Translate;
   prefix: string;
+  id?: string;
 }) {
   return (
-    <select name={name} defaultValue={defaultValue ?? value}>
+    <select id={id} name={name} defaultValue={defaultValue ?? value}>
       {options.map((option) => (
         <option key={option} value={option}>
           {t(`${prefix}.${option}`)}

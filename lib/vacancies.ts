@@ -23,7 +23,41 @@ export type VacancyFilters = {
   closed?: boolean;
 };
 
-export function listVacancies(filters: VacancyFilters = {}): Vacancy[] {
+// The list view, the API list and the MCP list all use this: everything except
+// the long text fields. A vacancy text can be 100 KB; a list of a hundred of
+// them is not something to hand to a page or an assistant's context window.
+const summaryColumns = {
+  id: vacancies.id,
+  employer: vacancies.employer,
+  title: vacancies.title,
+  url: vacancies.url,
+  source: vacancies.source,
+  sourceVerified: vacancies.sourceVerified,
+  foundOn: vacancies.foundOn,
+  assessedOn: vacancies.assessedOn,
+  layer: vacancies.layer,
+  location: vacancies.location,
+  commuteMinutes: vacancies.commuteMinutes,
+  hours: vacancies.hours,
+  contractType: vacancies.contractType,
+  officeDays: vacancies.officeDays,
+  remoteNote: vacancies.remoteNote,
+  salary: vacancies.salary,
+  languageRequirement: vacancies.languageRequirement,
+  verdict: vacancies.verdict,
+  verdictReason: vacancies.verdictReason,
+  status: vacancies.status,
+  statusNote: vacancies.statusNote,
+  appliedOn: vacancies.appliedOn,
+  closedOn: vacancies.closedOn,
+  feedbackCorrect: vacancies.feedbackCorrect,
+  createdAt: vacancies.createdAt,
+  updatedAt: vacancies.updatedAt,
+};
+
+export type VacancySummary = Pick<Vacancy, keyof typeof summaryColumns>;
+
+function whereFor(filters: VacancyFilters): SQL | undefined {
   const where: SQL[] = [];
 
   if (filters.q) {
@@ -41,11 +75,24 @@ export function listVacancies(filters: VacancyFilters = {}): Vacancy[] {
   } else if (!filters.closed) {
     where.push(notInArray(vacancies.status, CLOSED_STATUSES));
   }
+  return where.length ? and(...where) : undefined;
+}
 
+export function listVacancySummaries(filters: VacancyFilters = {}): VacancySummary[] {
+  return getDb()
+    .select(summaryColumns)
+    .from(vacancies)
+    .where(whereFor(filters))
+    .orderBy(desc(vacancies.foundOn), desc(vacancies.id))
+    .all();
+}
+
+// Full rows, long text included — for export and single-vacancy views.
+export function listVacancies(filters: VacancyFilters = {}): Vacancy[] {
   return getDb()
     .select()
     .from(vacancies)
-    .where(where.length ? and(...where) : undefined)
+    .where(whereFor(filters))
     .orderBy(desc(vacancies.foundOn), desc(vacancies.id))
     .all();
 }

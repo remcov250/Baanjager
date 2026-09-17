@@ -93,7 +93,8 @@ server.registerTool(
 server.registerTool(
   "list_vacancies",
   {
-    description: "List vacancies. By default excludes dropped and rejected ones; pass closed=true to include them.",
+    description:
+      "List vacancies without their long text fields. By default excludes dropped and rejected ones; pass closed=true to include them. Use get_vacancy for the full posting text.",
     inputSchema: {
       q: z.string().optional().describe("Search employer or title"),
       layer: z.enum(LAYERS).optional(),

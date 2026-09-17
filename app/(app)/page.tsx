@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LAYERS, STATUSES, VERDICTS } from "@/db/schema";
 import { StatusBadge, VerdictBadge, formatDate } from "@/components/ui";
 import { getT } from "@/lib/i18n";
-import { listVacancies } from "@/lib/vacancies";
+import { listVacancySummaries } from "@/lib/vacancies";
 
 type Search = { q?: string; layer?: string; verdict?: string; status?: string; closed?: string };
 
@@ -13,7 +13,7 @@ export default async function VacanciesPage({
 }) {
   const { t } = await getT();
   const params = await searchParams;
-  const rows = listVacancies({
+  const rows = listVacancySummaries({
     q: params.q,
     layer: params.layer,
     verdict: params.verdict,
