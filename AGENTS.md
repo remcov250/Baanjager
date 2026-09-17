@@ -58,6 +58,16 @@ throwaway database in `.e2e-data/`.
 `docker compose up --build` is the real acceptance test: it must build, start, answer
 `/api/health`, and show `/setup` on first visit.
 
+Two things that cost real time once:
+
+- **Never leave a `next start` running across a rebuild.** A stale server keeps serving the
+  old HTML, whose CSS/JS hashes no longer exist after `next build` — pages render unstyled
+  and it looks like a CSS bug. Before building, kill any server whose cwd is this directory
+  (`ps -eo pid,args | grep next-server`, then `readlink /proc/<pid>/cwd`); `pkill -f` on the
+  command line tends to kill your own shell instead.
+- **CI builds arm64 natively** (`ubuntu-24.04-arm`), not under QEMU: Next's SWC compiler
+  dies with SIGILL when emulated. Keep the per-platform matrix + manifest job as is.
+
 ## Style
 
 Prose in the UI and docs sounds like a person, not a brochure. Dutch is the default UI
