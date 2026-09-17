@@ -70,10 +70,10 @@ test("turns an insight into a rule linked to the vacancy", async ({ page }, test
   await page.getByLabel("Regel", { exact: true }).fill(ruleText);
   await page.getByRole("button", { name: "Regel toevoegen" }).click();
   await expect(page.getByText("Regel toegevoegd aan de criteria.")).toBeVisible();
-  await expect(page.getByText(ruleText)).toBeVisible();
+  await expect(page.getByText(ruleText).first()).toBeVisible();
 
   await page.goto("/criteria");
-  await expect(page.getByText(ruleText)).toBeVisible();
+  await expect(page.getByText(ruleText).first()).toBeVisible();
   await expect(page.getByRole("link", { name: new RegExp(employer) })).toBeVisible();
 });
 
@@ -92,7 +92,9 @@ test("filters the list and hides dropped vacancies by default", async ({ page },
   await expect(page).toHaveURL(/\/vacancies\/\d+/);
   await page.getByLabel("Status", { exact: true }).selectOption("dropped");
   await page.getByRole("button", { name: "Opslaan" }).first().click();
-  await expect(page).toHaveURL(/saved=1/);
+  // WebKit reports the new URL while the redirect is still in flight; wait for
+  // the page to have actually rendered before navigating away.
+  await expect(page.getByText("Opgeslagen")).toBeVisible();
   await page.goto("/vacancies");
   await expect(page.getByRole("link", { name: employer })).toHaveCount(0);
   await page.getByText("Toon afgevallen en afgewezen").click();
