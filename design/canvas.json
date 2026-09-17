@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "DashboardMobile.dc.html", "title": "Dashboard — telefoon", "x": 0, "y": 0, "w": 390, "h": 844 },
+    { "file": "VacaturesMobile.dc.html", "title": "Vacatures — telefoon", "x": 480, "y": 0, "w": 390, "h": 844 },
+    { "file": "Main.dc.html", "title": "Dashboard — desktop", "x": 0, "y": 1000, "w": 1440, "h": 920 },
+    { "file": "Vacatures.dc.html", "title": "Vacatures — desktop", "x": 1560, "y": 1000, "w": 1440, "h": 900 },
+    { "file": "Vacature.dc.html", "title": "Vacature — desktop", "x": 0, "y": 2080, "w": 1440, "h": 1120 }
+  ],
+  "annotations": [
+    { "id": "mobile-first", "x": 960, "y": 40, "w": 420, "text": "Mobiel eerst: de telefoonschermen zijn de referentie, desktop is dezelfde inhoud met meer ruimte.\n\nFictieve data. Typografie: Bricolage Grotesque (koppen) + Instrument Sans (tekst); kleuren zijn de tokens die de app al heeft (papier, inkt, oranje accent).\n\nWat JobSync niet heeft en wij wel: 'Wacht op jou' (wat er van jou nodig is), 'Waarom vacatures afvallen' (de criteria die het meest afwijzen), en de terugkoppeling die met één klik een regel wordt." }
+  ],
+  "launch": { "view": "canvas" }
+}

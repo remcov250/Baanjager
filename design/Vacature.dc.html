@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; background: #fafaf9; color: #1c1917; font-family: 'Instrument Sans', system-ui, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.45; }
+    a { color: #c2410c; text-decoration: none; } a:hover { color: #9a3412; }
+    .display { font-family: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif; letter-spacing: -0.01em; }
+    .nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: #57534e; font-weight: 500; }
+    .nav a.active { background: #fff1e8; color: #c2410c; }
+    .nav svg { width: 18px; height: 18px; }
+    .card { background: #ffffff; border: 1px solid #e7e5e4; border-radius: 12px; box-shadow: 0 1px 2px rgba(28,25,23,0.04); }
+    .label { font-size: 12px; font-weight: 500; color: #78716c; letter-spacing: 0.02em; text-transform: uppercase; }
+    .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .muted { color: #78716c; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #d6d3d1; background: #fff; font-weight: 500; font-size: 14px; color: #1c1917; }
+    .btn-primary { background: #c2410c; border-color: #c2410c; color: #fff; }
+    .kv { display: flex; flex-direction: column; gap: 3px; }
+    .kv .label { text-transform: none; letter-spacing: 0; font-size: 12px; }
+    .kv span:last-child { font-weight: 500; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .input { border: 1px solid #d6d3d1; border-radius: 8px; background: #fff; padding: 9px 12px; min-height: 20px; }
+    .textarea { border: 1px solid #d6d3d1; border-radius: 8px; background: #fff; padding: 10px 12px; min-height: 64px; white-space: pre-line; }
+    .seg { display: inline-flex; border: 1px solid #d6d3d1; border-radius: 8px; overflow: hidden; }
+    .seg span { padding: 7px 12px; font-size: 13px; font-weight: 500; color: #57534e; border-right: 1px solid #e7e5e4; }
+    .seg span:last-child { border-right: 0; }
+    .seg span.on { background: #dcfce7; color: #166534; }
+  </style>
+</helmet>
+
+<div style="display: flex; width: 1440px; min-height: 1120px; background: #fafaf9;">
+
+  <aside style="display: flex; flex-direction: column; width: 240px; padding: 20px 16px; background: #ffffff; border-right: 1px solid #e7e5e4;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 12px 22px;">
+      <div style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: #c2410c;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7 6.6 19.6l1.2-6.1L3.3 9.3l6.1-.7z"></path></svg>
+      </div>
+      <span class="display" style="font-size: 20px; font-weight: 700;">Baanjager</span>
+    </div>
+    <nav class="nav" style="display: flex; flex-direction: column; gap: 2px;">
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg>Dashboard</a>
+      <a class="active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M3 12h18"></path></svg>Vacatures</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="M3.5 6l1 1 2-2"></path><path d="M3.5 12l1 1 2-2"></path><path d="M3.5 18l1 1 2-2"></path></svg>Criteria</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>Profiel</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg>Bronnen</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>Instellingen</a>
+    </nav>
+  </aside>
+
+  <main style="display: flex; flex-direction: column; flex-grow: 1; gap: 20px; padding: 24px 36px 48px;">
+
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #78716c;">
+      <a href="#" style="color: #78716c;">Vacatures</a>
+      <span>/</span>
+      <span>Noorderlicht Energie</span>
+    </div>
+
+    <header style="display: flex; align-items: flex-start; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <h1 class="display" style="margin: 0; font-size: 28px; font-weight: 700; line-height: 1.15;">Contractmanager <span style="font-weight: 500; color: #78716c;">— Noorderlicht Energie</span></h1>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="badge" style="background: #dcfce7; color: #166534;">Match</span>
+          <span class="badge" style="background: #dcfce7; color: #166534;">Gesolliciteerd</span>
+          <span class="muted" style="font-size: 13px;">Lokaal · Sittard · gevonden 12 sep · verzonden 14 sep</span>
+        </div>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px;">
+        <span class="btn">Open vacature <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"></path><path d="M20 4l-9 9"></path><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"></path></svg></span>
+        <span class="btn btn-primary">Opslaan</span>
+      </div>
+    </header>
+
+    <div style="display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; align-items: start;">
+
+      <!-- Left column -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <section class="card" style="display: flex; flex-direction: column; gap: 16px; padding: 20px 22px;">
+          <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Randvoorwaarden</h2>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px;">
+            <div class="kv"><span class="label">Laag</span><span>Lokaal · Sittard</span></div>
+            <div class="kv"><span class="label">Reistijd</span><span>25 min</span></div>
+            <div class="kv"><span class="label">Uren</span><span>32–36</span></div>
+            <div class="kv"><span class="label">Kantoordagen</span><span>2 per week</span></div>
+            <div class="kv"><span class="label">Contractvorm</span><span>Onbepaalde tijd</span></div>
+            <div class="kv"><span class="label">Salaris</span><span style="color: #c2410c;">niet vermeld</span></div>
+            <div class="kv"><span class="label">Taaleis</span><span>Nederlands, Engels</span></div>
+            <div class="kv"><span class="label">Bron</span><span>Eigen site <span class="badge" style="margin-left: 4px; background: #dcfce7; color: #166534;">geverifieerd</span></span></div>
+          </div>
+        </section>
+
+        <section class="card" style="display: flex; flex-direction: column; gap: 14px; padding: 20px 22px;">
+          <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Verloop</h2>
+          <div style="display: flex; flex-direction: column; gap: 0;">
+            <div style="display: flex; gap: 12px;">
+              <div style="display: flex; flex-direction: column; align-items: center;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #1c1917;"></span><span style="width: 2px; flex-grow: 1; background: #e7e5e4;"></span></div>
+              <div style="display: flex; flex-direction: column; padding-bottom: 14px;"><span style="font-weight: 500;">Gevonden</span><span class="muted" style="font-size: 13px;">12 sep · LinkedIn, daarna eigen site</span></div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <div style="display: flex; flex-direction: column; align-items: center;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #1c1917;"></span><span style="width: 2px; flex-grow: 1; background: #e7e5e4;"></span></div>
+              <div style="display: flex; flex-direction: column; padding-bottom: 14px;"><span style="font-weight: 500;">Beoordeeld: Match</span><span class="muted" style="font-size: 13px;">13 sep</span></div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <div style="display: flex; flex-direction: column; align-items: center;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #1c1917;"></span><span style="width: 2px; flex-grow: 1; background: #e7e5e4;"></span></div>
+              <div style="display: flex; flex-direction: column; padding-bottom: 14px;"><span style="font-weight: 500;">Gesolliciteerd</span><span class="muted" style="font-size: 13px;">14 sep · via de eigen site, CV op maat</span></div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <div style="display: flex; flex-direction: column; align-items: center;"><span style="width: 10px; height: 10px; border-radius: 999px; border: 2px solid #c2410c; background: #fff; box-sizing: border-box;"></span></div>
+              <div style="display: flex; flex-direction: column;"><span style="font-weight: 500; color: #c2410c;">Wachten op reactie</span><span class="muted" style="font-size: 13px;">3 dagen · navragen na 10</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 20px 22px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Vacaturetekst</h2>
+            <span class="muted" style="margin-left: auto; font-size: 13px;">Uitklappen ↓</span>
+          </div>
+          <p class="muted" style="margin: 0; font-size: 13px; line-height: 1.5; max-height: 60px; overflow: hidden;">Als Contractmanager ben je verantwoordelijk voor het opstellen, beoordelen en beheren van inkoop- en samenwerkingscontracten binnen ons energieportfolio. Je werkt nauw samen met inkoop, juridische zaken en de operationele teams…</p>
+        </section>
+      </div>
+
+      <!-- Right column -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <section class="card" style="display: flex; flex-direction: column; gap: 16px; padding: 20px 22px; border-color: #fdba74;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Oordeel</h2>
+            <div class="seg" style="margin-left: auto;"><span class="on">Match</span><span>Mogelijk</span><span>Zwak</span><span>Geen match</span></div>
+          </div>
+          <div class="field">
+            <span class="label" style="text-transform: none; letter-spacing: 0;">Reden — het veld dat telt</span>
+            <div class="textarea">Twee kantoordagen in de lokale laag, 32–36 uur en een vast contract: alle harde eisen zitten goed. Inhoud sluit aan op contractbeheer en samenwerking met inkoop. Salaris niet vermeld is het enige signaal om na te vragen.</div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+            <div class="field"><span class="label" style="text-transform: none; letter-spacing: 0;">Wat past</span><div class="textarea" style="min-height: 56px;">Lokaal, hybride, vast contract, Engels naast Nederlands.</div></div>
+            <div class="field"><span class="label" style="text-transform: none; letter-spacing: 0;">Wat niet past</span><div class="textarea" style="min-height: 56px;">Salaris onbekend; energiesector is nieuw terrein.</div></div>
+          </div>
+          <div class="field"><span class="label" style="text-transform: none; letter-spacing: 0;">Twijfelpunten</span><div class="textarea" style="min-height: 44px;">Hoeveel van de rol is administratie versus onderhandelen? Navragen in een gesprek.</div></div>
+        </section>
+
+        <section class="card" style="display: flex; flex-direction: column; gap: 14px; padding: 20px 22px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Terugkoppeling</h2>
+            <span class="muted" style="font-size: 13px;">Klopte het oordeel? Hier landt de correctie die de criteria scherper maakt.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="label" style="text-transform: none; letter-spacing: 0;">Oordeel klopte</span>
+            <div class="seg"><span class="on">Ja</span><span>Deels</span><span>Nee</span></div>
+          </div>
+          <div class="field"><span class="label" style="text-transform: none; letter-spacing: 0;">Nieuw inzicht voor de criteria</span><div class="textarea" style="min-height: 44px;">Werkgevers die salaris niet noemen, doen dat hier meestal alsnog in het eerste gesprek — geen reden om af te vallen.</div></div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; background: #fff7ed; border: 1px solid #fed7aa;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+            <span style="font-size: 13px; color: #9a3412;">Maak hier een regel van — <strong>Zwaarwegend positief</strong>, gekoppeld aan deze vacature.</span>
+            <span class="btn" style="margin-left: auto; height: 32px; border-color: #fdba74; color: #c2410c;">Regel maken</span>
+          </div>
+        </section>
+
+        <section class="card" style="display: flex; flex-direction: column; gap: 10px; padding: 20px 22px;">
+          <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Regels uit deze vacature</h2>
+          <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-top: 1px solid #f5f5f4;">
+            <span class="badge" style="background: #dcfce7; color: #166534;">Positief</span>
+            <span>Twee kantoordagen in de lokale laag: geen bezwaar, eerder een plus.</span>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

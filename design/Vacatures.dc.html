@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; background: #fafaf9; color: #1c1917; font-family: 'Instrument Sans', system-ui, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.45; }
+    a { color: #c2410c; text-decoration: none; } a:hover { color: #9a3412; }
+    .display { font-family: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif; letter-spacing: -0.01em; }
+    .nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: #57534e; font-weight: 500; }
+    .nav a.active { background: #fff1e8; color: #c2410c; }
+    .nav svg { width: 18px; height: 18px; }
+    .card { background: #ffffff; border: 1px solid #e7e5e4; border-radius: 12px; box-shadow: 0 1px 2px rgba(28,25,23,0.04); }
+    .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #d6d3d1; background: #fff; font-size: 13px; font-weight: 500; white-space: nowrap; color: #44403c; }
+    .chip.on { background: #1c1917; border-color: #1c1917; color: #fff; }
+    .muted { color: #78716c; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #d6d3d1; background: #fff; font-weight: 500; font-size: 14px; color: #1c1917; }
+    .btn-primary { background: #c2410c; border-color: #c2410c; color: #fff; }
+    table { width: 100%; border-collapse: collapse; }
+    th { padding: 10px 16px; text-align: left; font-size: 12px; font-weight: 500; color: #78716c; letter-spacing: 0.02em; text-transform: uppercase; border-bottom: 1px solid #e7e5e4; background: #fafaf9; }
+    td { padding: 13px 16px; border-bottom: 1px solid #f5f5f4; vertical-align: middle; }
+    tr.hl td { background: #fffaf5; }
+  </style>
+</helmet>
+
+<div style="display: flex; width: 1440px; min-height: 900px; background: #fafaf9;">
+
+  <aside style="display: flex; flex-direction: column; width: 240px; padding: 20px 16px; background: #ffffff; border-right: 1px solid #e7e5e4;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 12px 22px;">
+      <div style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: #c2410c;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7 6.6 19.6l1.2-6.1L3.3 9.3l6.1-.7z"></path></svg>
+      </div>
+      <span class="display" style="font-size: 20px; font-weight: 700;">Baanjager</span>
+    </div>
+    <nav class="nav" style="display: flex; flex-direction: column; gap: 2px;">
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg>Dashboard</a>
+      <a class="active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M3 12h18"></path></svg>Vacatures</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="M3.5 6l1 1 2-2"></path><path d="M3.5 12l1 1 2-2"></path><path d="M3.5 18l1 1 2-2"></path></svg>Criteria</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>Profiel</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg>Bronnen</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>Instellingen</a>
+    </nav>
+  </aside>
+
+  <main style="display: flex; flex-direction: column; flex-grow: 1; gap: 20px; padding: 28px 36px 40px;">
+    <header style="display: flex; align-items: center; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <h1 class="display" style="margin: 0; font-size: 26px; font-weight: 700;">Vacatures</h1>
+        <span class="muted">31 lopend · 97 afgevallen</span>
+      </div>
+      <span class="btn btn-primary" style="margin-left: auto;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>Nieuwe vacature</span>
+    </header>
+
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 8px; width: 320px; height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #d6d3d1; background: #fff; color: #a8a29e;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <span>Werkgever of functie</span>
+      </div>
+      <span class="chip on">Lopend</span>
+      <span class="chip">Laag <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+      <span class="chip">Oordeel <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+      <span class="chip">Status <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+      <label style="display: flex; align-items: center; gap: 8px; margin-left: 6px; color: #57534e;"><span style="display: inline-block; width: 34px; height: 20px; border-radius: 999px; background: #d6d3d1; position: relative;"><span style="position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px; background: #fff;"></span></span>Toon afgevallen</label>
+      <span class="muted" style="margin-left: auto; font-size: 13px;">Gesorteerd op gevonden ↓</span>
+    </div>
+
+    <div class="card" style="overflow: hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Werkgever</th>
+            <th>Functie</th>
+            <th>Laag</th>
+            <th>Voorwaarden</th>
+            <th>Oordeel</th>
+            <th>Status</th>
+            <th style="text-align: right;">Gevonden</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight: 600;">Helix Medical</td>
+            <td>Compliance officer</td>
+            <td><span>Medium</span> <span class="muted">· Aken</span></td>
+            <td class="muted">36 u · kantoordagen onbekend</td>
+            <td><span class="badge" style="background: #ecfccb; color: #3f6212;">Mogelijk</span></td>
+            <td><span class="badge" style="background: #e0f2fe; color: #075985;">Nieuw</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">16 sep</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">Van Dijk Logistiek</td>
+            <td>Inkoper</td>
+            <td><span>Medium</span> <span class="muted">· Eindhoven</span></td>
+            <td class="muted">40 u · 3 d kantoor</td>
+            <td><span class="badge" style="background: #e0f2fe; color: #075985;">Nog te beoordelen</span></td>
+            <td><span class="badge" style="background: #e0f2fe; color: #075985;">Nieuw</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">15 sep</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">Noorderlicht Energie</td>
+            <td>Contractmanager</td>
+            <td><span>Lokaal</span> <span class="muted">· Sittard</span></td>
+            <td class="muted">32–36 u · 2 d kantoor · onbepaalde tijd</td>
+            <td><span class="badge" style="background: #dcfce7; color: #166534;">Match</span></td>
+            <td><span class="badge" style="background: #dcfce7; color: #166534;">Gesolliciteerd</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">12 sep</td>
+          </tr>
+          <tr class="hl">
+            <td style="font-weight: 600;">Studio Rietveld</td>
+            <td>Projectleider</td>
+            <td><span>Remote</span></td>
+            <td class="muted">32 u · fully remote · EN</td>
+            <td><span class="badge" style="background: #dcfce7; color: #166534;">Match</span></td>
+            <td><span class="badge" style="background: #d1fae5; color: #065f46;">Gesprek · 23 sep</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">9 sep</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">Kaap Consultancy</td>
+            <td>Contractmanager</td>
+            <td><span>Ver</span> <span class="muted">· Amsterdam</span></td>
+            <td class="muted">36 u · 1 d kantoor</td>
+            <td><span class="badge" style="background: #dcfce7; color: #166534;">Match</span></td>
+            <td><span class="badge" style="background: #dcfce7; color: #166534;">Gesolliciteerd</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">8 sep</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">Waterweg Advies</td>
+            <td>Adviseur inkoop</td>
+            <td><span>Lokaal</span> <span class="muted">· Heerlen</span></td>
+            <td class="muted">24–32 u · hybride</td>
+            <td><span class="badge" style="background: #ecfccb; color: #3f6212;">Mogelijk</span></td>
+            <td><span class="badge" style="background: #e0e7ff; color: #3730a3;">Bezig</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">6 sep</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">Gemeente Zuidmeer</td>
+            <td>Beleidsadviseur</td>
+            <td><span>Ver</span> <span class="muted">· Utrecht</span></td>
+            <td class="muted">36 u · 3 d kantoor</td>
+            <td><span class="badge" style="background: #fef3c7; color: #92400e;">Zwak</span></td>
+            <td><span class="badge" style="background: #fef3c7; color: #92400e;">On hold</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">3 sep</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600;">Bloemendaal &amp; Partners</td>
+            <td>Adviseur</td>
+            <td><span>Lokaal</span> <span class="muted">· Maastricht</span></td>
+            <td class="muted">40 u · 5 d kantoor</td>
+            <td><span class="badge" style="background: #e7e5e4; color: #44403c;">Geen match</span></td>
+            <td><span class="badge" style="background: #ffe4e6; color: #9f1239;">Afgewezen</span></td>
+            <td class="muted" style="text-align: right; white-space: nowrap;">2 sep</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fafaf9; border-top: 1px solid #e7e5e4; font-size: 13px; color: #78716c;">
+        <span>1–8 van 31</span>
+        <span style="margin-left: auto; display: flex; gap: 6px;">
+          <span class="chip" style="height: 30px; padding: 0 10px; color: #a8a29e;">Vorige</span>
+          <span class="chip" style="height: 30px; padding: 0 10px;">Volgende</span>
+        </span>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; background: #fafaf9; color: #1c1917; font-family: 'Instrument Sans', system-ui, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.4; }
+    a { color: #c2410c; text-decoration: none; } a:hover { color: #9a3412; }
+    .display { font-family: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif; letter-spacing: -0.01em; }
+    .card { background: #ffffff; border: 1px solid #e7e5e4; border-radius: 14px; box-shadow: 0 1px 2px rgba(28,25,23,0.04); }
+    .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid #d6d3d1; background: #fff; font-size: 13px; font-weight: 500; white-space: nowrap; color: #44403c; }
+    .chip.on { background: #1c1917; border-color: #1c1917; color: #fff; }
+    .muted { color: #78716c; }
+    .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-grow: 1; padding: 8px 0; color: #78716c; font-size: 11px; font-weight: 500; }
+    .tab svg { width: 22px; height: 22px; }
+    .tab.active { color: #c2410c; }
+    .item { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; }
+  </style>
+</helmet>
+
+<div style="position: relative; display: flex; flex-direction: column; width: 390px; height: 844px; background: #fafaf9; overflow: hidden;">
+
+  <header style="display: flex; flex-direction: column; gap: 12px; padding: 18px 16px 12px; background: #fafaf9;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h1 class="display" style="margin: 0; font-size: 24px; font-weight: 700;">Vacatures</h1>
+      <span class="muted" style="font-size: 14px;">31</span>
+      <div style="margin-left: auto; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; color: #57534e;">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; overflow: hidden;">
+      <span class="chip on">Lopend</span>
+      <span class="chip">Laag <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+      <span class="chip">Oordeel <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+      <span class="chip">Status <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span>
+      <span class="chip">Afgevallen</span>
+    </div>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px 96px; overflow: hidden;">
+
+    <div class="card item">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 1px;">
+          <span style="font-weight: 600;">Helix Medical</span>
+          <span class="muted" style="font-size: 14px;">Compliance officer</span>
+        </div>
+        <span class="badge" style="background: #ecfccb; color: #3f6212;">Mogelijk</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 13px; color: #78716c;">
+        <span class="badge" style="background: #e0f2fe; color: #075985;">Nieuw</span>
+        <span>Medium · Aken</span>
+        <span>2 d kantoor?</span>
+        <span style="margin-left: auto;">16 sep</span>
+      </div>
+    </div>
+
+    <div class="card item">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 1px;">
+          <span style="font-weight: 600;">Van Dijk Logistiek</span>
+          <span class="muted" style="font-size: 14px;">Inkoper</span>
+        </div>
+        <span class="badge" style="background: #e0f2fe; color: #075985;">Nog te beoordelen</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 13px; color: #78716c;">
+        <span class="badge" style="background: #e0f2fe; color: #075985;">Nieuw</span>
+        <span>Medium · Eindhoven</span>
+        <span style="margin-left: auto;">15 sep</span>
+      </div>
+    </div>
+
+    <div class="card item">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 1px;">
+          <span style="font-weight: 600;">Noorderlicht Energie</span>
+          <span class="muted" style="font-size: 14px;">Contractmanager</span>
+        </div>
+        <span class="badge" style="background: #dcfce7; color: #166534;">Match</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 13px; color: #78716c;">
+        <span class="badge" style="background: #dcfce7; color: #166534;">Gesolliciteerd</span>
+        <span>Lokaal · Sittard</span>
+        <span>32–36 u · 2 d kantoor</span>
+        <span style="margin-left: auto;">12 sep</span>
+      </div>
+    </div>
+
+    <div class="card item" style="border-color: #c2410c; box-shadow: 0 0 0 3px #fff1e8;">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 1px;">
+          <span style="font-weight: 600;">Studio Rietveld</span>
+          <span class="muted" style="font-size: 14px;">Projectleider</span>
+        </div>
+        <span class="badge" style="background: #dcfce7; color: #166534;">Match</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 13px; color: #78716c;">
+        <span class="badge" style="background: #d1fae5; color: #065f46;">Gesprek 23 sep</span>
+        <span>Remote · EN</span>
+        <span style="margin-left: auto;">9 sep</span>
+      </div>
+    </div>
+
+    <div class="card item">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 1px;">
+          <span style="font-weight: 600;">Kaap Consultancy</span>
+          <span class="muted" style="font-size: 14px;">Contractmanager</span>
+        </div>
+        <span class="badge" style="background: #dcfce7; color: #166534;">Match</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 13px; color: #78716c;">
+        <span class="badge" style="background: #dcfce7; color: #166534;">Gesolliciteerd</span>
+        <span>Ver · Amsterdam</span>
+        <span>1 d kantoor</span>
+        <span style="margin-left: auto;">8 sep</span>
+      </div>
+    </div>
+
+    <div class="card item">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 1px;">
+          <span style="font-weight: 600;">Gemeente Zuidmeer</span>
+          <span class="muted" style="font-size: 14px;">Beleidsadviseur</span>
+        </div>
+        <span class="badge" style="background: #fef3c7; color: #92400e;">Zwak</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 13px; color: #78716c;">
+        <span class="badge" style="background: #fef3c7; color: #92400e;">On hold</span>
+        <span>Ver · Utrecht</span>
+        <span>3 d kantoor</span>
+        <span style="margin-left: auto;">3 sep</span>
+      </div>
+    </div>
+  </main>
+
+  <div style="position: absolute; right: 18px; bottom: 84px; display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 999px; background: #c2410c; box-shadow: 0 6px 16px rgba(194,65,12,0.35);">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+  </div>
+
+  <nav style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; padding: 6px 8px 14px; background: #ffffff; border-top: 1px solid #e7e5e4;">
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg>Home</a>
+    <a class="tab active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M3 12h18"></path></svg>Vacatures</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="M3.5 6l1 1 2-2"></path><path d="M3.5 12l1 1 2-2"></path><path d="M3.5 18l1 1 2-2"></path></svg>Criteria</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>Profiel</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg>Meer</a>
+  </nav>
+</div>
+</x-dc>
+</body>
+</html>

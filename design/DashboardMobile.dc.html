@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; background: #fafaf9; color: #1c1917; font-family: 'Instrument Sans', system-ui, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.4; }
+    a { color: #c2410c; text-decoration: none; } a:hover { color: #9a3412; }
+    .display { font-family: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif; letter-spacing: -0.01em; }
+    .card { background: #ffffff; border: 1px solid #e7e5e4; border-radius: 14px; box-shadow: 0 1px 2px rgba(28,25,23,0.04); }
+    .label { font-size: 12px; font-weight: 500; color: #78716c; letter-spacing: 0.02em; text-transform: uppercase; }
+    .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .muted { color: #78716c; }
+    .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-grow: 1; padding: 8px 0; color: #78716c; font-size: 11px; font-weight: 500; }
+    .tab svg { width: 22px; height: 22px; }
+    .tab.active { color: #c2410c; }
+  </style>
+</helmet>
+
+<div style="position: relative; display: flex; flex-direction: column; width: 390px; height: 844px; background: #fafaf9; overflow: hidden;">
+
+  <!-- Top bar -->
+  <header style="display: flex; align-items: center; gap: 10px; padding: 18px 20px 6px;">
+    <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: #c2410c;">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7 6.6 19.6l1.2-6.1L3.3 9.3l6.1-.7z"></path></svg>
+    </div>
+    <span class="display" style="font-size: 19px; font-weight: 700;">Baanjager</span>
+    <div style="margin-left: auto; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; color: #57534e;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+    </div>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 14px; padding: 8px 16px 96px; overflow: hidden;">
+
+    <div style="display: flex; flex-direction: column; gap: 2px; padding: 4px 4px 0;">
+      <h1 class="display" style="margin: 0; font-size: 24px; font-weight: 700;">Goedemorgen</h1>
+      <span class="muted" style="font-size: 14px;">4 vacatures wachten op jou</span>
+    </div>
+
+    <!-- Stat grid -->
+    <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+      <div class="card" style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-color: #fdba74; background: #fff7ed;">
+        <span class="label" style="color: #c2410c;">Wacht op jou</span>
+        <span class="display" style="font-size: 30px; font-weight: 600; line-height: 1; color: #c2410c;">4</span>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px;">
+        <span class="label">Open</span>
+        <span class="display" style="font-size: 30px; font-weight: 600; line-height: 1;">11</span>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px;">
+        <span class="label">Gesolliciteerd</span>
+        <span class="display" style="font-size: 30px; font-weight: 600; line-height: 1;">6</span>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px;">
+        <span class="label">Afgevallen</span>
+        <span class="display" style="font-size: 30px; font-weight: 600; line-height: 1;">97</span>
+      </div>
+    </section>
+
+    <!-- Needs you -->
+    <section class="card" style="display: flex; flex-direction: column; padding: 16px 16px 4px;">
+      <div style="display: flex; align-items: center; gap: 8px; padding-bottom: 4px;">
+        <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Wacht op jou</h2>
+        <a href="#" style="margin-left: auto; font-size: 13px; font-weight: 500;">Alle →</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 0; border-top: 1px solid #f5f5f4;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 2px;">
+          <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Van Dijk Logistiek</span>
+          <span class="muted" style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Inkoper · Medium · Eindhoven</span>
+        </div>
+        <span class="badge" style="background: #e0f2fe; color: #075985;">Beoordelen</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 0; border-top: 1px solid #f5f5f4;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 2px;">
+          <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Helix Medical</span>
+          <span class="muted" style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Compliance officer · kantoordagen onbekend</span>
+        </div>
+        <span class="badge" style="background: #ecfccb; color: #3f6212;">Navragen</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 0; border-top: 1px solid #f5f5f4;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 2px;">
+          <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Kaap Consultancy</span>
+          <span class="muted" style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Contractmanager · 9 dagen geen reactie</span>
+        </div>
+        <span class="badge" style="background: #dcfce7; color: #166534;">Stil</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 0; border-top: 1px solid #f5f5f4;">
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; gap: 2px;">
+          <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Bloemendaal &amp; Partners</span>
+          <span class="muted" style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Adviseur · afgewezen, reden vastleggen</span>
+        </div>
+        <span class="badge" style="background: #ffe4e6; color: #9f1239;">Terugkoppelen</span>
+      </div>
+    </section>
+
+    <!-- Pipeline -->
+    <section class="card" style="display: flex; flex-direction: column; gap: 12px; padding: 16px;">
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <h2 class="display" style="margin: 0; font-size: 17px; font-weight: 600;">Pijplijn</h2>
+        <span class="muted" style="font-size: 13px;">29 lopend</span>
+      </div>
+      <div style="display: flex; gap: 3px; height: 12px; border-radius: 6px; overflow: hidden;">
+        <div style="flex-grow: 9; background: #7dd3fc;"></div>
+        <div style="flex-grow: 2; background: #a5b4fc;"></div>
+        <div style="flex-grow: 6; background: #4ade80;"></div>
+        <div style="flex-grow: 1; background: #059669;"></div>
+        <div style="flex-grow: 8; background: #fcd34d;"></div>
+        <div style="flex-grow: 3; background: #fda4af;"></div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px;">
+        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #7dd3fc;"></span>Nieuw 9</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #a5b4fc;"></span>Bezig 2</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #4ade80;"></span>Gesolliciteerd 6</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #059669;"></span>Gesprek 1</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #fcd34d;"></span>On hold 8</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #fda4af;"></span>Afgewezen 3</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- Floating add -->
+  <div style="position: absolute; right: 18px; bottom: 84px; display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 999px; background: #c2410c; box-shadow: 0 6px 16px rgba(194,65,12,0.35);">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+  </div>
+
+  <!-- Tab bar -->
+  <nav style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; padding: 6px 8px 14px; background: #ffffff; border-top: 1px solid #e7e5e4;">
+    <a class="tab active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg>Home</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M3 12h18"></path></svg>Vacatures</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="M3.5 6l1 1 2-2"></path><path d="M3.5 12l1 1 2-2"></path><path d="M3.5 18l1 1 2-2"></path></svg>Criteria</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>Profiel</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg>Meer</a>
+  </nav>
+</div>
+</x-dc>
+</body>
+</html>
