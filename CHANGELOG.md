@@ -19,6 +19,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 ### Gewijzigd
 
 - De vacaturelijst is verhuisd van `/` naar `/vacancies`.
+- drizzle-orm 0.45 en drizzle-kit 0.31 (audit: identifier-escaping), vitest 5 + vite 8
+  (audit, dev-only). Geen schemawijziging.
 - CSV-import loopt in één transactie (één commit voor het hele bestand, niets half).
 - CSV-export beschermt tegen formule-injectie: cellen die met `=`, `+`, `-` of `@`
   beginnen krijgen een apostrof, zodat een spreadsheet ze als tekst leest.

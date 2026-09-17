@@ -21,7 +21,7 @@ export default async function ProfilePage({
         <p className="mt-1 max-w-3xl text-sm text-muted">{t("profile.intro")}</p>
       </div>
 
-      <p className="notice">🔒 {t("profile.privacy")}</p>
+      <p className="notice">{t("profile.privacy")}</p>
       {saved ? <p className="notice">{t("common.saved")}</p> : null}
 
       <form action={saveProfileAction} className="space-y-6">
