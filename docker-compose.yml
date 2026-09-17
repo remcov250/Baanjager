@@ -1,5 +1,7 @@
 services:
   baanjager:
+    # Pull the published image, or `docker compose up --build` to build locally.
+    image: ghcr.io/remcov250/baanjager:latest
     build: .
     container_name: baanjager
     restart: unless-stopped

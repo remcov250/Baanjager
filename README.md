@@ -40,7 +40,8 @@ Gebouwd voor de telefoon eerst, omdat je een vacature meestal in de trein ziet.
 
 ## Snel starten
 
-Je hebt Docker nodig, verder niets.
+Je hebt Docker nodig, verder niets. Er is een kant-en-klare image voor amd64 en arm64:
+`ghcr.io/remcov250/baanjager:latest`.
 
 ```bash
 git clone https://github.com/remcov250/Baanjager.git
