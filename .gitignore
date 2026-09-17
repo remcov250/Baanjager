@@ -1,0 +1,19 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local database and uploads. Never commit real job-search data.
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+.env
+.env.local
+.env.*.local
+
+# Per-machine Claude Code overrides
+.claude/settings.local.json

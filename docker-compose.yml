@@ -1,0 +1,23 @@
+services:
+  baanjager:
+    build: .
+    container_name: baanjager
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # A named volume: the container runs as uid 1001 and Docker sets the
+      # ownership for you. If you'd rather bind-mount a folder, chown it to
+      # 1001:1001 first.
+      - baanjager-data:/data
+    environment:
+      DEFAULT_LOCALE: nl
+      # Set to "true" when a reverse proxy in front of this does HTTPS, so the
+      # session cookie gets the Secure flag and login rate limiting sees real IPs.
+      TRUST_PROXY: "false"
+      # Leave empty to keep the REST API and MCP off. Generate one with:
+      #   openssl rand -hex 32
+      API_TOKEN: ${API_TOKEN:-}
+
+volumes:
+  baanjager-data:
