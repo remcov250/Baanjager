@@ -22,6 +22,8 @@ const sans = Instrument_Sans({
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "Vacatures beoordelen, criteria aanscherpen.",
+  applicationName: APP_NAME,
+  appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -31,6 +33,9 @@ export const viewport: Viewport = {
   ],
   width: "device-width",
   initialScale: 1,
+  // Lets the tab bar and top bar extend under the iPhone home indicator and
+  // Dynamic Island; the safe-area insets in the shell keep content clear of them.
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

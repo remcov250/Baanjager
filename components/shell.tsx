@@ -108,7 +108,7 @@ export function Sidebar({
 
 export function MobileBar({ t, locale }: { t: Translate; locale: Locale }) {
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface/95 px-4 py-2.5 backdrop-blur md:hidden">
+    <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface/95 px-4 pb-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] backdrop-blur md:hidden">
       <Brand size="sm" />
       <div className="ml-auto flex items-center gap-2">
         <LocaleSwitch t={t} locale={locale} />

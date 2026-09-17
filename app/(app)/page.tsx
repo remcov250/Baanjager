@@ -192,7 +192,7 @@ export default async function DashboardPage() {
 
       <Link
         href="/vacancies/new"
-        className="fixed bottom-[84px] right-[18px] z-10 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-accent text-white shadow-fab sm:hidden"
+        className="fixed bottom-[calc(84px+env(safe-area-inset-bottom))] right-[18px] z-10 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-accent text-white shadow-fab sm:hidden"
         aria-label={t("vacancies.new")}
       >
         <Icon.plus className="h-6 w-6" />

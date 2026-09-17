@@ -16,8 +16,13 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   projects: [
-    // Mobile first: the phone project runs first and is the reference.
+    // Mobile first: the phone projects run first and are the reference.
     { name: "mobile", use: { ...devices["Pixel 7"] } },
+    // Real WebKit on an iPhone profile. Needs `playwright install webkit` plus its
+    // system libraries, which CI has; opt in locally with E2E_WEBKIT=1.
+    ...(process.env.CI || process.env.E2E_WEBKIT
+      ? [{ name: "iphone", use: { ...devices["iPhone 15 Pro"] } }]
+      : []),
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
