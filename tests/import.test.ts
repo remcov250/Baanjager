@@ -68,6 +68,12 @@ describe("parseStatus", () => {
     expect(parseStatus("", "Ja", "match")).toBe("applied");
     expect(parseStatus("", "On hold", "possible")).toBe("on_hold");
   });
+  it("does not mistake preparation notes or thin supply for interviews and offers", () => {
+    expect(parseStatus("Verzonden via LinkedIn. Gespreksvoorbereiding staat klaar.", "Ja", "match")).toBe("applied");
+    expect(parseStatus("Zwak; alleen bij dun aanbod (hybride-dagen navragen)", "Nee", "weak")).toBe("on_hold");
+    expect(parseStatus("Uitgenodigd voor een gesprek op 21-09", "Ja", "match")).toBe("interview");
+    expect(parseStatus("Aanbod ontvangen, bedenktijd tot vrijdag", "Ja", "match")).toBe("offer");
+  });
   it("maps in-progress and watchlist", () => {
     expect(parseStatus("KLAAR OM TE VERZENDEN. Formulier ingevuld", "Nee", "match")).toBe("in_progress");
     expect(parseStatus("Werkgever op volglijst", "Nee", "possible")).toBe("on_hold");

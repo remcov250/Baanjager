@@ -105,12 +105,20 @@ export function parseStatus(statusText: string, applied: string, verdict: Verdic
   if (s.startsWith("afgevallen") || s.includes("vervallen") || s.includes("geen vervolg") || s.startsWith("dropped")) {
     return "dropped";
   }
-  if (s.includes("gesprek") || s.includes("interview")) return "interview";
-  if (s.includes("aanbod") || s.includes("offer")) return "offer";
+  // "gesprek" alone is too loose: "gespreksvoorbereiding staat klaar" belongs to an application
+  // that was merely sent, and "aanbod" in "alleen bij dun aanbod" is the supply of vacancies,
+  // not a job offer. Only the phrasings that actually mean an interview or an offer count.
+  if (/uitgenodigd|gesprek (op|gepland|ingepland|staat)|gespreksronde (op|gepland)|interview (scheduled|invite|on )/.test(s)) {
+    return "interview";
+  }
+  if (/aanbod (ontvangen|gekregen)|offer (received|made|accepted)|job offer/.test(s)) return "offer";
   if (s.startsWith("verzonden") || s.includes("wachten op reactie") || a === "ja" || a === "yes") {
     return "applied";
   }
-  if (s.includes("on hold") || a === "on hold" || s.includes("volglijst") || s.includes("watchlist")) {
+  if (
+    s.includes("on hold") || a === "on hold" || s.includes("volglijst") || s.includes("watchlist") ||
+    s.includes("dun aanbod")
+  ) {
     return "on_hold";
   }
   if (s.includes("klaar om te verzenden") || s.startsWith("actief") || s.includes("bezig")) {
