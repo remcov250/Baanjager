@@ -21,7 +21,7 @@ export async function createVacancyAction(formData: FormData) {
   const parsed = parseForm(formData);
   if (!parsed.success) redirect("/vacancies/new?error=validation");
   const vacancy = createVacancy(parsed.data);
-  revalidatePath("/");
+  revalidatePath("/"); revalidatePath("/vacancies");
   redirect(`/vacancies/${vacancy.id}?saved=1`);
 }
 
@@ -32,7 +32,7 @@ export async function updateVacancyAction(formData: FormData) {
   const parsed = parseForm(formData);
   if (!parsed.success) redirect(`/vacancies/${id}?error=validation`);
   updateVacancy(id, parsed.data);
-  revalidatePath("/");
+  revalidatePath("/"); revalidatePath("/vacancies");
   revalidatePath(`/vacancies/${id}`);
   redirect(`/vacancies/${id}?saved=1`);
 }

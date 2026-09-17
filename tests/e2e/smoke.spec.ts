@@ -26,12 +26,12 @@ async function signIn(page: Page) {
 
 test("first visit goes to setup, creates the account and lands on the list", async ({ page }) => {
   await signIn(page);
-  await expect(page.getByRole("heading", { name: "Vacatures" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
 test("no horizontal scrolling on any page", async ({ page }) => {
   await signIn(page);
-  for (const path of ["/", "/vacancies/new", "/criteria", "/profile", "/sources", "/settings"]) {
+  for (const path of ["/", "/vacancies", "/vacancies/new", "/criteria", "/profile", "/sources", "/settings"]) {
     await page.goto(path);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -48,9 +48,10 @@ test("adds a vacancy with a verdict and reason", async ({ page }, testInfo) => {
   await page.getByLabel("Functietitel").fill("Analyst");
   await page.getByLabel("Laag").selectOption("local");
   await page.getByLabel("Kantoordagen (per week)").fill("2");
-  await page.getByLabel("Oordeel", { exact: true }).selectOption("match");
+  await page.getByText("Match", { exact: true }).click();
+  await expect(page.getByRole("radio", { name: "Match", exact: true })).toBeChecked();
   await page.getByLabel("Reden", { exact: true }).fill("Geen Duits vereist, twee kantoordagen, lokaal.");
-  await page.getByRole("button", { name: "Opslaan" }).click();
+  await page.getByRole("button", { name: "Opslaan" }).first().click();
 
   await expect(page).toHaveURL(/\/vacancies\/\d+\?saved=1/);
   await expect(page.getByText("Opgeslagen")).toBeVisible();
@@ -60,6 +61,7 @@ test("adds a vacancy with a verdict and reason", async ({ page }, testInfo) => {
 test("turns an insight into a rule linked to the vacancy", async ({ page }, testInfo) => {
   await signIn(page);
   const employer = `Acme ${testInfo.project.name}`;
+  await page.goto("/vacancies");
   await page.getByRole("link", { name: employer }).first().click();
   await expect(page).toHaveURL(/\/vacancies\/\d+/);
 
@@ -78,34 +80,35 @@ test("turns an insight into a rule linked to the vacancy", async ({ page }, test
 test("filters the list and hides dropped vacancies by default", async ({ page }, testInfo) => {
   await signIn(page);
   const employer = `Acme ${testInfo.project.name}`;
+  await page.goto("/vacancies");
   await expect(page.getByRole("link", { name: employer }).first()).toBeVisible();
 
   await page.getByLabel("Oordeel").selectOption("no_match");
   await page.getByRole("button", { name: "Zoeken" }).click();
   await expect(page.getByText("Nog geen vacatures")).toBeVisible();
 
-  await page.goto("/");
+  await page.goto("/vacancies");
   await page.getByRole("link", { name: employer }).first().click();
   await expect(page).toHaveURL(/\/vacancies\/\d+/);
   await page.getByLabel("Status", { exact: true }).selectOption("dropped");
-  await page.getByRole("button", { name: "Opslaan" }).click();
+  await page.getByRole("button", { name: "Opslaan" }).first().click();
   await expect(page).toHaveURL(/saved=1/);
-  await page.goto("/");
+  await page.goto("/vacancies");
   await expect(page.getByRole("link", { name: employer })).toHaveCount(0);
-  await page.getByLabel("Toon afgevallen en afgewezen").check();
+  await page.getByText("Toon afgevallen en afgewezen").click();
   await page.getByRole("button", { name: "Zoeken" }).click();
   await expect(page.getByRole("link", { name: employer }).first()).toBeVisible();
 });
 
 test("table on desktop, cards on mobile", async ({ page, isMobile }) => {
   await signIn(page);
-  await page.goto("/?closed=1");
+  await page.goto("/vacancies?closed=1");
   await expect(page.locator("table")).toBeVisible({ visible: !isMobile });
 });
 
 test("wrong password is refused, logout works", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("button", { name: "Uitloggen" }).click();
+  await page.getByRole("button", { name: "Uitloggen" }).first().click();
   await expect(page).toHaveURL(/\/login/);
 
   await page.getByLabel("Gebruikersnaam").fill(USER);

@@ -18,6 +18,6 @@ export async function importCsvAction(formData: FormData) {
   const result = importRows(rows, vacancyExists, (v) => {
     createVacancy(v);
   });
-  revalidatePath("/");
+  revalidatePath("/"); revalidatePath("/vacancies");
   redirect(`/settings?import=done&added=${result.added}&skipped=${result.skipped}`);
 }

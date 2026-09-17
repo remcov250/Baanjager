@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RULE_KINDS } from "@/db/schema";
 import { createRuleFromVacancyAction, updateVacancyAction } from "@/app/(app)/vacancies/actions";
-import { Field, Select, StatusBadge, VerdictBadge } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { Field, RuleKindBadge, Select, StatusBadge, VerdictBadge, shortDate } from "@/components/ui";
 import { VacancyForm } from "@/components/vacancy-form";
 import { getT } from "@/lib/i18n";
 import { rulesForVacancy } from "@/lib/rules";
@@ -20,49 +21,68 @@ export default async function VacancyPage({
   const vacancy = Number.isInteger(numericId) ? getVacancy(numericId) : undefined;
   if (!vacancy) notFound();
 
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const flags = await searchParams;
   const rules = rulesForVacancy(vacancy.id);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <Link href="/" className="text-sm text-stone-500 hover:text-ink">← {t("common.back")}</Link>
-        <h1>
-          {vacancy.title} <span className="font-normal text-stone-500">— {vacancy.employer}</span>
-        </h1>
-        <VerdictBadge verdict={vacancy.verdict} t={t} />
-        <StatusBadge status={vacancy.status} t={t} />
-        {vacancy.url ? (
-          <a href={vacancy.url} target="_blank" rel="noreferrer noopener" className="btn btn-sm">
-            {t("common.open")} ↗
-          </a>
-        ) : null}
+    <div className="flex flex-col gap-4 sm:gap-5">
+      <div className="flex items-center gap-1.5 text-[13px] text-muted">
+        <Link href="/vacancies" className="hover:text-fg">{t("vacancies.title")}</Link>
+        <span>/</span>
+        <span className="truncate">{vacancy.employer}</span>
       </div>
+
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+        <div className="flex min-w-0 flex-col gap-2">
+          <h1 className="text-[22px] leading-tight sm:text-[28px]">
+            {vacancy.title}
+            <span className="font-medium text-muted"> — {vacancy.employer}</span>
+          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <VerdictBadge verdict={vacancy.verdict} t={t} />
+            <StatusBadge status={vacancy.status} t={t} />
+            <span className="text-[13px] text-muted">
+              {t(`layer.${vacancy.layer}`)}
+              {vacancy.location ? ` · ${vacancy.location}` : ""}
+              {vacancy.foundOn ? ` · ${t("vacancy.tlFound").toLowerCase()} ${shortDate(vacancy.foundOn, locale)}` : ""}
+              {vacancy.appliedOn ? ` · ${t("vacancy.tlApplied").toLowerCase()} ${shortDate(vacancy.appliedOn, locale)}` : ""}
+            </span>
+          </div>
+        </div>
+        <div className="flex shrink-0 gap-2 sm:ml-auto">
+          {vacancy.url ? (
+            <a href={vacancy.url} target="_blank" rel="noreferrer noopener" className="btn">
+              {t("common.open")}
+              <Icon.external className="h-[15px] w-[15px]" />
+            </a>
+          ) : null}
+          <button form="vacancy-form" className="btn btn-primary hidden lg:inline-flex">{t("common.save")}</button>
+        </div>
+      </header>
 
       {flags.saved ? <p className="notice">{t("common.saved")}</p> : null}
       {flags.rule ? <p className="notice">{t("criteria.ruleAdded")}</p> : null}
       {flags.error ? <p className="notice">{t("common.validationError")}</p> : null}
 
-      <VacancyForm t={t} action={updateVacancyAction} vacancy={vacancy} />
+      <VacancyForm t={t} locale={locale} action={updateVacancyAction} vacancy={vacancy} />
 
-      <section className="card space-y-4">
+      <section className="card flex flex-col gap-4 lg:ml-[calc(5/12*100%+0.33rem)]">
         <h2>{t("vacancy.rulesFromThis")}</h2>
         {rules.length ? (
-          <ul className="space-y-1 text-sm">
+          <ul className="flex flex-col">
             {rules.map((r) => (
-              <li key={r.id}>
-                <span className="badge bg-stone-100 text-stone-700">{t(`ruleKind.${r.kind}`)}</span>{" "}
-                {r.text}
-                {r.retiredAt ? <span className="text-stone-400"> ({t("criteria.retired")})</span> : null}
+              <li key={r.id} className="flex items-start gap-3 border-t border-line-soft py-2.5 first:border-t-0">
+                <RuleKindBadge kind={r.kind} t={t} />
+                <span className={r.retiredAt ? "text-muted line-through" : ""}>{r.text}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-stone-500">{t("common.none")}</p>
+          <p className="text-sm text-muted">{t("common.none")}</p>
         )}
 
-        <form action={createRuleFromVacancyAction} className="space-y-3 border-t border-stone-100 pt-4">
+        <form action={createRuleFromVacancyAction} className="flex flex-col gap-3 rounded-lg border border-accent-line bg-accent-tint p-4">
           <input type="hidden" name="vacancyId" value={vacancy.id} />
           <h3 className="text-sm font-semibold">{t("vacancy.makeRule")}</h3>
           <div className="grid gap-3 sm:grid-cols-[12rem_1fr]">
@@ -76,7 +96,9 @@ export default async function VacancyPage({
           <Field label={t("criteria.rationale")} help={t("criteria.rationaleHelp")}>
             <textarea name="rationale" maxLength={5000} defaultValue={vacancy.verdictReason ?? ""} className="min-h-[4rem]" />
           </Field>
-          <button className="btn">{t("criteria.add")}</button>
+          <div>
+            <button className="btn">{t("criteria.add")}</button>
+          </div>
         </form>
       </section>
     </div>

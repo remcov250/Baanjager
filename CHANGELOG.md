@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ## [Unreleased]
 
+### Toegevoegd
+
+- **Dashboard** als startpagina: wat er van jou nodig is (beoordelen, stille sollicitaties,
+  ontbrekende terugkoppeling), pijplijn, afgevallen per laag, laatste regels.
+- **Dark mode**: volgt het systeem, of vast licht/donker via de schakelaar (sidebar en
+  Instellingen). Alle kleuren zijn nu één set tokens.
+- Nieuwe schil: sidebar op desktop, tabbalk en zwevende plus-knop op de telefoon. Eigen
+  typografie (Bricolage Grotesque + Instrument Sans, self-hosted).
+- Vacaturedetail in twee kolommen met een verloop-tijdlijn en een chip-keuze voor het
+  oordeel; de lijst kreeg filter-chips en toont randvoorwaarden in de tabel.
+
+### Gewijzigd
+
+- De vacaturelijst is verhuisd van `/` naar `/vacancies`.
+
 ## [0.1.0] — 2026-09-17
 
 Eerste versie.

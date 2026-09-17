@@ -9,7 +9,10 @@
     "sources": "Sources",
     "settings": "Settings",
     "logout": "Log out",
-    "language": "Language"
+    "language": "Language",
+    "dashboard": "Dashboard",
+    "more": "More",
+    "theme": "Appearance"
   },
   "common": {
     "save": "Save",
@@ -34,7 +37,9 @@
     "perWeek": "per week",
     "open": "Open",
     "validationError": "Something was wrong with the input. Check the fields and try again.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "hoursShort": "h",
+    "officeDaysShort": "d office"
   },
   "layer": {
     "local": "Local",
@@ -148,7 +153,12 @@
     "vacancyTextHelp": "Pasted in full. Vacancy texts are public, so that's fine.",
     "neverDeleted": "Vacancies are never deleted. A rejection with its reason is worth more than a match — it's the training data for your criteria. Set the status to Dropped to take it out of the default view.",
     "makeRule": "Make a rule from this insight",
-    "rulesFromThis": "Rules that came from this vacancy"
+    "rulesFromThis": "Rules that came from this vacancy",
+    "timeline": "Timeline",
+    "tlFound": "Found",
+    "tlAssessed": "Assessed",
+    "tlApplied": "Applied",
+    "tlClosed": "Closed"
   },
   "criteria": {
     "title": "Criteria",
@@ -227,7 +237,8 @@
     "passwordMismatch": "The new passwords don't match.",
     "file": "CSV file",
     "import_empty": "No file chosen.",
-    "import_toolarge": "The file is larger than 10 MB."
+    "import_toolarge": "The file is larger than 10 MB.",
+    "appearance": "Appearance"
   },
   "login": {
     "title": "Log in",
@@ -250,5 +261,34 @@
       "short": "The password is too short.",
       "mismatch": "The passwords don't match."
     }
+  },
+  "theme": {
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "dashboard": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "waiting": "{n} vacancies are waiting on you",
+    "needsYou": "Waiting on you",
+    "needsYouHint": "assess, follow up, give feedback",
+    "open": "Open",
+    "openHint": "{new} new · {progress} in progress",
+    "appliedHint": "{n} interview or offer",
+    "droppedHint": "of {total} seen — your training data",
+    "pipeline": "Pipeline",
+    "pipelineHint": "{n} vacancies in play",
+    "droppedByLayer": "Dropped per layer",
+    "droppedByLayerHint": "of the {n} dropped",
+    "criteriaLink": "See the criteria",
+    "latestRules": "Latest rules",
+    "learnedFrom": "learned from",
+    "allVacancies": "All vacancies",
+    "silent": "{d} days quiet",
+    "assess": "Assess",
+    "feedback": "Give feedback",
+    "nothingWaiting": "Nothing is waiting on you. Time for a scan?"
   }
 }

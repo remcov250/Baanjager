@@ -9,7 +9,10 @@
     "sources": "Bronnen",
     "settings": "Instellingen",
     "logout": "Uitloggen",
-    "language": "Taal"
+    "language": "Taal",
+    "dashboard": "Dashboard",
+    "more": "Meer",
+    "theme": "Weergave"
   },
   "common": {
     "save": "Opslaan",
@@ -34,7 +37,9 @@
     "perWeek": "per week",
     "open": "Openen",
     "validationError": "Er ging iets mis met de invoer. Controleer de velden en probeer het opnieuw.",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "hoursShort": "u",
+    "officeDaysShort": "d kantoor"
   },
   "layer": {
     "local": "Lokaal",
@@ -148,7 +153,12 @@
     "vacancyTextHelp": "Integraal geplakt. Vacatureteksten zijn openbaar, dus dat mag.",
     "neverDeleted": "Vacatures worden nooit verwijderd. Een afwijzing mét reden is waardevoller dan een match — het is de trainingsdata van je criteria. Zet de status op Afgevallen om hem uit het standaardoverzicht te halen.",
     "makeRule": "Regel maken van dit inzicht",
-    "rulesFromThis": "Regels die uit deze vacature zijn ontstaan"
+    "rulesFromThis": "Regels die uit deze vacature zijn ontstaan",
+    "timeline": "Verloop",
+    "tlFound": "Gevonden",
+    "tlAssessed": "Beoordeeld",
+    "tlApplied": "Gesolliciteerd",
+    "tlClosed": "Gesloten"
   },
   "criteria": {
     "title": "Criteria",
@@ -227,7 +237,8 @@
     "passwordMismatch": "De nieuwe wachtwoorden zijn niet gelijk.",
     "file": "CSV-bestand",
     "import_empty": "Geen bestand gekozen.",
-    "import_toolarge": "Het bestand is groter dan 10 MB."
+    "import_toolarge": "Het bestand is groter dan 10 MB.",
+    "appearance": "Weergave"
   },
   "login": {
     "title": "Inloggen",
@@ -250,5 +261,34 @@
       "short": "Het wachtwoord is te kort.",
       "mismatch": "De wachtwoorden zijn niet gelijk."
     }
+  },
+  "theme": {
+    "system": "Systeem",
+    "light": "Licht",
+    "dark": "Donker"
+  },
+  "dashboard": {
+    "morning": "Goedemorgen",
+    "afternoon": "Goedemiddag",
+    "evening": "Goedenavond",
+    "waiting": "{n} vacatures wachten op jou",
+    "needsYou": "Wacht op jou",
+    "needsYouHint": "beoordelen, navragen, terugkoppelen",
+    "open": "Open",
+    "openHint": "{new} nieuw · {progress} in behandeling",
+    "appliedHint": "{n} gesprek of aanbod",
+    "droppedHint": "van {total} gezien — je trainingsdata",
+    "pipeline": "Pijplijn",
+    "pipelineHint": "{n} lopende vacatures",
+    "droppedByLayer": "Afgevallen per laag",
+    "droppedByLayerHint": "van de {n} afgevallen",
+    "criteriaLink": "Bekijk de criteria",
+    "latestRules": "Laatste regels",
+    "learnedFrom": "geleerd van",
+    "allVacancies": "Alle vacatures",
+    "silent": "{d} dagen stil",
+    "assess": "Beoordelen",
+    "feedback": "Terugkoppelen",
+    "nothingWaiting": "Niets wacht op jou. Tijd voor een vacature-check?"
   }
 }

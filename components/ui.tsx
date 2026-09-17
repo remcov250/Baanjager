@@ -1,5 +1,5 @@
 import { cloneElement, useId } from "react";
-import type { Status, Verdict } from "@/db/schema";
+import type { RuleKind, Status, Verdict } from "@/db/schema";
 import type { Translate } from "@/lib/i18n";
 
 export function Field({
@@ -27,24 +27,31 @@ export function Field({
   );
 }
 
-const verdictColors: Record<Verdict, string> = {
-  match: "bg-green-100 text-green-800",
-  possible: "bg-lime-100 text-lime-800",
-  weak: "bg-amber-100 text-amber-800",
-  no_match: "bg-stone-200 text-stone-700",
-  pending: "bg-sky-100 text-sky-800",
-  na: "bg-stone-100 text-stone-500",
+export const verdictColors: Record<Verdict, string> = {
+  match: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+  possible: "bg-lime-100 text-lime-800 dark:bg-lime-900/40 dark:text-lime-300",
+  weak: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+  no_match: "bg-stone-200 text-stone-700 dark:bg-stone-700/60 dark:text-stone-300",
+  pending: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
+  na: "bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400",
 };
 
-const statusColors: Record<Status, string> = {
-  new: "bg-sky-100 text-sky-800",
-  in_progress: "bg-indigo-100 text-indigo-800",
-  applied: "bg-green-100 text-green-800",
-  interview: "bg-emerald-100 text-emerald-800",
-  offer: "bg-emerald-200 text-emerald-900",
-  on_hold: "bg-amber-100 text-amber-800",
-  rejected: "bg-rose-100 text-rose-800",
-  dropped: "bg-stone-200 text-stone-600",
+export const statusColors: Record<Status, string> = {
+  new: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
+  in_progress: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300",
+  applied: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+  interview: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+  offer: "bg-emerald-200 text-emerald-900 dark:bg-emerald-800/50 dark:text-emerald-200",
+  on_hold: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+  rejected: "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300",
+  dropped: "bg-stone-200 text-stone-600 dark:bg-stone-700/60 dark:text-stone-300",
+};
+
+export const ruleKindColors: Record<RuleKind, string> = {
+  knockout: "bg-fg text-bg",
+  heavy_negative: "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300",
+  heavy_positive: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+  open_question: "bg-surface-2 text-muted border border-line",
 };
 
 export function VerdictBadge({ verdict, t }: { verdict: Verdict; t: Translate }) {
@@ -53,6 +60,10 @@ export function VerdictBadge({ verdict, t }: { verdict: Verdict; t: Translate })
 
 export function StatusBadge({ status, t }: { status: Status; t: Translate }) {
   return <span className={`badge ${statusColors[status]}`}>{t(`status.${status}`)}</span>;
+}
+
+export function RuleKindBadge({ kind, t }: { kind: RuleKind; t: Translate }) {
+  return <span className={`badge ${ruleKindColors[kind]}`}>{t(`ruleKind.${kind}`)}</span>;
 }
 
 export function Select<T extends string>({
@@ -85,4 +96,15 @@ export function Select<T extends string>({
 
 export function formatDate(value: string | null | undefined): string {
   return value ? value : "—";
+}
+
+// "12 sep" style, locale aware; falls back to the raw value for odd input.
+export function shortDate(value: string | null | undefined, locale: string): string {
+  if (!value) return "—";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return new Intl.DateTimeFormat(locale === "nl" ? "nl-NL" : "en-GB", {
+    day: "numeric",
+    month: "short",
+  }).format(d);
 }

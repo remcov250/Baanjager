@@ -8,16 +8,21 @@ export default async function NewVacancyPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
   const { error } = await searchParams;
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <Link href="/" className="text-sm text-stone-500 hover:text-ink">← {t("common.back")}</Link>
-        <h1>{t("vacancies.new")}</h1>
+    <div className="flex flex-col gap-4 sm:gap-5">
+      <div className="flex items-center gap-1.5 text-[13px] text-muted">
+        <Link href="/vacancies" className="hover:text-fg">{t("vacancies.title")}</Link>
+        <span>/</span>
+        <span>{t("vacancies.new")}</span>
       </div>
+      <header className="flex items-center gap-4">
+        <h1>{t("vacancies.new")}</h1>
+        <button form="vacancy-form" className="btn btn-primary ml-auto hidden lg:inline-flex">{t("common.save")}</button>
+      </header>
       {error ? <p className="notice">{t("common.validationError")}</p> : null}
-      <VacancyForm t={t} action={createVacancyAction} />
+      <VacancyForm t={t} locale={locale} action={createVacancyAction} />
     </div>
   );
 }

@@ -1,7 +1,9 @@
 import { changePassword } from "@/app/actions";
 import { importCsvAction } from "@/app/(app)/settings/actions";
 import { Field } from "@/components/ui";
+import { ThemeSwitch } from "@/components/shell";
 import { MIN_PASSWORD_LENGTH, requireSession } from "@/lib/auth";
+import { getTheme } from "@/lib/theme";
 import { getT } from "@/lib/i18n";
 
 export default async function SettingsPage({
@@ -13,6 +15,7 @@ export default async function SettingsPage({
   const { t } = await getT();
   const params = await searchParams;
   const apiEnabled = Boolean(process.env.API_TOKEN);
+  const theme = await getTheme();
 
   const passwordMessage = {
     changed: t("settings.passwordChanged"),
@@ -24,6 +27,11 @@ export default async function SettingsPage({
   return (
     <div className="space-y-6">
       <h1>{t("settings.title")}</h1>
+
+      <section className="card space-y-3">
+        <h2>{t("settings.appearance")}</h2>
+        <ThemeSwitch t={t} theme={theme} />
+      </section>
 
       <section className="card space-y-3">
         <h2>{t("settings.import")}</h2>

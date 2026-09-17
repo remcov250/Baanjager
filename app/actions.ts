@@ -20,6 +20,7 @@ import {
 } from "@/lib/auth";
 import { LOCALE_COOKIE } from "@/lib/constants";
 import { isLocale } from "@/lib/i18n";
+import { THEME_COOKIE, isTheme } from "@/lib/theme";
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
@@ -36,6 +37,13 @@ export async function setLocale(formData: FormData) {
       maxAge: ONE_YEAR,
       sameSite: "lax",
     });
+  }
+}
+
+export async function setTheme(formData: FormData) {
+  const theme = formData.get("theme");
+  if (isTheme(theme)) {
+    (await cookies()).set(THEME_COOKIE, theme, { path: "/", maxAge: ONE_YEAR, sameSite: "lax" });
   }
 }
 

@@ -2,18 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light is the base; dark redefines the same tokens. A stored choice sets
+   data-theme on <html>; without it the system preference decides. */
+:root {
+  color-scheme: light;
+  --bg: 250 250 249;
+  --surface: 255 255 255;
+  --surface-2: 250 250 249;
+  --line: 231 229 228;
+  --line-soft: 245 245 244;
+  --fg: 28 25 23;
+  --muted: 120 113 108;
+  --muted-2: 168 162 158;
+  --accent: 194 65 12;
+  --accent-deep: 154 52 18;
+  --accent-soft: 255 241 232;
+  --accent-tint: 255 247 237;
+  --accent-line: 253 186 116;
+  --accent-fg: 154 52 18;
+  --shadow: 28 25 23;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: 15 14 13;
+  --surface: 28 25 23;
+  --surface-2: 36 33 31;
+  --line: 58 54 51;
+  --line-soft: 42 39 37;
+  --fg: 245 245 244;
+  --muted: 168 162 158;
+  --muted-2: 120 113 108;
+  --accent: 249 115 22;
+  --accent-deep: 234 88 12;
+  --accent-soft: 59 29 14;
+  --accent-tint: 42 26 16;
+  --accent-line: 124 45 18;
+  --accent-fg: 253 186 116;
+  --shadow: 0 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: 15 14 13;
+    --surface: 28 25 23;
+    --surface-2: 36 33 31;
+    --line: 58 54 51;
+    --line-soft: 42 39 37;
+    --fg: 245 245 244;
+    --muted: 168 162 158;
+    --muted-2: 120 113 108;
+    --accent: 249 115 22;
+    --accent-deep: 234 88 12;
+    --accent-soft: 59 29 14;
+    --accent-tint: 42 26 16;
+    --accent-line: 124 45 18;
+    --accent-fg: 253 186 116;
+    --shadow: 0 0 0;
+  }
+}
+
 @layer base {
   body {
-    @apply bg-paper text-ink antialiased;
+    @apply bg-bg font-sans text-[15px] leading-normal text-fg antialiased sm:text-sm;
   }
   h1 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply font-display text-2xl font-bold tracking-tight;
   }
   h2 {
-    @apply text-lg font-semibold;
+    @apply font-display text-[17px] font-semibold tracking-tight;
   }
   label {
-    @apply block text-sm font-medium text-stone-700;
+    @apply block text-sm font-medium text-fg/80;
   }
   input[type="text"],
   input[type="search"],
@@ -24,33 +85,57 @@
   input[type="file"],
   select,
   textarea {
-    @apply mt-1 block w-full rounded border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+    @apply mt-1 block w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg shadow-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
   }
   textarea {
-    @apply min-h-[6rem] font-mono text-[13px] leading-relaxed;
+    @apply min-h-[6rem] leading-relaxed;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center gap-1.5 rounded border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-ink shadow-sm hover:bg-stone-50;
+    @apply inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3.5 text-sm font-medium text-fg shadow-sm hover:bg-surface-2;
   }
   .btn-primary {
-    @apply border-accent bg-accent text-white hover:bg-orange-800;
+    @apply border-accent bg-accent text-white hover:bg-accent-deep;
   }
   .btn-sm {
-    @apply px-2 py-1 text-xs;
+    @apply h-8 px-2.5 text-xs;
   }
   .card {
-    @apply rounded-lg border border-stone-200 bg-white p-5 shadow-sm;
+    @apply rounded-xl border border-line bg-surface p-5 shadow-card;
+  }
+  .label {
+    @apply text-xs font-medium uppercase tracking-wide text-muted;
   }
   .help {
-    @apply mt-1 text-xs text-stone-500;
+    @apply mt-1 text-xs text-muted;
   }
   .notice {
-    @apply rounded border-l-4 border-accent bg-orange-50 px-4 py-3 text-sm text-stone-800;
+    @apply rounded-lg border border-accent-line bg-accent-tint px-4 py-3 text-sm text-fg;
   }
   .badge {
-    @apply inline-block rounded-full px-2 py-0.5 text-xs font-medium;
+    @apply inline-flex h-[22px] items-center whitespace-nowrap rounded-full px-2.5 text-xs font-medium;
+  }
+  .chip {
+    @apply inline-flex h-[34px] items-center gap-1.5 whitespace-nowrap rounded-full border border-line bg-surface px-3 text-[13px] font-medium text-fg/80 sm:rounded-lg;
+  }
+  .chip-on {
+    @apply border-fg bg-fg text-bg;
+  }
+  .stat {
+    @apply font-display text-[30px] font-semibold leading-none sm:text-[32px];
+  }
+  .navlink {
+    @apply flex items-center gap-2.5 rounded-lg px-3 py-2 font-medium text-muted hover:text-fg;
+  }
+  .navlink-on {
+    @apply bg-accent-soft text-accent;
+  }
+  .tab {
+    @apply flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted;
+  }
+  .tab-on {
+    @apply text-accent;
   }
 }
