@@ -130,6 +130,13 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
     <form id="vacancy-form" action={action} className="grid gap-4 lg:grid-cols-[5fr_7fr] lg:items-start">
       {v ? <input type="hidden" name="id" value={v.id} /> : null}
 
+      {/* Above both columns, on a phone and on desktop: the one thing worth seeing before the judgement. */}
+      <div className="card lg:col-span-2">
+        <Field label={t("vacancy.companySummary")} help={t("vacancy.companySummaryHelp")}>
+          <textarea name="companySummary" defaultValue={v?.companySummary ?? ""} maxLength={2000} className="min-h-[3rem]" />
+        </Field>
+      </div>
+
       {/* Left on desktop, second on a phone: the facts */}
       <div className="order-2 flex flex-col gap-4 lg:order-1">
         <Fold title={t("vacancy.basics")} summary={basicsSummary} open={isNew}>
@@ -142,9 +149,6 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
             </Field>
             <Field label={t("vacancy.url")} className="sm:col-span-2">
               <input type="url" name="url" defaultValue={v?.url ?? ""} maxLength={2000} />
-            </Field>
-            <Field label={t("vacancy.companySummary")} help={t("vacancy.companySummaryHelp")} className="sm:col-span-2">
-              <textarea name="companySummary" defaultValue={v?.companySummary ?? ""} maxLength={2000} className="min-h-[3.5rem]" />
             </Field>
             <Field label={t("vacancy.source")} help={t("vacancy.sourceHelp")}>
               <input type="text" name="source" defaultValue={v?.source ?? ""} maxLength={200} />
