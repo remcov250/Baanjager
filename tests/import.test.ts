@@ -124,8 +124,18 @@ describe("rowToVacancy", () => {
   });
   it("leaves office days empty when the column is blank", () => {
     expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "" })?.officeDays).toBeNull();
+    expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst" })?.officeDays).toBeNull();
     expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "0" })?.officeDays).toBe(0);
     expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "3" })?.officeDays).toBe(3);
+  });
+  it("never turns words about remote work into 0 office days — only an explicit number counts", () => {
+    for (const text of ["remote", "fully remote", "volledig remote", "thuis", "hybride", "in overleg"]) {
+      expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: text })?.officeDays, text).toBeNull();
+    }
+    // Remote wording in the status column doesn't leak into office days either.
+    const v = rowToVacancy({ werkgever: "Acme", titel: "Analyst", status: "Fully remote, wachten op reactie", gesolliciteerd: "Ja" });
+    expect(v?.officeDays).toBeNull();
+    expect(v?.status).toBe("applied");
   });
 });
 

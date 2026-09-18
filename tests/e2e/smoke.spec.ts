@@ -58,6 +58,47 @@ test("adds a vacancy with a verdict and reason", async ({ page }, testInfo) => {
   await expect(page.getByRole("heading", { name: new RegExp(employer) })).toBeVisible();
 });
 
+test("office days: blank shows 'niet vermeld', 0 shows remote", async ({ page, request }, testInfo) => {
+  await signIn(page);
+  const employer = `Beta ${testInfo.project.name}`;
+  await page.goto("/vacancies/new");
+  await page.getByLabel("Werkgever", { exact: true }).fill(employer);
+  await page.getByLabel("Functietitel").fill("Counsel");
+  await page.getByLabel("Laag").selectOption("local");
+  // Kantoordagen deliberately left blank.
+  await page.getByRole("button", { name: "Opslaan" }).first().click();
+  await expect(page).toHaveURL(/\/vacancies\/(\d+)\?saved=1/);
+  const id = Number(page.url().match(/\/vacancies\/(\d+)/)![1]);
+
+  // Detail: the conditions summary line says it is not stated, and the field is empty.
+  await expect(page.getByText("kantoordagen niet vermeld").first()).toBeVisible();
+  await expect(page.getByLabel("Kantoordagen (per week)")).toHaveValue("");
+
+  // List: the card (phone) or the table row (desktop) says the same. Both are
+  // in the DOM at every width, so only the visible one counts.
+  const visibleRow = (text: string) => page.locator("li:visible, tr:visible").filter({ hasText: text }).first();
+  await page.goto("/vacancies");
+  await expect(visibleRow(employer).getByText("kantoordagen niet vermeld")).toBeVisible();
+  // The vacancy with a real number from the earlier test still shows the number.
+  await expect(visibleRow(`Acme ${testInfo.project.name}`).getByText("2 d kantoor")).toBeVisible();
+
+  // 0 is a statement ("fully remote"), not an empty field.
+  const patched = await request.patch(`/api/v1/vacancies/${id}`, {
+    headers: { Authorization: "Bearer e2e-token" },
+    data: { officeDays: 0 },
+  });
+  expect(patched.ok()).toBeTruthy();
+  await page.goto("/vacancies");
+  await expect(visibleRow(employer).getByText("0 dagen · remote")).toBeVisible();
+
+  // And null can be set explicitly again through the API, the way the assistant does it.
+  const cleared = await request.patch(`/api/v1/vacancies/${id}`, {
+    headers: { Authorization: "Bearer e2e-token" },
+    data: { officeDays: null },
+  });
+  expect((await cleared.json()).officeDays).toBeNull();
+});
+
 test("turns an insight into a rule linked to the vacancy", async ({ page }, testInfo) => {
   await signIn(page);
   const employer = `Acme ${testInfo.project.name}`;

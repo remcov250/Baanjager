@@ -4,6 +4,7 @@ import { Icon } from "@/components/icons";
 import { StatusBadge, VerdictBadge, shortDate } from "@/components/ui";
 import { VacancyFilters } from "@/components/vacancy-filters";
 import { getT } from "@/lib/i18n";
+import { officeDaysLabel } from "@/lib/office-days";
 import { listVacancySummaries } from "@/lib/vacancies";
 
 type Search = { q?: string; layer?: string; verdict?: string; status?: string; closed?: string };
@@ -11,8 +12,7 @@ type Search = { q?: string; layer?: string; verdict?: string; status?: string; c
 function conditions(v: { hours: string | null; officeDays: number | null; contractType: string; remoteNote: string | null }, t: (k: string) => string): string {
   const parts: string[] = [];
   if (v.hours) parts.push(`${v.hours} ${t("common.hoursShort")}`);
-  if (v.officeDays !== null) parts.push(`${v.officeDays} ${t("common.officeDaysShort")}`);
-  else if (v.remoteNote) parts.push(v.remoteNote);
+  parts.push(officeDaysLabel(v.officeDays, v.remoteNote, t));
   if (v.contractType !== "unknown") parts.push(t(`contract.${v.contractType}`).toLowerCase());
   return parts.join(" · ");
 }

@@ -7,7 +7,7 @@ import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
 // Migrations run at startup against whatever database is on the volume, so
-// every new one is exercised two ways: on a database that stopped at the
+// the newest one is exercised two ways: on a database that stopped at the
 // previous migration with data in it, and on a fresh install.
 
 const migrationsFolder = path.resolve("drizzle");
@@ -41,20 +41,37 @@ describe("migrations", () => {
     const last = journal.entries.length - 1;
 
     migrate(db, { migrationsFolder: folderUpTo(last - 1) });
-    expect(columns(sqlite, "vacancies")).not.toContain("company_summary");
-    sqlite
-      .prepare("INSERT INTO vacancies (employer, title, verdict, status) VALUES (?, ?, ?, ?)")
-      .run("Acme", "Analyst", "possible", "applied");
+    const before = columns(sqlite, "vacancies");
+    expect(before).toEqual(expect.arrayContaining(["analysis", "cv_resume_id", "company_summary"]));
+
+    // Three shapes of office_days that the newest migration has to tell apart:
+    // a 0 nobody chose (an import default), a 0 that means fully remote, and
+    // a real number.
+    const insert = sqlite.prepare(
+      "INSERT INTO vacancies (employer, title, verdict, status, office_days, remote_note) VALUES (?, ?, ?, ?, ?, ?)",
+    );
+    insert.run("Acme", "Analyst", "possible", "applied", 0, null);
+    insert.run("Beta", "Counsel", "match", "new", 0, "Volledig remote");
+    insert.run("Counsel", "Planner", "weak", "dropped", 3, "hybride, 3 dagen kantoor");
+    insert.run("Delta", "Officer", "weak", "dropped", 0, null);
 
     migrate(db, { migrationsFolder });
-    const cols = columns(sqlite, "vacancies");
-    expect(cols).toEqual(expect.arrayContaining(["analysis", "cv_resume_id", "cv_url", "cv_linked_at", "company_summary"]));
-    const row = sqlite.prepare("SELECT * FROM vacancies").get() as Record<string, unknown>;
-    expect(row).toMatchObject({ employer: "Acme", status: "applied", analysis: null, cv_resume_id: null, company_summary: null });
+    expect(columns(sqlite, "vacancies")).toEqual(before);
+
+    const rows = sqlite
+      .prepare("SELECT employer, office_days AS officeDays, status FROM vacancies ORDER BY id")
+      .all() as { employer: string; officeDays: number | null; status: string }[];
+    expect(rows).toEqual([
+      { employer: "Acme", officeDays: null, status: "applied" },
+      { employer: "Beta", officeDays: 0, status: "new" },
+      { employer: "Counsel", officeDays: 3, status: "dropped" },
+      // Dropped rows are cleaned up too: a 0 there was never a choice either.
+      { employer: "Delta", officeDays: null, status: "dropped" },
+    ]);
 
     // Running it again is a no-op.
     migrate(db, { migrationsFolder });
-    expect(columns(sqlite, "vacancies")).toEqual(cols);
+    expect(columns(sqlite, "vacancies")).toEqual(before);
     sqlite.close();
   });
 

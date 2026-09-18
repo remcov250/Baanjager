@@ -40,7 +40,9 @@
     "validationError": "Er ging iets mis met de invoer. Controleer de velden en probeer het opnieuw.",
     "delete": "Verwijderen",
     "hoursShort": "u",
-    "officeDaysShort": "d kantoor"
+    "officeDaysShort": "d kantoor",
+    "officeDaysNotStated": "kantoordagen niet vermeld",
+    "officeDaysRemote": "0 dagen · remote"
   },
   "layer": {
     "local": "Lokaal",

@@ -40,7 +40,9 @@
     "validationError": "Something was wrong with the input. Check the fields and try again.",
     "delete": "Delete",
     "hoursShort": "h",
-    "officeDaysShort": "d office"
+    "officeDaysShort": "d office",
+    "officeDaysNotStated": "office days not stated",
+    "officeDaysRemote": "0 days · remote"
   },
   "layer": {
     "local": "Local",

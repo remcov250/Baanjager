@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ANALYSIS_GROUPS, CONTRACT_TYPES, FEEDBACK, LAYERS, STATUSES, VERDICTS, type Analysis, type Vacancy } from "@/db/schema";
 import { Icon } from "@/components/icons";
 import { Field, Select, shortDate } from "@/components/ui";
+import { officeDaysLabel } from "@/lib/office-days";
 import type { Locale, Translate } from "@/lib/i18n";
 
 type Props = {
@@ -99,7 +100,7 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
     ? [
         `${t(`layer.${v.layer}`)}${v.location ? ` · ${v.location}` : ""}`,
         v.hours ? `${v.hours} ${t("common.hoursShort")}` : null,
-        v.officeDays !== null ? `${v.officeDays} ${t("common.officeDaysShort")}` : v.remoteNote,
+        officeDaysLabel(v.officeDays, v.remoteNote, t),
         v.contractType !== "unknown" ? t(`contract.${v.contractType}`).toLowerCase() : null,
       ]
         .filter(Boolean)
