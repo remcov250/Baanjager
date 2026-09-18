@@ -115,14 +115,40 @@ claude mcp add --transport http reactive-resume https://<jouw-reactive-resume>/m
   --header "x-api-key: <RR_API_KEY>"
 ```
 
-`claude mcp add` schrijft die header — met sleutel — in platte tekst in de configuratie van
-de client. Wil je dat niet, registreer dan een klein startscript in plaats van de server:
-het haalt de sleutel bij het starten uit je secret manager en geeft 'm alleen als
-omgevingsvariabele door aan `mcp-remote`, dat `${VAR}` in een header zelf invult
-(`--header 'x-api-key:${REACTIVE_RESUME_API_KEY}'`, letterlijk, tussen enkele
-aanhalingstekens). Zo staat de sleutel niet in de config, niet in git, niet in de
-procesargumenten en niet in de shell-history. Laat het script hard falen als de sleutel
-ontbreekt, en laat het nooit de waarde printen.
+**De sleutel uit de configuratie houden.** `claude mcp add … --header` schrijft die header —
+met sleutel — in platte tekst in de configuratie van de client. Dat hoeft niet. De
+eenvoudigste manier, zonder secret manager: zet de header in een bestand dat alleen jij
+kunt lezen en laat [`mcp-remote`](https://github.com/geelen/mcp-remote) dat lezen.
+
+```bash
+mkdir -p ~/.config/reactive-resume
+printf 'x-api-key: %s\n' '<RR_API_KEY>' > ~/.config/reactive-resume/headers   # of met een editor
+chmod 600 ~/.config/reactive-resume/headers
+
+claude mcp add reactive-resume -- npx -y mcp-remote@0.14.2 https://<jouw-reactive-resume>/mcp \
+  --header-file ~/.config/reactive-resume/headers
+```
+
+De configuratie bevat nu alleen het pad. Een bestand dat niet leesbaar is, is een fout —
+`mcp-remote` gaat dan niet stiekem zonder sleutel verder. Draait Reactive Resume op
+`http://` in je eigen netwerk, voeg dan `--allow-http` toe.
+
+Heb je wél een secret manager (Bitwarden Secrets Manager, 1Password, `pass`, Vault…),
+registreer dan een klein startscript in plaats van de server: het haalt de sleutel bij het
+starten op en geeft 'm alleen als omgevingsvariabele door; `mcp-remote` vult `${VAR}` in
+een header zelf in, dus de waarde staat nooit in de procesargumenten:
+
+```sh
+#!/bin/sh
+# mcp-reactive-resume — vervang de eerste regel door jouw secret manager
+key=$(op read "op://Private/Reactive Resume/credential") || exit 1   # 1Password; of: pass show …
+[ -n "$key" ] || { echo "reactive-resume: geen sleutel" >&2; exit 1; }
+REACTIVE_RESUME_API_KEY="$key" exec npx -y mcp-remote@0.14.2 https://<jouw-reactive-resume>/mcp \
+  --header 'x-api-key:${REACTIVE_RESUME_API_KEY}'     # letterlijk, enkele aanhalingstekens
+```
+
+`claude mcp add reactive-resume -- /pad/naar/mcp-reactive-resume`. In beide gevallen: niet
+in git, niet in de shell-history, niet in de logs, en hard falen als de sleutel ontbreekt.
 
 Zie ook [Reactive Resume: Using the MCP server](https://docs.rxresu.me/guides/using-the-mcp-server).
 De tools die je daar krijgt en die hier gebruikt worden: `list_resumes`, `read_resume`,
@@ -208,5 +234,8 @@ Baanjager, no outbound requests.
   Unknown is the default; gaps only on contradiction; related names the actual experience.
 - Free-text fields are fenced as untrusted data by the MCP server; a regression test covers
   a posting that tries to instruct the assistant.
+- Keep the Reactive Resume key out of the client config: `mcp-remote --header-file` with a
+  `chmod 600` file, or a small launcher that reads your secret manager and passes the key
+  as an environment variable (`--header 'x-api-key:${REACTIVE_RESUME_API_KEY}'`, literal).
 - Flow: you ask → `get_cv_context` → if `cv` exists, patch that resume; else duplicate a base
   resume and patch it → `link_cv`. The assistant never starts this on its own.

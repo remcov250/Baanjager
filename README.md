@@ -167,9 +167,10 @@ Een CV, alleen als ik erom vraag:
 
 **Ook een CV-bouwer erbij?** Reactive Resume 5.3+ heeft een eigen MCP-server; sluit die
 naast Baanjager aan (`claude mcp add --transport http reactive-resume
-https://<jouw-reactive-resume>/mcp --header "x-api-key: <sleutel>"`). De assistent haalt
-de context uit Baanjager, maakt of bewerkt het CV daar, en koppelt het terug. Baanjager
-zelf praat nooit met de CV-bouwer. Hoe en waarom: [docs/cv-integration.md](docs/cv-integration.md).
+https://<jouw-reactive-resume>/mcp --header "x-api-key: <sleutel>"`; liever de sleutel
+niet in de config? Dat kan ook, zie de docs). De assistent haalt de context uit Baanjager,
+maakt of bewerkt het CV daar, en koppelt het terug. Baanjager zelf praat nooit met de
+CV-bouwer. Hoe en waarom: [docs/cv-integration.md](docs/cv-integration.md).
 
 **3. Laat 'm draaien.** Een sessie op je laptop werkt. Wil je dat de agent altijd aan staat
 (zodat je 'm vanaf je telefoon iets kunt vragen), draai de assistent dan op een server in
