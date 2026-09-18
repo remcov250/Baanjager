@@ -5,11 +5,14 @@ import type { Translate } from "@/lib/i18n";
 export function Field({
   label,
   help,
+  helpAlways = false,
   children,
   className,
 }: {
   label: string;
   help?: string;
+  // Help text is hidden on phones unless it is essential for the field.
+  helpAlways?: boolean;
   children: React.ReactElement<{ id?: string }>;
   className?: string;
 }) {
@@ -22,7 +25,7 @@ export function Field({
     <div className={className}>
       {label ? <label htmlFor={id}>{label}</label> : null}
       {cloneElement(children, { id })}
-      {help ? <p className="help">{help}</p> : null}
+      {help ? <p className={`help ${helpAlways ? "help-always" : ""}`}>{help}</p> : null}
     </div>
   );
 }

@@ -31,7 +31,7 @@ test("first visit goes to setup, creates the account and lands on the list", asy
 
 test("no horizontal scrolling on any page", async ({ page }) => {
   await signIn(page);
-  for (const path of ["/", "/vacancies", "/vacancies/new", "/criteria", "/profile", "/sources", "/settings"]) {
+  for (const path of ["/", "/vacancies", "/vacancies/new", "/criteria", "/profile", "/sources", "/settings", "/ai"]) {
     await page.goto(path);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -73,7 +73,8 @@ test("turns an insight into a rule linked to the vacancy", async ({ page }, test
   await expect(page.getByText(ruleText).first()).toBeVisible();
 
   await page.goto("/criteria");
-  await expect(page.getByText(ruleText).first()).toBeVisible();
+  // Rules are folded to their first line; open this one to see where it came from.
+  await page.getByText(ruleText).first().click();
   await expect(page.getByRole("link", { name: new RegExp(employer) })).toBeVisible();
 });
 

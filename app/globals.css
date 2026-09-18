@@ -150,8 +150,12 @@
   .label {
     @apply text-xs font-medium uppercase tracking-wide text-muted;
   }
+  /* Explanations are for the desk; on a phone they bury the fields. */
   .help {
-    @apply mt-1 text-xs text-muted;
+    @apply mt-1 hidden text-xs text-muted sm:block;
+  }
+  .help-always {
+    @apply block;
   }
   .notice {
     @apply rounded-lg border border-accent-line bg-accent-tint px-4 py-3 text-sm text-fg;

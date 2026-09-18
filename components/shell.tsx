@@ -13,6 +13,7 @@ function navItems(t: Translate): NavItem[] {
     { href: "/criteria", label: t("nav.criteria"), icon: "criteria" },
     { href: "/profile", label: t("nav.profile"), icon: "profile" },
     { href: "/sources", label: t("nav.sources"), icon: "sources" },
+    { href: "/ai", label: t("nav.ai"), icon: "ai" },
     { href: "/settings", label: t("nav.settings"), icon: "settings" },
   ];
 }
@@ -124,7 +125,7 @@ export function MobileBar({ t, locale }: { t: Translate; locale: Locale }) {
 
 export function TabBar({ t }: { t: Translate }) {
   // Five tabs fit a phone; Bronnen lives under Instellingen's neighbour "Meer".
-  const items = navItems(t).filter((i) => i.href !== "/sources" && i.href !== "/settings");
+  const items = navItems(t).filter((i) => !["/sources", "/ai", "/settings"].includes(i.href));
   return (
     <nav className="fixed inset-x-0 bottom-0 z-10 flex border-t border-line bg-surface px-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden">
       <TabLinks items={items} />

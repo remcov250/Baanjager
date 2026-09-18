@@ -26,6 +26,18 @@ export function createSource(input: {
   return getDb().insert(sources).values(input).returning().get();
 }
 
+export function updateSource(
+  id: number,
+  input: Partial<{ layer: Layer; label: string; url: string | null; note: string | null; cadence: string | null; active: boolean }>,
+): Source | undefined {
+  return getDb()
+    .update(sources)
+    .set({ ...input, updatedAt: sql`(datetime('now'))` })
+    .where(eq(sources.id, id))
+    .returning()
+    .get();
+}
+
 export function setSourceActive(id: number, active: boolean): void {
   getDb()
     .update(sources)

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CONTRACT_TYPES, FEEDBACK, LAYERS, STATUSES, VERDICTS, type Vacancy } from "@/db/schema";
+import { Icon } from "@/components/icons";
 import { Field, Select, shortDate } from "@/components/ui";
 import type { Locale, Translate } from "@/lib/i18n";
 
@@ -14,9 +15,60 @@ type Props = {
 const segment =
   "chip relative cursor-pointer rounded-lg! has-checked:border-fg has-checked:bg-fg has-checked:text-bg";
 
+// A collapsible card: the summary line is what you see on a phone until you open it.
+function Fold({
+  title,
+  summary,
+  open,
+  children,
+  className = "",
+}: {
+  title: string;
+  summary?: string;
+  open?: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <details className={`fold card py-3 ${className}`} open={open}>
+      <summary>
+        <span className="flex min-w-0 flex-col">
+          <h2>{title}</h2>
+          {summary ? <span className="truncate text-[13px] text-muted">{summary}</span> : null}
+        </span>
+        <Icon.chevron className="fold-chevron" />
+      </summary>
+      <div className="flex flex-col gap-4 pt-3">{children}</div>
+    </details>
+  );
+}
+
 export function VacancyForm({ t, locale, action, vacancy }: Props) {
   const v = vacancy;
+  const isNew = !v;
   const today = new Date().toISOString().slice(0, 10);
+
+  const conditionsSummary = v
+    ? [
+        `${t(`layer.${v.layer}`)}${v.location ? ` · ${v.location}` : ""}`,
+        v.hours ? `${v.hours} ${t("common.hoursShort")}` : null,
+        v.officeDays !== null ? `${v.officeDays} ${t("common.officeDaysShort")}` : v.remoteNote,
+        v.contractType !== "unknown" ? t(`contract.${v.contractType}`).toLowerCase() : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : undefined;
+
+  const basicsSummary = v
+    ? [v.source, v.foundOn ? `${t("vacancy.tlFound").toLowerCase()} ${shortDate(v.foundOn, locale)}` : null]
+        .filter(Boolean)
+        .join(" · ") || undefined
+    : undefined;
+
+  const textSummary = v?.vacancyText ? v.vacancyText.replace(/\s+/g, " ").slice(0, 90) : t("vacancy.textEmpty");
+  const feedbackSummary = v?.feedbackCorrect
+    ? `${t("vacancy.feedbackCorrect")}: ${t(`feedback.${v.feedbackCorrect}`)}`
+    : t("vacancy.feedbackEmpty");
 
   const timeline = v
     ? [
@@ -33,11 +85,10 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
 
       {/* Left on desktop, second on a phone: the facts */}
       <div className="order-2 flex flex-col gap-4 lg:order-1">
-        <section className="card flex flex-col gap-4">
-          <h2>{t("vacancy.basics")}</h2>
+        <Fold title={t("vacancy.basics")} summary={basicsSummary} open={isNew}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("vacancy.employer")}>
-              <input type="text" name="employer" defaultValue={v?.employer ?? ""} required maxLength={200} autoFocus={!v} />
+              <input type="text" name="employer" defaultValue={v?.employer ?? ""} required maxLength={200} autoFocus={isNew} />
             </Field>
             <Field label={t("vacancy.title")}>
               <input type="text" name="title" defaultValue={v?.title ?? ""} required maxLength={300} />
@@ -62,10 +113,9 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
               <input type="date" name="assessedOn" defaultValue={v?.assessedOn ?? ""} />
             </Field>
           </div>
-        </section>
+        </Fold>
 
-        <section className="card flex flex-col gap-4">
-          <h2>{t("vacancy.conditions")}</h2>
+        <Fold title={t("vacancy.conditions")} summary={conditionsSummary} open={isNew}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("vacancy.layer")} help={t("layer.help")}>
               <Select name="layer" defaultValue={v?.layer ?? "na"} options={LAYERS} t={t} prefix="layer" />
@@ -95,10 +145,10 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
               <input type="text" name="languageRequirement" defaultValue={v?.languageRequirement ?? ""} maxLength={300} />
             </Field>
           </div>
-        </section>
+        </Fold>
 
         {timeline.length ? (
-          <section className="card flex flex-col gap-3">
+          <section className="card flex flex-col gap-3 py-4">
             <h2>{t("vacancy.timeline")}</h2>
             <ol className="flex flex-col">
               {timeline.map((step, i) => (
@@ -107,7 +157,7 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
                     <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-fg" />
                     <span className="w-0.5 flex-1 bg-line" />
                   </div>
-                  <div className="flex flex-col pb-3.5">
+                  <div className="flex flex-col pb-3">
                     <span className="font-medium">{step.label}</span>
                     <span className="text-[13px] text-muted">
                       {shortDate(step.date, locale)}
@@ -122,21 +172,18 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-medium text-accent">{t(`status.${v!.status}`)}</span>
-                  {v!.statusNote ? (
-                    <span className="line-clamp-2 text-[13px] text-muted">{v!.statusNote}</span>
-                  ) : null}
+                  {v!.statusNote ? <span className="line-clamp-2 text-[13px] text-muted">{v!.statusNote}</span> : null}
                 </div>
               </li>
             </ol>
           </section>
         ) : null}
 
-        <section className="card flex flex-col gap-2">
-          <h2>{t("vacancy.text")}</h2>
+        <Fold title={t("vacancy.text")} summary={textSummary}>
           <Field label="" help={t("vacancy.vacancyTextHelp")}>
             <textarea name="vacancyText" aria-label={t("vacancy.text")} defaultValue={v?.vacancyText ?? ""} maxLength={100000} className="min-h-[12rem] font-mono text-base sm:text-[13px]" />
           </Field>
-        </section>
+        </Fold>
       </div>
 
       {/* Right on desktop, first on a phone: the judgement is what you open it for */}
@@ -155,7 +202,7 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
               ))}
             </div>
           </fieldset>
-          <Field label={t("vacancy.verdictReason")} help={t("vacancy.verdictReasonHelp")}>
+          <Field label={t("vacancy.verdictReason")} help={t("vacancy.verdictReasonHelp")} helpAlways>
             <textarea name="verdictReason" defaultValue={v?.verdictReason ?? ""} maxLength={5000} />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -190,11 +237,8 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
           <p className="text-xs text-muted">{t("vacancy.neverDeleted")}</p>
         </section>
 
-        <section className="card flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <h2>{t("vacancy.feedback")}</h2>
-            <p className="text-[13px] text-muted">{t("vacancy.feedbackIntro")}</p>
-          </div>
+        <Fold title={t("vacancy.feedback")} summary={feedbackSummary} open={Boolean(v?.feedbackCorrect)}>
+          <p className="text-[13px] text-muted">{t("vacancy.feedbackIntro")}</p>
           <fieldset className="flex flex-wrap items-center gap-3">
             <legend className="sr-only">{t("vacancy.feedbackCorrect")}</legend>
             <span className="text-sm font-medium text-fg/80">{t("vacancy.feedbackCorrect")}</span>
@@ -217,7 +261,7 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
           <Field label={t("vacancy.feedbackInsight")} help={t("vacancy.feedbackInsightHelp")}>
             <textarea name="feedbackInsight" defaultValue={v?.feedbackInsight ?? ""} maxLength={5000} className="min-h-[4rem]" />
           </Field>
-        </section>
+        </Fold>
 
         <div className="flex items-center gap-3 lg:hidden">
           <button className="btn btn-primary">{t("common.save")}</button>

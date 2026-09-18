@@ -51,6 +51,12 @@ export default async function SettingsPage({
       </section>
 
       <section className="card space-y-3">
+        <h2>{t("nav.ai")}</h2>
+        <p className="text-sm text-muted">{t("settings.aiCard")}</p>
+        <Link href="/ai" className="btn">{t("nav.ai")}</Link>
+      </section>
+
+      <section className="card space-y-3">
         <h2>{t("settings.import")}</h2>
         <p className="text-sm text-muted">{t("settings.importHelp")}</p>
         <p className="text-xs text-muted">{t("settings.importLegacyHelp")}</p>

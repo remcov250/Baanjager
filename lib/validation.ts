@@ -98,6 +98,8 @@ export const sourceInput = z.object({
   active: checkbox.optional(),
 });
 
+export const sourcePatch = sourceInput.partial();
+
 export const PROFILE_KEYS = [
   "skills",
   "experience",

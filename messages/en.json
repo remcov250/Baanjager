@@ -12,7 +12,8 @@
     "language": "Language",
     "dashboard": "Dashboard",
     "more": "More",
-    "theme": "Appearance"
+    "theme": "Appearance",
+    "ai": "Working with AI"
   },
   "common": {
     "save": "Save",
@@ -118,7 +119,7 @@
     "source": "Source",
     "sourceHelp": "Where you found it: employer's site, LinkedIn, Indeed, a recruiter…",
     "sourceVerified": "Verified on the employer's own site",
-    "sourceVerifiedHelp": "Aggregators run weeks to months behind. Only once the vacancy is on the employer's own site do you know it's still open.",
+    "sourceVerifiedHelp": "Job boards run behind; only the employer's own site proves it is still open.",
     "foundOn": "Found on",
     "assessedOn": "Assessed on",
     "layer": "Layer",
@@ -129,7 +130,7 @@
     "contractType": "Contract type",
     "officeDays": "Office days",
     "remoteNote": "Working arrangement",
-    "remoteNoteHelp": "Hybrid, remote %, 'by agreement'… Exactly what the text says about it.",
+    "remoteNoteHelp": "Hybrid, remote %, 'by agreement'…",
     "salary": "Salary indication",
     "salaryHelp": "Leave empty if it isn't stated — that's a signal in itself.",
     "languageRequirement": "Language requirement",
@@ -142,23 +143,25 @@
     "doubtsHelp": "What you can't tell from the text but that decides it. Also useful if there's an interview.",
     "status": "Status",
     "statusNote": "Note",
-    "statusNoteHelp": "What exactly happened: filled in, sent, reply received, waiting on whom.",
+    "statusNoteHelp": "What exactly happened, with a date.",
     "appliedOn": "Applied on",
     "closedOn": "Closed on",
-    "feedbackIntro": "Fill in after the verdict. Was the assessment right? Was the reason off? This is where the correction lands that makes the system sharper — without feedback it learns nothing.",
+    "feedbackIntro": "Was the verdict right? The correction here sharpens the criteria.",
     "feedbackCorrect": "Verdict was right",
     "feedbackMissed": "What was missed or weighed wrongly",
     "feedbackInsight": "New insight for the criteria",
     "feedbackInsightHelp": "If there's something here, turn it into a rule on the Criteria page, linked to this vacancy.",
     "vacancyTextHelp": "Pasted in full. Vacancy texts are public, so that's fine.",
-    "neverDeleted": "Vacancies are never deleted. A rejection with its reason is worth more than a match — it's the training data for your criteria. Set the status to Dropped to take it out of the default view.",
+    "neverDeleted": "Vacancies are never deleted — Dropped is a status, the reason stays.",
     "makeRule": "Make a rule from this insight",
     "rulesFromThis": "Rules that came from this vacancy",
     "timeline": "Timeline",
     "tlFound": "Found",
     "tlAssessed": "Assessed",
     "tlApplied": "Applied",
-    "tlClosed": "Closed"
+    "tlClosed": "Closed",
+    "textEmpty": "No vacancy text yet",
+    "feedbackEmpty": "Not filled in yet"
   },
   "criteria": {
     "title": "Criteria",
@@ -238,7 +241,8 @@
     "file": "CSV file",
     "import_empty": "No file chosen.",
     "import_toolarge": "The file is larger than 10 MB.",
-    "appearance": "Appearance"
+    "appearance": "Appearance",
+    "aiCard": "Connecting over MCP, what the assistant can do, and what a good session looks like."
   },
   "login": {
     "title": "Log in",
@@ -290,5 +294,8 @@
     "assess": "Assess",
     "feedback": "Give feedback",
     "nothingWaiting": "Nothing is waiting on you. Time for a scan?"
+  },
+  "ai": {
+    "intro": "How an assistant uses this app: connecting, what it can do, and what a good session looks like."
   }
 }

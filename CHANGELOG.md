@@ -7,6 +7,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ### Toegevoegd
 
+- **Werken met AI**: een pagina met hoe je een assistent aansluit (Claude Code, Claude
+  Desktop, andere MCP-clients), wat hij kan, en hoe een goede sessie eruitziet.
+- **Bronnen zijn bewerkbaar** (UI en `PATCH`/`DELETE /api/v1/sources/:id`).
+- Criteria en Bronnen tonen alleen een samenvattingsregel per item en klappen uit op
+  klik; toevoegen staat bovenaan. Het vacaturedetail doet hetzelfde: op de telefoon
+  staan alleen Oordeel en Status open, de rest heeft een samenvatting; uitlegtekst
+  verschijnt alleen op een groter scherm.
 - **Dashboard** als startpagina: wat er van jou nodig is (beoordelen, stille sollicitaties,
   ontbrekende terugkoppeling), pijplijn, afgevallen per laag, laatste regels.
 - **Dark mode**: volgt het systeem, of vast licht/donker via de schakelaar (sidebar en

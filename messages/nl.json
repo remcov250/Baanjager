@@ -12,7 +12,8 @@
     "language": "Taal",
     "dashboard": "Dashboard",
     "more": "Meer",
-    "theme": "Weergave"
+    "theme": "Weergave",
+    "ai": "Werken met AI"
   },
   "common": {
     "save": "Opslaan",
@@ -118,7 +119,7 @@
     "source": "Bron",
     "sourceHelp": "Waar je hem vond: eigen site, LinkedIn, Indeed, recruiter…",
     "sourceVerified": "Geverifieerd op de eigen site van de werkgever",
-    "sourceVerifiedHelp": "Aggregators lopen weken tot maanden achter. Pas als de vacature op de eigen site staat, weet je dat hij nog open is.",
+    "sourceVerifiedHelp": "Vacaturebanken lopen achter; alleen de eigen site bewijst dat hij nog open is.",
     "foundOn": "Gevonden op",
     "assessedOn": "Beoordeeld op",
     "layer": "Laag",
@@ -129,7 +130,7 @@
     "contractType": "Contractvorm",
     "officeDays": "Kantoordagen",
     "remoteNote": "Werkvorm",
-    "remoteNoteHelp": "Hybride, thuiswerk-%, 'in overleg'… Wat de tekst er precies over zegt.",
+    "remoteNoteHelp": "Hybride, thuiswerk-%, 'in overleg'…",
     "salary": "Salarisindicatie",
     "salaryHelp": "Laat leeg als het niet vermeld staat — dat is op zichzelf een signaal.",
     "languageRequirement": "Taaleis",
@@ -142,23 +143,25 @@
     "doubtsHelp": "Wat je niet uit de tekst kunt opmaken maar wel bepalend is. Ook nuttig als er een gesprek volgt.",
     "status": "Status",
     "statusNote": "Toelichting",
-    "statusNoteHelp": "Wat er precies is gebeurd: ingevuld, verzonden, reactie gekregen, wachtend op wie.",
+    "statusNoteHelp": "Wat er precies is gebeurd, met datum.",
     "appliedOn": "Gesolliciteerd op",
     "closedOn": "Gesloten op",
-    "feedbackIntro": "In te vullen ná het oordeel. Klopte de beoordeling? Zat de reden ernaast? Hier landt de correctie die het systeem scherper maakt — zonder terugkoppeling leert het niets.",
+    "feedbackIntro": "Klopte het oordeel? De correctie hier maakt de criteria scherper.",
     "feedbackCorrect": "Oordeel klopte",
     "feedbackMissed": "Wat er gemist of verkeerd gewogen is",
     "feedbackInsight": "Nieuw inzicht voor de criteria",
     "feedbackInsightHelp": "Als hier iets staat, maak er dan een regel van op de Criteria-pagina, gekoppeld aan deze vacature.",
     "vacancyTextHelp": "Integraal geplakt. Vacatureteksten zijn openbaar, dus dat mag.",
-    "neverDeleted": "Vacatures worden nooit verwijderd. Een afwijzing mét reden is waardevoller dan een match — het is de trainingsdata van je criteria. Zet de status op Afgevallen om hem uit het standaardoverzicht te halen.",
+    "neverDeleted": "Vacatures worden nooit verwijderd — Afgevallen is een status, de reden blijft staan.",
     "makeRule": "Regel maken van dit inzicht",
     "rulesFromThis": "Regels die uit deze vacature zijn ontstaan",
     "timeline": "Verloop",
     "tlFound": "Gevonden",
     "tlAssessed": "Beoordeeld",
     "tlApplied": "Gesolliciteerd",
-    "tlClosed": "Gesloten"
+    "tlClosed": "Gesloten",
+    "textEmpty": "Nog geen vacaturetekst",
+    "feedbackEmpty": "Nog niet ingevuld"
   },
   "criteria": {
     "title": "Criteria",
@@ -238,7 +241,8 @@
     "file": "CSV-bestand",
     "import_empty": "Geen bestand gekozen.",
     "import_toolarge": "Het bestand is groter dan 10 MB.",
-    "appearance": "Weergave"
+    "appearance": "Weergave",
+    "aiCard": "Aansluiten via MCP, wat de assistent kan, en hoe een goede sessie eruitziet."
   },
   "login": {
     "title": "Inloggen",
@@ -290,5 +294,8 @@
     "assess": "Beoordelen",
     "feedback": "Terugkoppelen",
     "nothingWaiting": "Niets wacht op jou. Tijd voor een vacature-check?"
+  },
+  "ai": {
+    "intro": "Hoe een assistent deze app gebruikt: aansluiten, wat hij kan, en hoe een goede sessie eruitziet."
   }
 }
