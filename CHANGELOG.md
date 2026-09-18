@@ -7,6 +7,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ### Toegevoegd
 
+- **Een CV uit een match.** `GET /api/v1/vacancies/:id/context` (MCP `get_cv_context`)
+  geeft alles wat een CV-bouwer nodig heeft: vacature, oordeel als `matchLevel`, bewijs
+  per eis, de drie profielsecties, een eventueel al gekoppeld CV, een `untrusted`-lijst en
+  een `policy` (alleen bewijs, niets verzinnen, onbekend is geen nee). `PUT
+  /api/v1/vacancies/:id/cv` (MCP `link_cv`) onthoudt welk CV in de CV-bouwer erbij hoort;
+  idempotent. Werkt met Reactive Resume's eigen MCP-server; Baanjager belt zelf nooit
+  naar buiten. Zie `docs/cv-integration.md`.
+- **Oordeel "Onzeker"** naast match, mogelijk, zwak en geen match: gekeken, maar de tekst
+  zegt te weinig. Het dashboard zet die onder "Navragen"; import kent "onzeker"/"uncertain".
+- **Bewijs per eis** (`analysis`): sterk / verwant / deels / onbekend / ontbreekt, plus de
+  termen die de vacature zelf gebruikt. De assistent schrijft het via de API of MCP; het
+  detail toont het boven de reden. Nieuwe migratie (`0001`, alleen kolommen erbij), met een
+  test die 'm op een bestaande én een verse database draait.
+- **Vacaturetekst als untrusted data.** De MCP-server zet alle vrije tekst van een vacature
+  in een gemarkeerd blok dat van binnenuit niet te sluiten is, zodat een instructie in een
+  vacature inhoud blijft. Regressietest inbegrepen.
+
 - **Werken met AI**: een pagina met hoe je een assistent aansluit (Claude Code, Claude
   Desktop, andere MCP-clients), wat hij kan, en hoe een goede sessie eruitziet.
 - **Bronnen zijn bewerkbaar** (UI en `PATCH`/`DELETE /api/v1/sources/:id`).
@@ -25,6 +42,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ### Gewijzigd
 
+- URL's van vacatures, bronnen en CV-koppelingen moeten `http(s)` zijn; andere schema's
+  worden geweigerd in plaats van als link gerenderd.
+- De export heeft vier kolommen erbij: `analysis` (JSON), `cv_resume_id`, `cv_url`,
+  `cv_linked_at`.
 - De vacaturelijst is verhuisd van `/` naar `/vacancies`.
 - Alles naar de laatste stabiele versies: Next 16 (Turbopack, `proxy.ts`), React 19.3,
   Tailwind 4 (config in CSS), zod 4, better-sqlite3 13, drizzle-orm 0.45 / drizzle-kit 0.31,

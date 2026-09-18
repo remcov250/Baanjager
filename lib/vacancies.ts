@@ -115,6 +115,28 @@ export function updateVacancy(id: number, input: Partial<NewVacancy>): Vacancy |
     .get();
 }
 
+// Idempotent: linking the same resume again changes nothing, so an assistant
+// that retries never bumps the timestamp or loses the URL. A different resume
+// replaces the link; null clears it.
+export function setCvLink(
+  id: number,
+  link: { resumeId: string | null; url?: string | null },
+): Vacancy | undefined {
+  const current = getVacancy(id);
+  if (!current) return undefined;
+  if (link.resumeId === null) {
+    if (current.cvResumeId === null) return current;
+    return updateVacancy(id, { cvResumeId: null, cvUrl: null, cvLinkedAt: null });
+  }
+  const url = link.url === undefined ? current.cvUrl : link.url;
+  if (current.cvResumeId === link.resumeId && current.cvUrl === url) return current;
+  return updateVacancy(id, {
+    cvResumeId: link.resumeId,
+    cvUrl: url,
+    cvLinkedAt: current.cvResumeId === link.resumeId ? current.cvLinkedAt : new Date().toISOString(),
+  });
+}
+
 export function vacancyExists(employer: string, title: string): boolean {
   const row = getDb()
     .select({ id: vacancies.id })

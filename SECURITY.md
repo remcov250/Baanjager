@@ -27,7 +27,16 @@ reporting on this repository instead.
 - **Geen delete** op vacatures, niet in de UI en niet in de API. Wat je kwijt wilt, krijgt
   status *Afgevallen*.
 - **Invoer** wordt server-side gevalideerd met zod; formulierdata en API-body's gaan door
-  dezelfde schema's. Tekstvelden hebben maxima; CSV-import maximaal 10 MB.
+  dezelfde schema's. Tekstvelden hebben maxima; CSV-import maximaal 10 MB. URL's zijn
+  `http(s)` of niets.
+- **Vacaturetekst is untrusted.** Wat een assistent via MCP leest (vacaturetekst, redenen,
+  notities, bewijs) komt van internet of uit eerdere sessies. De MCP-server zet het in een
+  gemarkeerd blok dat van binnenuit niet gesloten kan worden; het context-endpoint voor
+  CV-bouwers geeft de lijst velden mee (`untrusted`) plus een `policy`. Er is een
+  regressietest voor een vacature die de assistent probeert te instrueren.
+- **Geen uitgaande verzoeken.** De app belt niet naar een CV-bouwer of AI-aanbieder; de
+  koppeling met een CV-bouwer is een opgeslagen id + URL, de sleutel daarvan blijft bij de
+  assistent.
 - **Container** draait als uid 1001, geen root. De database staat in `/data`.
 
 ## Wat je zelf moet regelen

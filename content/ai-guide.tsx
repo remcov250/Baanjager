@@ -20,6 +20,8 @@ const TOOLS = [
   ["set_status", "Status doorgeven met een notitie: verzonden, reactie, afwijzing.", "Update the status with a note: sent, reply, rejection."],
   ["add_rule", "Van een afwijzing een regel maken, gekoppeld aan de vacature.", "Turn a rejection into a rule, linked to the vacancy."],
   ["get_profile / update_profile_section", "Het gepseudonimiseerde profiel lezen en bijwerken.", "Read and update the pseudonymised profile."],
+  ["get_cv_context", "Alles wat een CV-bouwer nodig heeft voor één vacature, plus of er al een CV aan hangt.", "Everything a CV builder needs for one vacancy, plus whether a CV is already linked."],
+  ["link_cv", "Onthouden welk CV in de CV-bouwer bij deze vacature hoort.", "Remember which CV in the CV builder belongs to this vacancy."],
 ] as const;
 
 export function AiGuide({ locale, origin }: { locale: Locale; origin: string }) {
@@ -135,6 +137,43 @@ claude mcp add baanjager \\
       </section>
 
       <section className="card flex flex-col gap-3">
+        <h2>{nl ? "Een CV uit een match" : "A CV from a match"}</h2>
+        {nl ? (
+          <>
+            <p className="text-sm">
+              Baanjager maakt geen CV's; dat doet een CV-bouwer. Met <strong>Reactive Resume</strong> (5.3 of
+              nieuwer, heeft een eigen MCP-server) gaat het zo: jij vraagt om een CV voor een vacature, de
+              assistent haalt met <code>get_cv_context</code> het oordeel, het bewijs per eis en je profiel op,
+              maakt of bewerkt het CV in Reactive Resume, en koppelt het met <code>link_cv</code> terug — dan
+              staat er een knop <em>CV</em> op de vacature. Bestaat er al een CV, dan wordt dát bijgewerkt.
+            </p>
+            <p className="text-sm">
+              De regels reizen mee met de data: alleen bewijs uit je profiel, verwante ervaring heet verwant,
+              onbekend is geen tekortkoming, en niets wordt verzonnen. Baanjager zelf praat nooit met de
+              CV-bouwer; de sleutel daarvan blijft bij de assistent.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm">
+              Baanjager doesn't build CVs; a CV builder does. With <strong>Reactive Resume</strong> (5.3+, which
+              has its own MCP server) it goes like this: you ask for a CV for a vacancy, the assistant pulls the
+              verdict, the evidence per requirement and your profile with <code>get_cv_context</code>, builds or
+              edits the CV in Reactive Resume, and links it back with <code>link_cv</code> — a <em>CV</em> button
+              then appears on the vacancy. If a CV already exists, that one is updated.
+            </p>
+            <p className="text-sm">
+              The rules travel with the data: evidence from your profile only, related experience is called
+              related, unknown is not a gap, nothing is invented. Baanjager itself never talks to the CV builder;
+              its key stays with the assistant.
+            </p>
+          </>
+        )}
+        <Code>{`claude mcp add --transport http reactive-resume https://<reactive-resume>/mcp \\
+  --header "x-api-key: <RR_API_KEY>"`}</Code>
+      </section>
+
+      <section className="card flex flex-col gap-3">
         <h2>{nl ? "Zonder MCP: de API" : "Without MCP: the API"}</h2>
         <p className="text-sm">
           {nl
@@ -150,6 +189,11 @@ claude mcp add baanjager \\
           {nl
             ? "Alles in deze app: vacatures, oordelen, status-notities, criteria en het profiel. Daarom bevat het profiel bewust geen naam, adres, telefoonnummer of e-mail — voor het matchen voegen die niets toe. Vacatureteksten zijn openbaar en mogen integraal."
             : "Everything in this app: vacancies, verdicts, status notes, criteria and the profile. That is why the profile deliberately has no name, address, phone number or email — they add nothing to matching. Vacancy texts are public and may be stored in full."}
+        </p>
+        <p className="text-sm">
+          {nl
+            ? "Vacatureteksten komen van internet. De MCP-server zet ze, en alle andere vrije tekst, in een blok dat als 'untrusted data' gemarkeerd is: inhoud om te beoordelen, geen instructies aan de assistent."
+            : "Vacancy texts come from the internet. The MCP server fences them, and every other free-text field, in a block marked as untrusted data: content to assess, not instructions to the assistant."}
         </p>
       </section>
     </div>

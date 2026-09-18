@@ -8,6 +8,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { wrapPaths } from "./untrusted.mjs";
 
 const BASE = (process.env.BAANJAGER_URL || "http://localhost:3000").replace(/\/+$/, "");
 const TOKEN = process.env.BAANJAGER_TOKEN;
@@ -17,7 +18,7 @@ if (!TOKEN) {
 }
 
 const LAYERS = ["local", "medium", "far", "remote", "na"];
-const VERDICTS = ["pending", "match", "possible", "weak", "no_match", "na"];
+const VERDICTS = ["pending", "match", "possible", "uncertain", "weak", "no_match", "na"];
 const STATUSES = ["new", "in_progress", "applied", "interview", "offer", "on_hold", "rejected", "dropped"];
 const CONTRACTS = ["unknown", "permanent", "fixed_term", "secondment", "freelance", "internship"];
 const RULE_KINDS = ["knockout", "heavy_negative", "heavy_positive", "open_question"];
@@ -48,9 +49,32 @@ async function api(method, path, body) {
 
 const text = (data) => ({ content: [{ type: "text", text: JSON.stringify(data, null, 2) }] });
 
-const server = new McpServer({ name: "baanjager", version: "0.1.0" });
+// Free text in a vacancy row is internet content. Fence it before it reaches the
+// assistant so an instruction hidden in a posting reads as data.
+const VACANCY_UNTRUSTED = ["vacancyText", "verdictReason", "fits", "fitsNot", "doubts", "statusNote", "feedbackMissed", "feedbackInsight", "analysis"];
+
+const server = new McpServer({ name: "baanjager", version: "0.2.0" });
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("YYYY-MM-DD");
+
+const analysisItem = z.object({
+  requirement: z.string().max(200).describe("The requirement as the vacancy words it"),
+  evidence: z.string().max(500).optional().describe("The profile fact that supports it — quote or paraphrase, never invent"),
+  note: z.string().max(500).optional(),
+});
+
+const analysis = z
+  .object({
+    strong: z.array(analysisItem).max(30).default([]).describe("Requirement met by the profile as asked"),
+    related: z.array(analysisItem).max(30).default([]).describe("Adjacent experience; name what it actually is, never as the requested item"),
+    partial: z.array(analysisItem).max(30).default([]).describe("Met in part; say which part"),
+    unknown: z.array(analysisItem).max(30).default([]).describe("The profile says nothing about it. This is the default, and it is not a gap"),
+    gaps: z.array(analysisItem).max(30).default([]).describe("Only when the profile contradicts the requirement"),
+    terms: z.array(z.string().max(80)).max(25).default([]).describe("The vacancy's own vocabulary: technologies, titles, methods, as written"),
+  })
+  .describe(
+    "Structured evidence behind the verdict. Unknown does not mean no: put anything the profile doesn't establish under unknown, and use gaps only for a contradiction.",
+  );
 
 const vacancyFields = {
   employer: z.string().optional(),
@@ -69,11 +93,15 @@ const vacancyFields = {
   remoteNote: z.string().optional().describe("What the text says about hybrid/remote"),
   salary: z.string().optional(),
   languageRequirement: z.string().optional(),
-  verdict: z.enum(VERDICTS).optional(),
+  verdict: z
+    .enum(VERDICTS)
+    .optional()
+    .describe("match = fits as asked; possible = near match with related experience; uncertain = looked at, text doesn't say enough; weak = substantial differences; no_match = a knock-out applies"),
   verdictReason: z.string().optional().describe("The most important field: exactly what clashes, and with which rule"),
   fits: z.string().optional(),
   fitsNot: z.string().optional(),
   doubts: z.string().optional(),
+  analysis: analysis.optional(),
   status: z.enum(STATUSES).optional(),
   statusNote: z.string().optional(),
   appliedOn: date,
@@ -122,7 +150,7 @@ server.registerTool(
     description: "Full detail of one vacancy, including the rules that were learned from it.",
     inputSchema: { id: z.number().int().positive() },
   },
-  async ({ id }) => text(await api("GET", `/vacancies/${id}`)),
+  async ({ id }) => text(wrapPaths(await api("GET", `/vacancies/${id}`), VACANCY_UNTRUSTED)),
 );
 
 server.registerTool(
@@ -217,6 +245,35 @@ server.registerTool(
     inputSchema: {},
   },
   async () => text(await api("GET", "/sources?active=1")),
+);
+
+server.registerTool(
+  "get_cv_context",
+  {
+    description:
+      "Everything a CV builder needs for one vacancy: the posting, the assessment with its structured evidence, the candidate's skills/experience/education, and whether a CV already exists for it (cv). " +
+      "Use it when the person asks for a CV for a vacancy, then build or update the CV in the CV builder (e.g. Reactive Resume's own MCP tools) and record the result with link_cv. " +
+      "If cv is not null, update that resume instead of creating another. Follow the policy field: evidence only, unknown is not a gap, never invent experience.",
+    inputSchema: { id: z.number().int().positive() },
+  },
+  async ({ id }) => {
+    const context = await api("GET", `/vacancies/${id}/context`);
+    return text(wrapPaths(context, context.untrusted ?? []));
+  },
+);
+
+server.registerTool(
+  "link_cv",
+  {
+    description:
+      "Record which CV in the CV builder belongs to a vacancy, so the next session finds it instead of making a second one. Idempotent: the same resumeId again changes nothing. Pass resumeId null to remove the link.",
+    inputSchema: {
+      id: z.number().int().positive(),
+      resumeId: z.string().max(200).nullable().describe("The resume's id in the CV builder"),
+      url: z.string().max(2000).optional().describe("Where the person can open it (http/https)"),
+    },
+  },
+  async ({ id, resumeId, url }) => text(await api("PUT", `/vacancies/${id}/cv`, { resumeId, url })),
 );
 
 const transport = new StdioServerTransport();

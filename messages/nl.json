@@ -54,6 +54,7 @@
     "pending": "Nog te beoordelen",
     "match": "Match",
     "possible": "Mogelijk",
+    "uncertain": "Onzeker",
     "weak": "Zwak",
     "no_match": "Geen match",
     "na": "N.v.t."
@@ -161,7 +162,20 @@
     "tlApplied": "Gesolliciteerd",
     "tlClosed": "Gesloten",
     "textEmpty": "Nog geen vacaturetekst",
-    "feedbackEmpty": "Nog niet ingevuld"
+    "feedbackEmpty": "Nog niet ingevuld",
+    "analysis": "Bewijs per eis",
+    "analysisHelp": "Door de assistent ingevuld: per eis uit de vacature wat het profiel laat zien. Onbekend is geen nee.",
+    "cv": "CV",
+    "cvLinked": "CV gemaakt op {d}",
+    "cvHint": "Gemaakt in de CV-bouwer via de assistent; hier staat alleen de koppeling."
+  },
+  "analysis": {
+    "strong": "Sterk",
+    "related": "Verwant",
+    "partial": "Deels",
+    "unknown": "Onbekend",
+    "gaps": "Ontbreekt",
+    "terms": "Termen uit de vacature"
   },
   "criteria": {
     "title": "Criteria",
@@ -292,6 +306,7 @@
     "allVacancies": "Alle vacatures",
     "silent": "{d} dagen stil",
     "assess": "Beoordelen",
+    "ask": "Navragen",
     "feedback": "Terugkoppelen",
     "nothingWaiting": "Niets wacht op jou. Tijd voor een vacature-check?"
   },

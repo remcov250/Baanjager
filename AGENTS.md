@@ -44,7 +44,14 @@ Schema change → edit `db/schema.ts` → `npm run db:generate` → commit the n
 
 New vacancy field → column in `db/schema.ts`, migration, zod in `lib/validation.ts`, the
 form in `components/vacancy-form.tsx`, both language files, `lib/export.ts`, and the MCP
-tool schema in `mcp/server.mjs`.
+tool schema in `mcp/server.mjs`. If a CV builder needs it, also `lib/context.ts`.
+`tests/migration.test.ts` runs every migration against a database that stopped at the
+previous one and against a fresh one; keep migrations additive.
+
+Anything an assistant reads back that came from a posting or free text goes through
+`mcp/untrusted.mjs` (`wrapPaths`) — see `tests/context-api.test.ts` for the regression
+that must keep passing. Baanjager makes no outbound requests: the CV builder integration
+is composition over MCP (`docs/cv-integration.md`), never a server-side call.
 
 ## Verifying
 

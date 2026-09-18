@@ -50,7 +50,25 @@ export default async function VacancyPage({
             </span>
           </div>
         </div>
-        <div className="flex shrink-0 gap-2 sm:ml-auto">
+        <div className="flex shrink-0 flex-wrap gap-2 sm:ml-auto">
+          {vacancy.cvResumeId ? (
+            vacancy.cvUrl ? (
+              <a
+                href={vacancy.cvUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="btn"
+                title={vacancy.cvLinkedAt ? t("vacancy.cvLinked", { d: shortDate(vacancy.cvLinkedAt, locale) }) : t("vacancy.cvHint")}
+              >
+                {t("vacancy.cv")}
+                <Icon.external className="h-[15px] w-[15px]" />
+              </a>
+            ) : (
+              <span className="btn cursor-default text-muted" title={t("vacancy.cvHint")}>
+                {t("vacancy.cvLinked", { d: shortDate(vacancy.cvLinkedAt, locale) })}
+              </span>
+            )
+          ) : null}
           {vacancy.url ? (
             <a href={vacancy.url} target="_blank" rel="noreferrer noopener" className="btn">
               {t("common.open")}

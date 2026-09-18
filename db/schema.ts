@@ -6,8 +6,29 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const LAYERS = ["local", "medium", "far", "remote", "na"] as const;
 export type Layer = (typeof LAYERS)[number];
 
-export const VERDICTS = ["pending", "match", "possible", "weak", "no_match", "na"] as const;
+// The verdict scale is deliberately not binary. "uncertain" is the honest answer
+// when the text doesn't say enough — unknown is not the same as no, and a
+// vacancy that reads as uncertain is still worth a question or a closer look.
+export const VERDICTS = ["pending", "match", "possible", "uncertain", "weak", "no_match", "na"] as const;
 export type Verdict = (typeof VERDICTS)[number];
+
+// Structured evidence next to the free-text verdict. Every entry names a
+// requirement from the vacancy and, where there is any, the evidence from the
+// profile. The groups are the whole point: "related" is not "strong", and
+// "unknown" is the default for anything the profile doesn't establish — it only
+// becomes a "gap" when the profile contradicts the requirement.
+export type AnalysisItem = { requirement: string; evidence?: string; note?: string };
+export type Analysis = {
+  strong: AnalysisItem[];
+  related: AnalysisItem[];
+  partial: AnalysisItem[];
+  unknown: AnalysisItem[];
+  gaps: AnalysisItem[];
+  // The vacancy's own vocabulary, as written. Not evidence, not matched.
+  terms: string[];
+};
+export const ANALYSIS_GROUPS = ["strong", "related", "partial", "unknown", "gaps"] as const;
+export type AnalysisGroup = (typeof ANALYSIS_GROUPS)[number];
 
 export const STATUSES = [
   "new",
@@ -70,6 +91,7 @@ export const vacancies = sqliteTable("vacancies", {
   fits: text("fits"),
   fitsNot: text("fits_not"),
   doubts: text("doubts"),
+  analysis: text("analysis", { mode: "json" }).$type<Analysis>(),
 
   status: text("status", { enum: STATUSES }).notNull().default("new"),
   statusNote: text("status_note"),
@@ -79,6 +101,13 @@ export const vacancies = sqliteTable("vacancies", {
   feedbackCorrect: text("feedback_correct", { enum: FEEDBACK }),
   feedbackMissed: text("feedback_missed"),
   feedbackInsight: text("feedback_insight"),
+
+  // A CV made for this vacancy lives in a CV builder (Reactive Resume), not here.
+  // Baanjager only keeps the reference, so the assistant can find it again and
+  // update it instead of making a second one.
+  cvResumeId: text("cv_resume_id"),
+  cvUrl: text("cv_url"),
+  cvLinkedAt: text("cv_linked_at"),
 
   vacancyText: text("vacancy_text"),
   ...timestamps,

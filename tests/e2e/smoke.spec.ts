@@ -123,6 +123,46 @@ test("wrong password is refused, logout works", async ({ page }) => {
   await expect(page).toHaveURL(/\/login\?next=%2Fcriteria/);
 });
 
+test("evidence from the assistant and a linked CV show on the detail page", async ({ page, request }, testInfo) => {
+  const headers = { Authorization: "Bearer e2e-token" };
+  const employer = `Acme ${testInfo.project.name}`;
+  const list = await (await request.get(`/api/v1/vacancies?q=${encodeURIComponent(employer)}&closed=1`, { headers })).json();
+  const id = list[0].id;
+
+  const patched = await request.patch(`/api/v1/vacancies/${id}`, {
+    headers,
+    data: {
+      verdict: "uncertain",
+      analysis: {
+        strong: [{ requirement: "Contractenrecht", evidence: "profiel: 4 jaar contracten" }],
+        unknown: [{ requirement: "Duits C1" }],
+        terms: ["Contractenrecht", "Legal Counsel"],
+      },
+    },
+  });
+  expect(patched.ok()).toBeTruthy();
+  const linked = await request.put(`/api/v1/vacancies/${id}/cv`, {
+    headers,
+    data: { resumeId: `e2e-${testInfo.project.name}`, url: "https://cv.example/e2e" },
+  });
+  expect(linked.ok()).toBeTruthy();
+
+  await signIn(page);
+  await page.goto(`/vacancies/${id}`);
+  const analysis = page.getByTestId("analysis");
+  await expect(analysis).toBeVisible();
+  await expect(analysis.getByText("Sterk", { exact: true })).toBeVisible();
+  await expect(analysis.getByText("Onbekend", { exact: true })).toBeVisible();
+  await expect(analysis.getByText("Duits C1")).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Onzeker" })).toBeChecked();
+  await expect(page.getByRole("link", { name: "CV" })).toHaveAttribute("href", "https://cv.example/e2e");
+
+  const context = await (await request.get(`/api/v1/vacancies/${id}/context`, { headers })).json();
+  expect(context.assessment.matchLevel).toBe("uncertain");
+  expect(context.cv.resumeId).toBe(`e2e-${testInfo.project.name}`);
+  expect(context.policy).toContain("never invent");
+});
+
 test("API needs the token and has no delete", async ({ request }) => {
   const denied = await request.get("/api/v1/summary");
   expect(denied.status()).toBe(401);

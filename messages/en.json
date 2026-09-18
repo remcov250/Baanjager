@@ -54,6 +54,7 @@
     "pending": "Not assessed yet",
     "match": "Match",
     "possible": "Possible",
+    "uncertain": "Uncertain",
     "weak": "Weak",
     "no_match": "No match",
     "na": "N/A"
@@ -161,7 +162,20 @@
     "tlApplied": "Applied",
     "tlClosed": "Closed",
     "textEmpty": "No vacancy text yet",
-    "feedbackEmpty": "Not filled in yet"
+    "feedbackEmpty": "Not filled in yet",
+    "analysis": "Evidence per requirement",
+    "analysisHelp": "Filled in by the assistant: for each requirement in the vacancy, what the profile shows. Unknown is not a no.",
+    "cv": "CV",
+    "cvLinked": "CV made on {d}",
+    "cvHint": "Made in the CV builder through the assistant; only the link lives here."
+  },
+  "analysis": {
+    "strong": "Strong",
+    "related": "Related",
+    "partial": "Partial",
+    "unknown": "Unknown",
+    "gaps": "Gaps",
+    "terms": "The vacancy's own terms"
   },
   "criteria": {
     "title": "Criteria",
@@ -292,6 +306,7 @@
     "allVacancies": "All vacancies",
     "silent": "{d} days quiet",
     "assess": "Assess",
+    "ask": "Ask",
     "feedback": "Give feedback",
     "nothingWaiting": "Nothing is waiting on you. Time for a scan?"
   },

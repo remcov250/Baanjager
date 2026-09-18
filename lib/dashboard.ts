@@ -5,6 +5,8 @@ import { CLOSED_STATUSES, listVacancySummaries, type VacancySummary } from "@/li
 export type Attention =
   | { kind: "silent"; vacancy: VacancySummary; days: number }
   | { kind: "assess"; vacancy: VacancySummary }
+  // Looked at, but the text didn't say enough: something to ask, not to drop.
+  | { kind: "ask"; vacancy: VacancySummary }
   | { kind: "feedback"; vacancy: VacancySummary };
 
 export type Dashboard = {
@@ -36,6 +38,7 @@ export function dashboard(now = new Date()): Dashboard {
 
   const silent: Attention[] = [];
   const assess: Attention[] = [];
+  const ask: Attention[] = [];
   const feedback: Attention[] = [];
 
   for (const v of all) {
@@ -49,12 +52,13 @@ export function dashboard(now = new Date()): Dashboard {
       if (days >= SILENT_AFTER_DAYS) silent.push({ kind: "silent", vacancy: v, days });
     }
     if (!isClosed && v.verdict === "pending") assess.push({ kind: "assess", vacancy: v });
+    if (!isClosed && v.verdict === "uncertain" && v.status === "new") ask.push({ kind: "ask", vacancy: v });
     if (v.status === "rejected" && !v.feedbackCorrect) feedback.push({ kind: "feedback", vacancy: v });
   }
 
   silent.sort((a, b) => (b.kind === "silent" && a.kind === "silent" ? b.days - a.days : 0));
   const rules = listRules(false);
-  const attention = [...silent, ...assess, ...feedback];
+  const attention = [...silent, ...assess, ...ask, ...feedback];
 
   return {
     total: all.length,

@@ -33,6 +33,7 @@ export function Field({
 export const verdictColors: Record<Verdict, string> = {
   match: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
   possible: "bg-lime-100 text-lime-800 dark:bg-lime-900/40 dark:text-lime-300",
+  uncertain: "bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300",
   weak: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
   no_match: "bg-stone-200 text-stone-700 dark:bg-stone-700/60 dark:text-stone-300",
   pending: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",

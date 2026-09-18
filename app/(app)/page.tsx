@@ -20,6 +20,7 @@ const LAYER_BAR = ["#c2410c", "#ea580c", "#fb923c", "#fdba74", "#fed7aa"];
 const attentionBadge = {
   silent: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
   assess: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
+  ask: "bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300",
   feedback: "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300",
 };
 
@@ -230,7 +231,9 @@ function AttentionList({
               ? t("dashboard.silent", { d: a.days })
               : a.kind === "assess"
                 ? t("dashboard.assess")
-                : t("dashboard.feedback");
+                : a.kind === "ask"
+                  ? t("dashboard.ask")
+                  : t("dashboard.feedback");
           return (
             <Link
               key={`${a.kind}-${v.id}`}

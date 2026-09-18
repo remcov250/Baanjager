@@ -117,6 +117,11 @@ describe("rowToVacancy", () => {
   it("rejects a row without employer or title", () => {
     expect(rowToVacancy({ werkgever: "Acme" })).toBeNull();
   });
+  it("drops link placeholders that are not http(s)", () => {
+    expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", url: "—" })?.url).toBeNull();
+    expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", link: "n.v.t." })?.url).toBeNull();
+    expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", url: "https://example.com/j" })?.url).toBe("https://example.com/j");
+  });
   it("leaves office days empty when the column is blank", () => {
     expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "" })?.officeDays).toBeNull();
     expect(rowToVacancy({ werkgever: "Acme", titel: "Analyst", kantoordagen: "0" })?.officeDays).toBe(0);

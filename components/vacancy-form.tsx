@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CONTRACT_TYPES, FEEDBACK, LAYERS, STATUSES, VERDICTS, type Vacancy } from "@/db/schema";
+import { ANALYSIS_GROUPS, CONTRACT_TYPES, FEEDBACK, LAYERS, STATUSES, VERDICTS, type Analysis, type Vacancy } from "@/db/schema";
 import { Icon } from "@/components/icons";
 import { Field, Select, shortDate } from "@/components/ui";
 import type { Locale, Translate } from "@/lib/i18n";
@@ -40,6 +40,53 @@ function Fold({
       </summary>
       <div className="flex flex-col gap-4 pt-3">{children}</div>
     </details>
+  );
+}
+
+const groupTone: Record<(typeof ANALYSIS_GROUPS)[number], string> = {
+  strong: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+  related: "bg-lime-100 text-lime-800 dark:bg-lime-900/40 dark:text-lime-300",
+  partial: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+  unknown: "bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300",
+  gaps: "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300",
+};
+
+// Read-only: the assistant writes the evidence over the API, the person edits
+// the prose. Empty groups are skipped so a thin analysis stays short.
+function AnalysisView({ analysis, t }: { analysis: Analysis; t: Translate }) {
+  const groups = ANALYSIS_GROUPS.filter((g) => analysis[g]?.length);
+  if (!groups.length && !analysis.terms?.length) return null;
+  return (
+    <div className="flex flex-col gap-3" data-testid="analysis">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-fg/80">{t("vacancy.analysis")}</span>
+        <span className="help">{t("vacancy.analysisHelp")}</span>
+      </div>
+      {groups.map((group) => (
+        <div key={group} className="flex flex-col gap-1.5">
+          <span className={`badge self-start ${groupTone[group]}`}>{t(`analysis.${group}`)}</span>
+          <ul className="flex flex-col gap-1 text-sm">
+            {analysis[group].map((item, i) => (
+              <li key={i} className="flex flex-col leading-snug sm:flex-row sm:gap-2">
+                <span className="font-medium">{item.requirement}</span>
+                {item.evidence ? <span className="text-muted">{item.evidence}</span> : null}
+                {item.note ? <span className="text-muted-2 text-[13px]">({item.note})</span> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      {analysis.terms?.length ? (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[13px] text-muted">{t("analysis.terms")}</span>
+          <div className="flex flex-wrap gap-1.5">
+            {analysis.terms.map((term) => (
+              <span key={term} className="chip py-0.5 text-[13px]">{term}</span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -202,6 +249,7 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
               ))}
             </div>
           </fieldset>
+          {v?.analysis ? <AnalysisView analysis={v.analysis} t={t} /> : null}
           <Field label={t("vacancy.verdictReason")} help={t("vacancy.verdictReasonHelp")} helpAlways>
             <textarea name="verdictReason" defaultValue={v?.verdictReason ?? ""} maxLength={5000} />
           </Field>

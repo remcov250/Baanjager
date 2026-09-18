@@ -8,6 +8,7 @@ import {
   type Status,
   type Verdict,
 } from "@/db/schema";
+import { isHttpUrl } from "@/lib/validation";
 
 // Pure mapping from a CSV row to a vacancy. Accepts the app's own export
 // columns and, because the first user had a Dutch spreadsheet, their Dutch
@@ -86,6 +87,7 @@ export function parseVerdict(value: string): Verdict {
   if (v.startsWith("geen match") || v.startsWith("no match")) return "no_match";
   if (v.startsWith("match")) return "match";
   if (v.startsWith("mogelijk") || v.startsWith("possible")) return "possible";
+  if (v.startsWith("onzeker") || v.startsWith("uncertain")) return "uncertain";
   if (v.startsWith("zwak") || v.startsWith("weak")) return "weak";
   if (v.startsWith("nog te") || v.startsWith("pending")) return "pending";
   if (v.startsWith("n.v.t") || v === "na" || v === "n/a") return "na";
@@ -148,10 +150,14 @@ export function rowToVacancy(row: RawRow): NewVacancy | null {
   const officeDaysText = pick(row, "office_days");
   const officeDays = officeDaysText ? Number(officeDaysText) : NaN;
 
+  // Spreadsheets fill an empty link cell with "—" or "n.v.t."; only a real
+  // http(s) address is worth keeping as a link.
+  const url = pick(row, "url");
+
   return {
     employer,
     title,
-    url: pick(row, "url") || null,
+    url: isHttpUrl(url) ? url : null,
     source: pick(row, "source") || null,
     foundOn: normalizeDate(pick(row, "found_on")),
     layer,

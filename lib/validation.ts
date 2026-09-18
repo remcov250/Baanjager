@@ -14,6 +14,23 @@ const emptyToNull = (value: unknown) =>
 const text = (max: number) =>
   z.preprocess(emptyToNull, z.string().trim().max(max).nullable().optional());
 
+// URLs are rendered as links, so only http(s) may go in; "javascript:" and
+// friends are rejected rather than escaped.
+export const isHttpUrl = (value: string) => {
+  try {
+    const { protocol } = new URL(value);
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const httpUrl = (max: number) =>
+  z.preprocess(
+    emptyToNull,
+    z.string().trim().max(max).refine(isHttpUrl, "expected an http(s) URL").nullable().optional(),
+  );
+
 // The shape alone lets "2026-02-30" through (Date.parse rolls it into March);
 // round-tripping through a UTC date catches that.
 const isRealDate = (value: string) => {
@@ -42,10 +59,36 @@ const checkbox = z.preprocess(
   z.boolean(),
 );
 
+// The structured evidence behind a verdict (see Analysis in db/schema.ts). Caps
+// keep it a summary, not a dump: 30 items per group, 25 terms. Unknown keys are
+// rejected so a typo ("strongs") doesn't silently vanish.
+const analysisItem = z
+  .object({
+    requirement: z.string().trim().min(1).max(200),
+    evidence: z.string().trim().max(500).optional(),
+    note: z.string().trim().max(500).optional(),
+  })
+  .strict();
+
+const analysisGroup = z.array(analysisItem).max(30).default([]);
+
+export const analysisInput = z
+  .object({
+    strong: analysisGroup,
+    related: analysisGroup,
+    partial: analysisGroup,
+    unknown: analysisGroup,
+    gaps: analysisGroup,
+    terms: z.array(z.string().trim().min(1).max(80)).max(25).default([]),
+  })
+  .strict();
+
+export type AnalysisInput = z.infer<typeof analysisInput>;
+
 export const vacancyInput = z.object({
   employer: z.string().trim().min(1).max(200),
   title: z.string().trim().min(1).max(300),
-  url: text(2000),
+  url: httpUrl(2000),
   source: text(200),
   sourceVerified: checkbox.optional(),
   foundOn: isoDate,
@@ -66,6 +109,9 @@ export const vacancyInput = z.object({
   fits: text(5000),
   fitsNot: text(5000),
   doubts: text(5000),
+  // Not a form field: the assistant writes it over the API, the person edits
+  // the prose. Absent from FormData, so a form save never touches it.
+  analysis: z.preprocess(emptyToNull, analysisInput.nullable().optional()),
 
   status: z.enum(STATUSES).optional(),
   statusNote: text(5000),
@@ -89,10 +135,16 @@ export const ruleInput = z.object({
   sourceVacancyId: smallInt(1, 2_147_483_647),
 });
 
+// The reference to a CV in the CV builder. resumeId null clears the link.
+export const cvLinkInput = z.object({
+  resumeId: z.preprocess(emptyToNull, z.string().trim().min(1).max(200).nullable()),
+  url: httpUrl(2000),
+});
+
 export const sourceInput = z.object({
   layer: z.enum(LAYERS),
   label: z.string().trim().min(1).max(200),
-  url: text(2000),
+  url: httpUrl(2000),
   note: text(2000),
   cadence: text(100),
   active: checkbox.optional(),
