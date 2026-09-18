@@ -19,8 +19,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 ### Gewijzigd
 
 - De vacaturelijst is verhuisd van `/` naar `/vacancies`.
-- drizzle-orm 0.45 en drizzle-kit 0.31 (audit: identifier-escaping), vitest 5 + vite 8
-  (audit, dev-only). Geen schemawijziging.
+- Alles naar de laatste stabiele versies: Next 16 (Turbopack, `proxy.ts`), React 19.3,
+  Tailwind 4 (config in CSS), zod 4, better-sqlite3 13, drizzle-orm 0.45 / drizzle-kit 0.31,
+  vitest 5 + vite 8, TypeScript 7, Playwright 1.63. Geen schemawijziging; `npm audit` zonder
+  high/critical.
 - CSV-import loopt in één transactie (één commit voor het hele bestand, niets half).
 - CSV-export beschermt tegen formule-injectie: cellen die met `=`, `+`, `-` of `@`
   beginnen krijgen een apostrof, zodat een spreadsheet ze als tekst leest.
