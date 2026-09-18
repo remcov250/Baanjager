@@ -22,3 +22,6 @@ data/
 .e2e-data/
 playwright-report/
 test-results/
+
+# Private per-machine instructions for a Claude Code session; never committed.
+CLAUDE.local.md
