@@ -125,6 +125,8 @@
     "assessedOn": "Assessed on",
     "layer": "Layer",
     "location": "Location",
+    "companySummary": "About the company",
+    "companySummaryHelp": "Short summary of the employer itself — who they are, what they do.",
     "commuteMinutes": "Travel time",
     "hours": "Hours",
     "hoursHelp": "For example 32–36",
@@ -167,7 +169,10 @@
     "analysisHelp": "Filled in by the assistant: for each requirement in the vacancy, what the profile shows. Unknown is not a no.",
     "cv": "CV",
     "cvLinked": "CV made on {d}",
-    "cvHint": "Made in the CV builder through the assistant; only the link lives here."
+    "cvHint": "Made in the CV builder through the assistant; only the link lives here.",
+    "apply": "Apply",
+    "alreadyApplied": "Already applied",
+    "alreadyAppliedHint": "You already applied to this one; the link opens the original vacancy."
   },
   "analysis": {
     "strong": "Strong",
@@ -289,9 +294,9 @@
     "morning": "Good morning",
     "afternoon": "Good afternoon",
     "evening": "Good evening",
-    "waiting": "{n} vacancies are waiting on you",
-    "needsYou": "Waiting on you",
-    "needsYouHint": "assess, follow up, give feedback",
+    "waiting": "{n} vacancies are a potential match",
+    "potentialMatches": "Potential matches",
+    "potentialMatchesHint": "verdict match or possible, not applied yet",
     "open": "Open",
     "openHint": "{new} new · {progress} in progress",
     "appliedHint": "{n} interview or offer",
@@ -304,11 +309,7 @@
     "latestRules": "Latest rules",
     "learnedFrom": "learned from",
     "allVacancies": "All vacancies",
-    "silent": "{d} days quiet",
-    "assess": "Assess",
-    "ask": "Ask",
-    "feedback": "Give feedback",
-    "nothingWaiting": "Nothing is waiting on you. Time for a scan?"
+    "nothingPotential": "No potential matches yet. Time for a scan?"
   },
   "ai": {
     "intro": "How an assistant uses this app: connecting, what it can do, and what a good session looks like."

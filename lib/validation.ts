@@ -96,6 +96,7 @@ export const vacancyInput = z.object({
 
   layer: z.enum(LAYERS).optional(),
   location: text(200),
+  companySummary: text(2000),
   commuteMinutes: smallInt(0, 1440),
   hours: text(50),
   contractType: z.enum(CONTRACT_TYPES).optional(),

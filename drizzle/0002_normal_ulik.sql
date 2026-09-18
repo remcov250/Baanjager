@@ -1,0 +1,1 @@
+ALTER TABLE `vacancies` ADD `company_summary` text;

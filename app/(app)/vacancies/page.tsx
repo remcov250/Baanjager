@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { LAYERS, STATUSES, VERDICTS } from "@/db/schema";
+import { LAYERS, type Verdict } from "@/db/schema";
 import { Icon } from "@/components/icons";
 import { StatusBadge, VerdictBadge, shortDate } from "@/components/ui";
+import { VacancyFilters } from "@/components/vacancy-filters";
 import { getT } from "@/lib/i18n";
 import { listVacancySummaries } from "@/lib/vacancies";
 
@@ -16,6 +17,18 @@ function conditions(v: { hours: string | null; officeDays: number | null; contra
   return parts.join(" · ");
 }
 
+// Default reading order for the list: best verdict first, then closest layer.
+// Only applies when nothing narrowed it to a single verdict or layer already.
+const VERDICT_RANK: Record<Verdict, number> = {
+  match: 0,
+  possible: 1,
+  pending: 2,
+  uncertain: 3,
+  weak: 4,
+  no_match: 5,
+  na: 6,
+};
+
 export default async function VacanciesPage({ searchParams }: { searchParams: Promise<Search> }) {
   const { t, locale } = await getT();
   const params = await searchParams;
@@ -26,6 +39,9 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
     status: params.status,
     closed: params.closed === "1",
   });
+  if (!params.verdict && !params.layer) {
+    rows.sort((a, b) => VERDICT_RANK[a.verdict] - VERDICT_RANK[b.verdict] || LAYERS.indexOf(a.layer) - LAYERS.indexOf(b.layer));
+  }
 
   return (
     <div className="flex flex-col gap-4 sm:gap-5">
@@ -38,44 +54,14 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
         </Link>
       </header>
 
-      <form className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <label htmlFor="q" className="sr-only">{t("common.search")}</label>
-          <div className="relative flex-1 sm:max-w-xs">
-            <Icon.search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-2" />
-            <input id="q" type="search" name="q" defaultValue={params.q ?? ""} placeholder={t("vacancies.searchPlaceholder")} className="mt-0! pl-9!" />
-          </div>
-          <button className="btn">{t("common.search")}</button>
-        </div>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
-          <label htmlFor="layer" className="sr-only">{t("vacancies.colLayer")}</label>
-          <select id="layer" name="layer" defaultValue={params.layer ?? ""} className="chip mt-0! w-auto! py-0! shadow-none!">
-            <option value="">{t("vacancies.colLayer")}: {t("common.all")}</option>
-            {LAYERS.map((l) => (
-              <option key={l} value={l}>{t(`layer.${l}`)}</option>
-            ))}
-          </select>
-          <label htmlFor="verdict" className="sr-only">{t("vacancies.colVerdict")}</label>
-          <select id="verdict" name="verdict" defaultValue={params.verdict ?? ""} className="chip mt-0! w-auto! py-0! shadow-none!">
-            <option value="">{t("vacancies.colVerdict")}: {t("common.all")}</option>
-            {VERDICTS.map((v) => (
-              <option key={v} value={v}>{t(`verdict.${v}`)}</option>
-            ))}
-          </select>
-          <label htmlFor="status" className="sr-only">{t("vacancies.colStatus")}</label>
-          <select id="status" name="status" defaultValue={params.status ?? ""} className="chip mt-0! w-auto! py-0! shadow-none!">
-            <option value="">{t("vacancies.colStatus")}: {t("common.all")}</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>{t(`status.${s}`)}</option>
-            ))}
-          </select>
-          {/* relative: the sr-only checkbox is absolutely positioned and must stay inside this scrolling row */}
-          <label className={`chip relative cursor-pointer ${params.closed === "1" ? "chip-on" : ""}`}>
-            <input type="checkbox" name="closed" value="1" defaultChecked={params.closed === "1"} className="sr-only" />
-            {t("vacancies.showClosed")}
-          </label>
-        </div>
-      </form>
+      <VacancyFilters
+        locale={locale}
+        q={params.q ?? ""}
+        layer={params.layer ?? ""}
+        verdict={params.verdict ?? ""}
+        status={params.status ?? ""}
+        closed={params.closed === "1"}
+      />
 
       {rows.length === 0 ? (
         <p className="card text-sm text-muted">{t("vacancies.empty")}</p>

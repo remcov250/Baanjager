@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LAYERS, type Status } from "@/db/schema";
 import { Icon } from "@/components/icons";
-import { RuleKindBadge, shortDate } from "@/components/ui";
+import { RuleKindBadge, VerdictBadge, shortDate } from "@/components/ui";
 import { dashboard } from "@/lib/dashboard";
 import { getT, type Translate } from "@/lib/i18n";
 
@@ -16,13 +16,6 @@ const PIPELINE: { status: Status; color: string }[] = [
 ];
 
 const LAYER_BAR = ["#c2410c", "#ea580c", "#fb923c", "#fdba74", "#fed7aa"];
-
-const attentionBadge = {
-  silent: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
-  assess: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300",
-  ask: "bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300",
-  feedback: "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300",
-};
 
 function greetingKey(hour: number): string {
   if (hour < 12) return "dashboard.morning";
@@ -56,7 +49,7 @@ export default async function DashboardPage() {
           <h1 className="sm:hidden">{t(greetingKey(now.getHours()))}</h1>
           <span className="text-muted">
             <span className="hidden sm:inline">{dateLabel} · </span>
-            {t("dashboard.waiting", { n: d.attentionTotal })}
+            {t("dashboard.waiting", { n: d.potentialMatchesTotal })}
           </span>
         </div>
         <Link href="/vacancies/new" className="btn btn-primary ml-auto hidden sm:inline-flex">
@@ -67,9 +60,9 @@ export default async function DashboardPage() {
 
       <section className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <div className="card order-1 flex flex-col gap-1.5 border-accent-line bg-accent-tint sm:order-3">
-          <span className="label text-accent">{t("dashboard.needsYou")}</span>
-          <span className="stat text-accent">{d.attentionTotal}</span>
-          <span className="hidden text-[13px] text-accent-fg sm:block">{t("dashboard.needsYouHint")}</span>
+          <span className="label text-accent">{t("dashboard.potentialMatches")}</span>
+          <span className="stat text-accent">{d.potentialMatchesTotal}</span>
+          <span className="hidden text-[13px] text-accent-fg sm:block">{t("dashboard.potentialMatchesHint")}</span>
         </div>
         <div className="card order-2 flex flex-col gap-1.5 sm:order-1">
           <span className="label">{t("dashboard.open")}</span>
@@ -95,7 +88,7 @@ export default async function DashboardPage() {
       </section>
 
       <section className="card flex flex-col gap-3 sm:hidden">
-        <AttentionList t={t} locale={locale} d={d} compact />
+        <PotentialMatchesList t={t} locale={locale} d={d} compact />
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
@@ -157,7 +150,7 @@ export default async function DashboardPage() {
 
       <section className="grid gap-4 lg:grid-cols-[3fr_2fr]">
         <div className="card hidden flex-col sm:flex">
-          <AttentionList t={t} locale={locale} d={d} />
+          <PotentialMatchesList t={t} locale={locale} d={d} />
         </div>
 
         <div className="card flex flex-col">
@@ -202,7 +195,7 @@ export default async function DashboardPage() {
   );
 }
 
-function AttentionList({
+function PotentialMatchesList({
   t,
   locale,
   d,
@@ -216,47 +209,36 @@ function AttentionList({
   return (
     <>
       <div className="flex items-center gap-2.5 pb-1.5">
-        <h2>{t("dashboard.needsYou")}</h2>
+        <h2>{t("dashboard.potentialMatches")}</h2>
         <Link href="/vacancies" className="ml-auto text-[13px] font-medium text-accent hover:text-accent-deep">
           {compact ? t("common.all") : t("dashboard.allVacancies")} →
         </Link>
       </div>
-      {d.attention.length === 0 ? (
-        <p className="py-2 text-sm text-muted">{t("dashboard.nothingWaiting")}</p>
+      {d.potentialMatches.length === 0 ? (
+        <p className="py-2 text-sm text-muted">{t("dashboard.nothingPotential")}</p>
       ) : (
-        d.attention.map((a) => {
-          const v = a.vacancy;
-          const label =
-            a.kind === "silent"
-              ? t("dashboard.silent", { d: a.days })
-              : a.kind === "assess"
-                ? t("dashboard.assess")
-                : a.kind === "ask"
-                  ? t("dashboard.ask")
-                  : t("dashboard.feedback");
-          return (
-            <Link
-              key={`${a.kind}-${v.id}`}
-              href={`/vacancies/${v.id}`}
-              className="flex min-h-[56px] items-center gap-3 border-t border-line-soft py-2.5 first-of-type:border-t-0 hover:bg-surface-2"
-            >
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate font-semibold">
-                  {v.employer}
-                  <span className="hidden font-normal text-muted sm:inline"> — {v.title}</span>
-                </span>
-                <span className="truncate text-[13px] text-muted">
-                  <span className="sm:hidden">{v.title} · </span>
-                  {t(`layer.${v.layer}`)}
-                  {v.location ? ` · ${v.location}` : ""}
-                  {v.foundOn ? ` · ${shortDate(v.foundOn, locale)}` : ""}
-                </span>
-              </div>
-              <span className={`badge ${attentionBadge[a.kind]}`}>{label}</span>
-              <Icon.chevron className="hidden h-[18px] w-[18px] text-muted-2 sm:block" />
-            </Link>
-          );
-        })
+        d.potentialMatches.map((v) => (
+          <Link
+            key={v.id}
+            href={`/vacancies/${v.id}`}
+            className="flex min-h-[56px] items-center gap-3 border-t border-line-soft py-2.5 first-of-type:border-t-0 hover:bg-surface-2"
+          >
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="truncate font-semibold">
+                {v.employer}
+                <span className="hidden font-normal text-muted sm:inline"> — {v.title}</span>
+              </span>
+              <span className="truncate text-[13px] text-muted">
+                <span className="sm:hidden">{v.title} · </span>
+                {t(`layer.${v.layer}`)}
+                {v.location ? ` · ${v.location}` : ""}
+                {v.foundOn ? ` · ${shortDate(v.foundOn, locale)}` : ""}
+              </span>
+            </div>
+            <VerdictBadge verdict={v.verdict} t={t} />
+            <Icon.chevron className="hidden h-[18px] w-[18px] text-muted-2 sm:block" />
+          </Link>
+        ))
       )}
     </>
   );

@@ -78,6 +78,11 @@ export const vacancies = sqliteTable("vacancies", {
 
   layer: text("layer", { enum: LAYERS }).notNull().default("na"),
   location: text("location"),
+  // A short note on the employer itself — who they are, what they do — written
+  // once by whoever assesses the vacancy. Not scraped by the server: Baanjager
+  // makes no outbound requests (see AGENTS.md), so this is filled in the same
+  // way as fits/fitsNot, by whoever (or whatever) is doing the assessment.
+  companySummary: text("company_summary"),
   commuteMinutes: integer("commute_minutes"),
   hours: text("hours"),
   contractType: text("contract_type", { enum: CONTRACT_TYPES }).notNull().default("unknown"),

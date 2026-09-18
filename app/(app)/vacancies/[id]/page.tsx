@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { RULE_KINDS } from "@/db/schema";
+import { RULE_KINDS, type Status } from "@/db/schema";
 import { createRuleFromVacancyAction, updateVacancyAction } from "@/app/(app)/vacancies/actions";
 import { Icon } from "@/components/icons";
 import { Field, RuleKindBadge, Select, StatusBadge, VerdictBadge, shortDate } from "@/components/ui";
@@ -8,6 +8,11 @@ import { VacancyForm } from "@/components/vacancy-form";
 import { getT } from "@/lib/i18n";
 import { rulesForVacancy } from "@/lib/rules";
 import { getVacancy } from "@/lib/vacancies";
+
+// Once a vacancy has been sent off, the button stops being a call to action.
+const ALREADY_APPLIED: Status[] = ["applied", "interview", "offer"];
+// Not sent yet, and not closed either: this is what "Solliciteren" is for.
+const CAN_APPLY: Status[] = ["new", "in_progress", "on_hold"];
 
 export default async function VacancyPage({
   params,
@@ -70,10 +75,22 @@ export default async function VacancyPage({
             )
           ) : null}
           {vacancy.url ? (
-            <a href={vacancy.url} target="_blank" rel="noreferrer noopener" className="btn">
-              {t("common.open")}
-              <Icon.external className="h-[15px] w-[15px]" />
-            </a>
+            ALREADY_APPLIED.includes(vacancy.status) ? (
+              <a href={vacancy.url} target="_blank" rel="noreferrer noopener" className="btn cursor-default text-muted" title={t("vacancy.alreadyAppliedHint")}>
+                {t("vacancy.alreadyApplied")}
+                <Icon.external className="h-[15px] w-[15px]" />
+              </a>
+            ) : CAN_APPLY.includes(vacancy.status) ? (
+              <a href={vacancy.url} target="_blank" rel="noreferrer noopener" className="btn btn-primary">
+                {t("vacancy.apply")}
+                <Icon.external className="h-[15px] w-[15px]" />
+              </a>
+            ) : (
+              <a href={vacancy.url} target="_blank" rel="noreferrer noopener" className="btn">
+                {t("common.open")}
+                <Icon.external className="h-[15px] w-[15px]" />
+              </a>
+            )
           ) : null}
           <button form="vacancy-form" className="btn btn-primary hidden lg:inline-flex">{t("common.save")}</button>
         </div>

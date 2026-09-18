@@ -85,7 +85,6 @@ test("filters the list and hides dropped vacancies by default", async ({ page },
   await expect(page.getByRole("link", { name: employer }).first()).toBeVisible();
 
   await page.getByLabel("Oordeel").selectOption("no_match");
-  await page.getByRole("button", { name: "Zoeken" }).click();
   await expect(page.getByText("Nog geen vacatures")).toBeVisible();
 
   await page.goto("/vacancies");
@@ -99,7 +98,6 @@ test("filters the list and hides dropped vacancies by default", async ({ page },
   await page.goto("/vacancies");
   await expect(page.getByRole("link", { name: employer })).toHaveCount(0);
   await page.getByText("Toon afgevallen en afgewezen").click();
-  await page.getByRole("button", { name: "Zoeken" }).click();
   await expect(page.getByRole("link", { name: employer }).first()).toBeVisible();
 });
 

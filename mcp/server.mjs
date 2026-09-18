@@ -51,7 +51,7 @@ const text = (data) => ({ content: [{ type: "text", text: JSON.stringify(data, n
 
 // Free text in a vacancy row is internet content. Fence it before it reaches the
 // assistant so an instruction hidden in a posting reads as data.
-const VACANCY_UNTRUSTED = ["vacancyText", "verdictReason", "fits", "fitsNot", "doubts", "statusNote", "feedbackMissed", "feedbackInsight", "analysis"];
+const VACANCY_UNTRUSTED = ["vacancyText", "verdictReason", "fits", "fitsNot", "doubts", "companySummary", "statusNote", "feedbackMissed", "feedbackInsight", "analysis"];
 
 const server = new McpServer({ name: "baanjager", version: "0.2.0" });
 
@@ -86,6 +86,7 @@ const vacancyFields = {
   assessedOn: date,
   layer: z.enum(LAYERS).optional().describe("Distance layer from the home base"),
   location: z.string().optional(),
+  companySummary: z.string().optional().describe("Short note on the employer itself — who they are, what they do. Not scraped by the server; written by whoever assesses the vacancy."),
   commuteMinutes: z.number().int().min(0).max(1440).optional(),
   hours: z.string().optional().describe("e.g. 32-36"),
   contractType: z.enum(CONTRACTS).optional(),

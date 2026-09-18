@@ -125,6 +125,8 @@
     "assessedOn": "Beoordeeld op",
     "layer": "Laag",
     "location": "Locatie",
+    "companySummary": "Over het bedrijf",
+    "companySummaryHelp": "Korte samenvatting van de werkgever zelf — wie ze zijn, wat ze doen.",
     "commuteMinutes": "Reistijd",
     "hours": "Uren",
     "hoursHelp": "Bijvoorbeeld 32–36",
@@ -167,7 +169,10 @@
     "analysisHelp": "Door de assistent ingevuld: per eis uit de vacature wat het profiel laat zien. Onbekend is geen nee.",
     "cv": "CV",
     "cvLinked": "CV gemaakt op {d}",
-    "cvHint": "Gemaakt in de CV-bouwer via de assistent; hier staat alleen de koppeling."
+    "cvHint": "Gemaakt in de CV-bouwer via de assistent; hier staat alleen de koppeling.",
+    "apply": "Solliciteren",
+    "alreadyApplied": "Al gesolliciteerd",
+    "alreadyAppliedHint": "Je hebt hier al op gesolliciteerd; de link opent de oorspronkelijke vacature."
   },
   "analysis": {
     "strong": "Sterk",
@@ -289,9 +294,9 @@
     "morning": "Goedemorgen",
     "afternoon": "Goedemiddag",
     "evening": "Goedenavond",
-    "waiting": "{n} vacatures wachten op jou",
-    "needsYou": "Wacht op jou",
-    "needsYouHint": "beoordelen, navragen, terugkoppelen",
+    "waiting": "{n} vacatures zijn een potentiële match",
+    "potentialMatches": "Potentiële matches",
+    "potentialMatchesHint": "oordeel match of possible, nog niet gesolliciteerd",
     "open": "Open",
     "openHint": "{new} nieuw · {progress} in behandeling",
     "appliedHint": "{n} gesprek of aanbod",
@@ -304,11 +309,7 @@
     "latestRules": "Laatste regels",
     "learnedFrom": "geleerd van",
     "allVacancies": "Alle vacatures",
-    "silent": "{d} dagen stil",
-    "assess": "Beoordelen",
-    "ask": "Navragen",
-    "feedback": "Terugkoppelen",
-    "nothingWaiting": "Niets wacht op jou. Tijd voor een vacature-check?"
+    "nothingPotential": "Nog geen potentiële matches. Tijd voor een vacature-check?"
   },
   "ai": {
     "intro": "Hoe een assistent deze app gebruikt: aansluiten, wat hij kan, en hoe een goede sessie eruitziet."

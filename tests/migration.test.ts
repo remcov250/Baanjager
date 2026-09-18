@@ -41,16 +41,16 @@ describe("migrations", () => {
     const last = journal.entries.length - 1;
 
     migrate(db, { migrationsFolder: folderUpTo(last - 1) });
-    expect(columns(sqlite, "vacancies")).not.toContain("analysis");
+    expect(columns(sqlite, "vacancies")).not.toContain("company_summary");
     sqlite
       .prepare("INSERT INTO vacancies (employer, title, verdict, status) VALUES (?, ?, ?, ?)")
       .run("Acme", "Analyst", "possible", "applied");
 
     migrate(db, { migrationsFolder });
     const cols = columns(sqlite, "vacancies");
-    expect(cols).toEqual(expect.arrayContaining(["analysis", "cv_resume_id", "cv_url", "cv_linked_at"]));
+    expect(cols).toEqual(expect.arrayContaining(["analysis", "cv_resume_id", "cv_url", "cv_linked_at", "company_summary"]));
     const row = sqlite.prepare("SELECT * FROM vacancies").get() as Record<string, unknown>;
-    expect(row).toMatchObject({ employer: "Acme", status: "applied", analysis: null, cv_resume_id: null });
+    expect(row).toMatchObject({ employer: "Acme", status: "applied", analysis: null, cv_resume_id: null, company_summary: null });
 
     // Running it again is a no-op.
     migrate(db, { migrationsFolder });
