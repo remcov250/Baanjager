@@ -9,13 +9,13 @@ import "./globals.css";
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
-  variable: "--font-display",
+  variable: "--font-bricolage",
   display: "swap",
 });
 const sans = Instrument_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-sans",
+  variable: "--font-instrument",
   display: "swap",
 });
 

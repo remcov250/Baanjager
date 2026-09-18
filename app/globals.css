@@ -1,9 +1,44 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Light is the base; dark redefines the same tokens. A stored choice sets
-   data-theme on <html>; without it the system preference decides. */
+/* `dark:` follows a stored choice on <html data-theme>, the system otherwise —
+   the same rule the token blocks below use. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme="light"]):not([data-theme="light"] *)) {
+      @slot;
+    }
+  }
+}
+
+/* Every colour is a CSS variable (RGB triplet) so light and dark are one set of
+   utilities; the triplets live in :root below. */
+@theme {
+  --color-bg: rgb(var(--bg));
+  --color-surface: rgb(var(--surface));
+  --color-surface-2: rgb(var(--surface-2));
+  --color-line: rgb(var(--line));
+  --color-line-soft: rgb(var(--line-soft));
+  --color-fg: rgb(var(--fg));
+  --color-muted: rgb(var(--muted));
+  --color-muted-2: rgb(var(--muted-2));
+  --color-accent: rgb(var(--accent));
+  --color-accent-deep: rgb(var(--accent-deep));
+  --color-accent-soft: rgb(var(--accent-soft));
+  --color-accent-tint: rgb(var(--accent-tint));
+  --color-accent-line: rgb(var(--accent-line));
+  --color-accent-fg: rgb(var(--accent-fg));
+
+  --font-sans: var(--font-instrument), system-ui, "Segoe UI", sans-serif;
+  --font-display: var(--font-bricolage), var(--font-instrument), system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px rgb(var(--shadow) / 0.06);
+  --shadow-fab: 0 6px 16px rgb(var(--accent) / 0.35);
+}
+
+/* Light is the base; dark redefines the same tokens. */
 :root {
   color-scheme: light;
   --bg: 250 250 249;
@@ -91,6 +126,12 @@
   textarea {
     @apply min-h-[6rem] leading-relaxed;
   }
+  summary {
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
 }
 
 @layer components {
@@ -143,5 +184,15 @@
   }
   .tab-on {
     @apply text-accent;
+  }
+  /* Collapsible sections (native <details>): the summary is the whole tappable row. */
+  .fold > summary {
+    @apply flex min-h-11 cursor-pointer select-none items-center gap-3;
+  }
+  .fold > summary .fold-chevron {
+    @apply ml-auto h-[18px] w-[18px] shrink-0 text-muted-2 transition-transform;
+  }
+  .fold[open] > summary .fold-chevron {
+    @apply rotate-90;
   }
 }

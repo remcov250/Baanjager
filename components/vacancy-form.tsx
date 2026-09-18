@@ -12,7 +12,7 @@ type Props = {
 
 // relative keeps the sr-only radio inside the chip instead of at the document edge.
 const segment =
-  "chip relative cursor-pointer !rounded-lg has-[:checked]:border-fg has-[:checked]:bg-fg has-[:checked]:text-bg";
+  "chip relative cursor-pointer rounded-lg! has-checked:border-fg has-checked:bg-fg has-checked:text-bg";
 
 export function VacancyForm({ t, locale, action, vacancy }: Props) {
   const v = vacancy;
