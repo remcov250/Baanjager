@@ -115,6 +115,15 @@ claude mcp add --transport http reactive-resume https://<jouw-reactive-resume>/m
   --header "x-api-key: <RR_API_KEY>"
 ```
 
+`claude mcp add` schrijft die header — met sleutel — in platte tekst in de configuratie van
+de client. Wil je dat niet, registreer dan een klein startscript in plaats van de server:
+het haalt de sleutel bij het starten uit je secret manager en geeft 'm alleen als
+omgevingsvariabele door aan `mcp-remote`, dat `${VAR}` in een header zelf invult
+(`--header 'x-api-key:${REACTIVE_RESUME_API_KEY}'`, letterlijk, tussen enkele
+aanhalingstekens). Zo staat de sleutel niet in de config, niet in git, niet in de
+procesargumenten en niet in de shell-history. Laat het script hard falen als de sleutel
+ontbreekt, en laat het nooit de waarde printen.
+
 Zie ook [Reactive Resume: Using the MCP server](https://docs.rxresu.me/guides/using-the-mcp-server).
 De tools die je daar krijgt en die hier gebruikt worden: `list_resumes`, `read_resume`,
 `duplicate_resume`, `create_resume`, `import_resume`, `apply_resume_patch`, `update_resume`,
