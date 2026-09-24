@@ -25,3 +25,6 @@ test-results/
 
 # Private per-machine instructions for a Claude Code session; never committed.
 CLAUDE.local.md
+
+# brievenbus (Codex -> Claude briefs, lokaal werkverkeer)
+briefs/
