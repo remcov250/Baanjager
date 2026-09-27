@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { logout, setLocale, setTheme } from "@/app/actions";
 import { Icon } from "@/components/icons";
-import { SidebarLinks, TabLinks, type NavItem } from "@/components/nav-links";
+import { MoreTab, SidebarLinks, TabLinks, type NavItem } from "@/components/nav-links";
 import { APP_NAME } from "@/lib/app";
 import { LOCALES, type Locale, type Translate } from "@/lib/i18n";
 import { THEMES, type Theme } from "@/lib/theme";
@@ -57,8 +57,9 @@ function LocaleSwitch({ t, locale }: { t: Translate; locale: Locale }) {
           key={code}
           name="locale"
           value={code}
-          className={`px-1 py-1 ${code === locale ? "font-semibold text-fg" : "text-muted hover:text-fg"}`}
+          className={`min-h-11 min-w-11 px-2 sm:min-h-0 sm:min-w-0 sm:px-1 sm:py-1 ${code === locale ? "font-semibold text-fg" : "text-muted hover:text-fg"}`}
           aria-label={`${t("nav.language")}: ${code}`}
+          aria-pressed={code === locale}
         >
           {code.toUpperCase()}
         </button>
@@ -125,14 +126,12 @@ export function MobileBar({ t, locale }: { t: Translate; locale: Locale }) {
 
 export function TabBar({ t }: { t: Translate }) {
   // Five tabs fit a phone; Bronnen lives under Instellingen's neighbour "Meer".
-  const items = navItems(t).filter((i) => !["/sources", "/ai", "/settings"].includes(i.href));
+  const more = ["/sources", "/ai", "/settings"];
+  const items = navItems(t).filter((i) => !more.includes(i.href));
   return (
     <nav className="fixed inset-x-0 bottom-0 z-10 flex border-t border-line bg-surface px-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden">
       <TabLinks items={items} />
-      <Link href="/settings" className="tab">
-        <Icon.more className="h-[22px] w-[22px]" />
-        {t("nav.more")}
-      </Link>
+      <MoreTab href="/settings" label={t("nav.more")} covers={more} />
     </nav>
   );
 }

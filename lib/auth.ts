@@ -1,4 +1,4 @@
-import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { eq, lt, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -41,12 +41,17 @@ export function findUser(username: string) {
   return getDb().select().from(users).where(eq(users.username, username)).get();
 }
 
-export function createUser(username: string, password: string) {
-  return getDb()
-    .insert(users)
-    .values({ username, passwordHash: hashPassword(password) })
-    .returning()
-    .get();
+// The first account, and only the first: the check and the insert are one
+// transaction, so two /setup posts at the same moment can't both get through.
+// Returns undefined when an account already exists.
+export function createFirstUser(username: string, password: string) {
+  const passwordHash = hashPassword(password);
+  const db = getDb();
+  return db.transaction(() => {
+    const row = db.select({ n: sql<number>`count(*)` }).from(users).get();
+    if ((row?.n ?? 0) > 0) return undefined;
+    return db.insert(users).values({ username, passwordHash }).returning().get();
+  }, { behavior: "immediate" });
 }
 
 export function changePassword(userId: number, newPassword: string): void {
@@ -119,13 +124,19 @@ export async function destroySession(): Promise<void> {
 
 // --------------------------------------------------------------- rate limiting
 
+// Counted per username and client. A single shared counter let anyone who could
+// reach /login keep the owner locked out with ten bad guesses every quarter of
+// an hour; now that takes knowing the username, and it only locks that name
+// from that client when the proxy says who the client is.
 const WINDOW_MS = 15 * 60_000;
 const MAX_ATTEMPTS = 10;
+const MAX_TRACKED = 10_000;
 const attempts = new Map<string, { count: number; resetAt: number }>();
 
-export async function loginAllowed(): Promise<boolean> {
-  const key = await clientKey();
+export async function loginAllowed(username: string): Promise<boolean> {
+  const key = await attemptKey(username);
   const now = Date.now();
+  sweep(now);
   const entry = attempts.get(key);
   if (!entry || entry.resetAt < now) {
     attempts.set(key, { count: 1, resetAt: now + WINDOW_MS });
@@ -135,14 +146,31 @@ export async function loginAllowed(): Promise<boolean> {
   return entry.count <= MAX_ATTEMPTS;
 }
 
-export async function clearLoginAttempts(): Promise<void> {
-  attempts.delete(await clientKey());
+export async function clearLoginAttempts(username: string): Promise<void> {
+  attempts.delete(await attemptKey(username));
 }
 
+async function attemptKey(username: string): Promise<string> {
+  return `${await clientKey()}|${username.slice(0, 64)}`;
+}
+
+// Expired entries go; if the map still grows past the cap (many made-up
+// usernames or addresses), the oldest go first. Map keeps insertion order.
+function sweep(now: number): void {
+  for (const [key, entry] of attempts) if (entry.resetAt < now) attempts.delete(key);
+  for (const key of attempts.keys()) {
+    if (attempts.size < MAX_TRACKED) break;
+    attempts.delete(key);
+  }
+}
+
+// Behind a proxy, X-Forwarded-For is "client, proxy1, proxy2…" and a client can
+// put anything at the front. The entry the nearest proxy appended — the last
+// one — is the only one it vouches for.
 async function clientKey(): Promise<string> {
-  if (process.env.TRUST_PROXY !== "true") return "global";
+  if (process.env.TRUST_PROXY !== "true") return "direct";
   const forwarded = (await headers()).get("x-forwarded-for");
-  return forwarded?.split(",")[0]?.trim() || "global";
+  return forwarded?.split(",").at(-1)?.trim() || "direct";
 }
 
 // ------------------------------------------------------------------ API token
@@ -150,7 +178,9 @@ async function clientKey(): Promise<string> {
 export function apiTokenMatches(header: string | null): boolean {
   const token = process.env.API_TOKEN;
   if (!token || !header?.startsWith("Bearer ")) return false;
-  const given = Buffer.from(header.slice("Bearer ".length).trim());
-  const expected = Buffer.from(token);
-  return given.length === expected.length && timingSafeEqual(given, expected);
+  // Compare digests: equal length always, so the time taken says nothing about
+  // how long the real token is.
+  const given = createHash("sha256").update(header.slice("Bearer ".length).trim()).digest();
+  const expected = createHash("sha256").update(token).digest();
+  return timingSafeEqual(given, expected);
 }

@@ -1,4 +1,7 @@
 {
+  "meta": {
+    "description": "Assess vacancies, sharpen your criteria."
+  },
   "app": {
     "tagline": "Assess vacancies, sharpen your criteria."
   },
@@ -26,7 +29,6 @@
     "yes": "Yes",
     "no": "No",
     "none": "—",
-    "notStated": "not stated",
     "all": "All",
     "actions": "Actions",
     "retire": "Retire",
@@ -98,6 +100,7 @@
     "title": "Vacancies",
     "new": "New vacancy",
     "empty": "No vacancies yet. Add the first one, or import a CSV under Settings.",
+    "showMore": "Show more ({shown} of {total})",
     "count": "{n} vacancies",
     "showClosed": "Show dropped and rejected",
     "searchPlaceholder": "Employer or title",
@@ -106,8 +109,7 @@
     "colLayer": "Layer",
     "colVerdict": "Verdict",
     "colStatus": "Status",
-    "colFound": "Found",
-    "colApplied": "Applied"
+    "colFound": "Found"
   },
   "vacancy": {
     "basics": "Vacancy",
@@ -232,13 +234,13 @@
     "cadenceHelp": "Weekly, every two weeks, monthly…",
     "active": "Active",
     "inactive": "Inactive",
+    "deleteConfirm": "Delete \"{label}\"? This can't be undone. Deactivating keeps the source.",
     "empty": "No sources yet. Start with the local layer: that's the light check you do often.",
     "activate": "Activate",
     "deactivate": "Deactivate"
   },
   "settings": {
     "title": "Settings",
-    "general": "General",
     "locale": "Default language",
     "import": "Import CSV",
     "importHelp": "Columns: employer, title, url, source, found_on, layer, verdict, verdict_reason, status, applied_on, closed_on. Extra columns are ignored. Existing vacancies are not overwritten.",
@@ -260,6 +262,7 @@
     "newPasswordRepeat": "Repeat new password",
     "passwordChanged": "Password changed. All other sessions have been logged out.",
     "passwordWrong": "The current password isn't right.",
+    "passwordRate": "Too many attempts. Try again in fifteen minutes.",
     "passwordShort": "The new password is too short.",
     "passwordMismatch": "The new passwords don't match.",
     "file": "CSV file",

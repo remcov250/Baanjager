@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth";
 import { createRule, setRuleRetired } from "@/lib/rules";
+import { getVacancy } from "@/lib/vacancies";
 import { ruleInput } from "@/lib/validation";
 
 export async function createRuleAction(formData: FormData) {
@@ -15,6 +16,9 @@ export async function createRuleAction(formData: FormData) {
     sourceVacancyId: formData.get("sourceVacancyId"),
   });
   if (!parsed.success) redirect("/criteria?error=validation");
+  // A stale form can name a vacancy id that isn't there; the foreign key would
+  // turn that into a crash instead of a message.
+  if (parsed.data.sourceVacancyId && !getVacancy(parsed.data.sourceVacancyId)) redirect("/criteria?error=validation");
   createRule(parsed.data);
   revalidatePath("/criteria");
   redirect("/criteria?saved=1");

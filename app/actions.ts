@@ -8,8 +8,8 @@ import {
   USERNAME_PATTERN,
   changePassword as changePasswordInDb,
   clearLoginAttempts,
+  createFirstUser,
   createSession,
-  createUser,
   destroySession,
   findUser,
   hashPassword,
@@ -69,7 +69,8 @@ export async function setup(formData: FormData) {
   if (password.length < MIN_PASSWORD_LENGTH) redirect("/setup?error=short");
   if (password !== repeat) redirect("/setup?error=mismatch");
 
-  const user = createUser(username, password);
+  const user = createFirstUser(username, password);
+  if (!user) redirect("/login");
   await createSession(user.id);
   redirect("/");
 }
@@ -78,12 +79,12 @@ export async function login(formData: FormData) {
   const next = safeNext(formData.get("next"));
   const suffix = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
 
-  if (!(await loginAllowed())) redirect(`/login?error=rate${suffix}`);
-
   const username = String(formData.get("username") ?? "")
     .trim()
     .toLowerCase();
   const password = String(formData.get("password") ?? "");
+
+  if (!(await loginAllowed(username))) redirect(`/login?error=rate${suffix}`);
   const user = findUser(username);
 
   // Verify against a real hash even when the user doesn't exist, so a missing
@@ -91,7 +92,7 @@ export async function login(formData: FormData) {
   const ok = verifyPassword(password, user?.passwordHash ?? DUMMY_HASH) && Boolean(user);
   if (!user || !ok) redirect(`/login?error=wrong${suffix}`);
 
-  await clearLoginAttempts();
+  await clearLoginAttempts(username);
   await createSession(user.id);
   redirect(next);
 }
@@ -106,6 +107,10 @@ export async function changePassword(formData: FormData) {
   const current = String(formData.get("current_password") ?? "");
   const password = String(formData.get("new_password") ?? "");
   const repeat = String(formData.get("new_password_repeat") ?? "");
+
+  // A stolen session cookie shouldn't be a way to guess the password, which
+  // outlives the session; same limit as the login form.
+  if (!(await loginAllowed(`password-change:${session.username}`))) redirect("/settings?password=rate");
 
   const user = findUser(session.username);
   if (!user || !verifyPassword(current, user.passwordHash)) {

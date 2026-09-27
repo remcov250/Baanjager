@@ -142,6 +142,48 @@ test("filters the list and hides dropped vacancies by default", async ({ page },
   await expect(page.getByRole("link", { name: employer }).first()).toBeVisible();
 });
 
+test("the filters follow the URL after going back", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/vacancies");
+  await page.getByLabel("Oordeel").selectOption("no_match");
+  await expect(page).toHaveURL(/verdict=no_match/);
+  await page.goBack();
+  await expect(page).not.toHaveURL(/verdict=/);
+  await expect(page.getByLabel("Oordeel")).toHaveValue("");
+});
+
+test("a link the server would refuse is caught before the form is sent", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/vacancies/new");
+  await page.getByLabel("Werkgever", { exact: true }).fill("Beta");
+  await page.getByLabel("Functietitel").fill("Counsel");
+  await page.getByLabel("URL", { exact: true }).fill("ftp://jobs.example/counsel");
+  await page.getByRole("button", { name: "Opslaan" }).first().click();
+  await expect(page).toHaveURL(/\/vacancies\/new$/);
+  expect(await page.getByLabel("URL", { exact: true }).evaluate((el: HTMLInputElement) => el.validity.patternMismatch)).toBe(true);
+  await expect(page.getByLabel("Werkgever", { exact: true })).toHaveValue("Beta");
+});
+
+test("deleting a source asks first", async ({ page }, testInfo) => {
+  await signIn(page);
+  const label = `Board ${testInfo.project.name} ${testInfo.retry}`;
+  await page.goto("/sources");
+  await page.locator("summary", { hasText: "Bron toevoegen" }).click();
+  await page.getByLabel("Naam").fill(label);
+  await page.getByRole("button", { name: "Bron toevoegen" }).click();
+  await expect(page.getByText("Opgeslagen")).toBeVisible();
+
+  await page.getByText(label, { exact: true }).click();
+  const source = page.locator("details", { hasText: label });
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await source.getByRole("button", { name: "Verwijderen" }).click();
+  await expect(page.getByText(label, { exact: true })).toBeVisible();
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await source.getByRole("button", { name: "Verwijderen" }).click();
+  await expect(page.getByText(label, { exact: true })).toHaveCount(0);
+});
+
 test("table on desktop, cards on mobile", async ({ page, isMobile }) => {
   await signIn(page);
   await page.goto("/vacancies?closed=1");

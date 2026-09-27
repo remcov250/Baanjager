@@ -1,4 +1,7 @@
 {
+  "meta": {
+    "description": "Vacatures beoordelen, criteria aanscherpen."
+  },
   "app": {
     "tagline": "Vacatures beoordelen, criteria aanscherpen."
   },
@@ -26,7 +29,6 @@
     "yes": "Ja",
     "no": "Nee",
     "none": "—",
-    "notStated": "niet vermeld",
     "all": "Alle",
     "actions": "Acties",
     "retire": "Buiten gebruik stellen",
@@ -98,6 +100,7 @@
     "title": "Vacatures",
     "new": "Nieuwe vacature",
     "empty": "Nog geen vacatures. Voeg de eerste toe, of importeer een CSV via Instellingen.",
+    "showMore": "Toon meer ({shown} van {total})",
     "count": "{n} vacatures",
     "showClosed": "Toon afgevallen en afgewezen",
     "searchPlaceholder": "Werkgever of functie",
@@ -106,8 +109,7 @@
     "colLayer": "Laag",
     "colVerdict": "Oordeel",
     "colStatus": "Status",
-    "colFound": "Gevonden",
-    "colApplied": "Gesolliciteerd"
+    "colFound": "Gevonden"
   },
   "vacancy": {
     "basics": "Vacature",
@@ -232,13 +234,13 @@
     "cadenceHelp": "Wekelijks, elke twee weken, maandelijks…",
     "active": "Actief",
     "inactive": "Inactief",
+    "deleteConfirm": "\"{label}\" verwijderen? Dit kan niet ongedaan worden. Deactiveren bewaart de bron wel.",
     "empty": "Nog geen bronnen. Begin met de lokale laag: dat is de lichte check die je vaak doet.",
     "activate": "Activeren",
     "deactivate": "Deactiveren"
   },
   "settings": {
     "title": "Instellingen",
-    "general": "Algemeen",
     "locale": "Standaardtaal",
     "import": "CSV importeren",
     "importHelp": "Kolommen: employer, title, url, source, found_on, layer, verdict, verdict_reason, status, applied_on, closed_on. Extra kolommen worden genegeerd. Bestaande vacatures worden niet overschreven.",
@@ -260,6 +262,7 @@
     "newPasswordRepeat": "Nieuw wachtwoord herhalen",
     "passwordChanged": "Wachtwoord gewijzigd. Alle andere sessies zijn uitgelogd.",
     "passwordWrong": "Het huidige wachtwoord klopt niet.",
+    "passwordRate": "Te veel pogingen. Probeer het over een kwartier opnieuw.",
     "passwordShort": "Het nieuwe wachtwoord is te kort.",
     "passwordMismatch": "De nieuwe wachtwoorden zijn niet gelijk.",
     "file": "CSV-bestand",

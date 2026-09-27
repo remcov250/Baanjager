@@ -2,6 +2,14 @@ import { cloneElement, useId } from "react";
 import type { RuleKind, Status, Verdict } from "@/db/schema";
 import type { Translate } from "@/lib/i18n";
 
+// Browser-side mirrors of the server's rules, so a form the server would refuse
+// never leaves the page and nothing typed is lost on a redirect. The server
+// still checks; these only catch the honest mistakes first.
+// An http(s) link: type="url" alone also lets ftp: and mailto: through.
+export const HTTP_URL_PATTERN = "[Hh][Tt][Tt][Pp][Ss]?://.+";
+// Required text that isn't only spaces (the server trims before it checks).
+export const NOT_BLANK_PATTERN = ".*\\S.*";
+
 export function Field({
   label,
   help,
@@ -21,11 +29,15 @@ export function Field({
   // name, which confuses screen readers and getByLabel alike.
   const generated = useId();
   const id = children.props.id ?? generated;
+  const helpId = `${id}-help`;
   return (
     <div className={className}>
       {label ? <label htmlFor={id}>{label}</label> : null}
-      {cloneElement(children, { id })}
-      {help ? <p className={`help ${helpAlways ? "help-always" : ""}`}>{help}</p> : null}
+      {cloneElement(children as React.ReactElement<{ id?: string; "aria-describedby"?: string }>, {
+        id,
+        ...(help ? { "aria-describedby": helpId } : {}),
+      })}
+      {help ? <p id={helpId} className={`help ${helpAlways ? "help-always" : ""}`}>{help}</p> : null}
     </div>
   );
 }

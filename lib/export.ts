@@ -85,5 +85,8 @@ export function vacanciesToCsv(rows: Vacancy[]): string {
   }));
   // escapeFormulae: a vacancy text (or a title) can start with "=", "+", "-" or
   // "@"; a spreadsheet would run that as a formula when the export is opened.
-  return Papa.unparse(data, { columns: [...EXPORT_COLUMNS], newline: "\n", escapeFormulae: true });
+  // Papa's own `true` uses /^[=+\-@\t\r].*$/, which never matches a value with
+  // a newline in it, so a multi-line vacancy text slipped through. Only the
+  // first character matters.
+  return Papa.unparse(data, { columns: [...EXPORT_COLUMNS], newline: "\n", escapeFormulae: /^[=+\-@\t\r]/ });
 }

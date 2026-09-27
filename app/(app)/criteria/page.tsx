@@ -2,7 +2,7 @@ import Link from "next/link";
 import { RULE_KINDS } from "@/db/schema";
 import { createRuleAction, setRuleRetiredAction } from "@/app/(app)/criteria/actions";
 import { Icon } from "@/components/icons";
-import { Field, RuleKindBadge, Select } from "@/components/ui";
+import { Field, NOT_BLANK_PATTERN, RuleKindBadge, Select } from "@/components/ui";
 import { getT } from "@/lib/i18n";
 import { listRules } from "@/lib/rules";
 import { vacancyOptions } from "@/lib/vacancies";
@@ -26,7 +26,7 @@ export default async function CriteriaPage({
       </div>
 
       {params.saved ? <p className="notice">{t("common.saved")}</p> : null}
-      {params.error ? <p className="notice">{t("common.validationError")}</p> : null}
+      {params.error ? <p className="notice notice-error" role="alert">{t("common.validationError")}</p> : null}
 
       <details className="fold card py-3" open={Boolean(params.error)}>
         <summary>
@@ -42,7 +42,7 @@ export default async function CriteriaPage({
               <Select name="kind" defaultValue="knockout" options={RULE_KINDS} t={t} prefix="ruleKind" />
             </Field>
             <Field label={t("criteria.text")}>
-              <input type="text" name="text" required maxLength={1000} />
+              <input type="text" name="text" required pattern={NOT_BLANK_PATTERN} maxLength={1000} />
             </Field>
           </div>
           <Field label={t("criteria.rationale")} help={t("criteria.rationaleHelp")}>

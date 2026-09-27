@@ -7,7 +7,11 @@ import { getT } from "@/lib/i18n";
 import { officeDaysLabel } from "@/lib/office-days";
 import { listVacancySummaries } from "@/lib/vacancies";
 
-type Search = { q?: string; layer?: string; verdict?: string; status?: string; closed?: string };
+type Search = { q?: string; layer?: string; verdict?: string; status?: string; closed?: string; limit?: string };
+
+// Vacancies are never deleted, so the list only grows. Show a page's worth and
+// let "show more" raise the limit; the count in the header stays the total.
+const PAGE = 100;
 
 function conditions(v: { hours: string | null; officeDays: number | null; contractType: string; remoteNote: string | null }, t: (k: string) => string): string {
   const parts: string[] = [];
@@ -42,6 +46,11 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
   if (!params.verdict && !params.layer) {
     rows.sort((a, b) => VERDICT_RANK[a.verdict] - VERDICT_RANK[b.verdict] || LAYERS.indexOf(a.layer) - LAYERS.indexOf(b.layer));
   }
+  const limit = Math.max(PAGE, Math.floor(Number(params.limit) / PAGE) * PAGE || PAGE);
+  const shown = rows.slice(0, limit);
+  const more = new URLSearchParams(
+    Object.entries({ ...params, limit: String(limit + PAGE) }).filter((entry): entry is [string, string] => Boolean(entry[1])),
+  );
 
   return (
     <div className="flex flex-col gap-4 sm:gap-5">
@@ -68,7 +77,7 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
       ) : (
         <>
           <ul className="flex flex-col gap-2.5 sm:hidden">
-            {rows.map((v) => (
+            {shown.map((v) => (
               <li key={v.id}>
                 <Link href={`/vacancies/${v.id}`} className="card flex flex-col gap-2 rounded-2xl p-4 active:bg-surface-2">
                   <div className="flex items-start justify-between gap-2.5">
@@ -106,7 +115,7 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
                 </tr>
               </thead>
               <tbody className="divide-y divide-line-soft">
-                {rows.map((v) => (
+                {shown.map((v) => (
                   <tr key={v.id} className="hover:bg-accent-tint/60">
                     <td className="px-4 py-3 font-semibold">
                       <Link href={`/vacancies/${v.id}`} className="hover:underline">{v.employer}</Link>
@@ -125,6 +134,12 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
               </tbody>
             </table>
           </div>
+
+          {rows.length > shown.length ? (
+            <Link href={`/vacancies?${more}`} scroll={false} className="btn self-center">
+              {t("vacancies.showMore", { shown: shown.length, total: rows.length })}
+            </Link>
+          ) : null}
         </>
       )}
 
