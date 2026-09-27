@@ -43,20 +43,31 @@ function pick(row: RawRow, field: string): string {
   for (const alias of ALIASES[field] ?? [field]) {
     const value = row[alias];
     if (value !== undefined && value !== null && String(value).trim() !== "") {
-      return String(value).trim();
+      return unescapeFormula(String(value).trim());
     }
   }
   return "";
 }
 
+// The export puts a ' in front of a cell that starts with = + - or @ so a
+// spreadsheet doesn't run it. Coming back in, that ' is not part of the text.
+function unescapeFormula(value: string): string {
+  return /^'[=+\-@\t\r]/.test(value) ? value.slice(1) : value;
+}
+
+// ISO, or day-month-year the way a Dutch spreadsheet writes it. A date that
+// doesn't exist (2024-13-45, 31/02/2024) is dropped rather than stored.
 export function normalizeDate(value: string): string | null {
   const v = value.trim();
   if (!v) return null;
+  let iso: string | null = null;
   let m = v.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  if (m) iso = `${m[1]}-${m[2]}-${m[3]}`;
   m = v.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
-  if (m) return `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
-  return null;
+  if (m) iso = `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+  if (!iso) return null;
+  const time = Date.parse(`${iso}T00:00:00Z`);
+  return !Number.isNaN(time) && new Date(time).toISOString().slice(0, 10) === iso ? iso : null;
 }
 
 // "Lokaal (Zwolle)" → local + Zwolle; "Medium/Remote" → medium; "Ver" → far.
@@ -140,7 +151,10 @@ export function rowToVacancy(row: RawRow): NewVacancy | null {
   const statusText = pick(row, "status");
   const status = parseStatus(statusText, pick(row, "applied"), verdict);
 
-  const noteParts = [statusText];
+  // The status text goes into the note because a spreadsheet's status column
+  // is free text. When it is already one of the app's own values (this app's
+  // export), it says nothing the status doesn't.
+  const noteParts = [(STATUSES as readonly string[]).includes(statusText.toLowerCase()) ? "" : statusText];
   const dossier = pick(row, "dossier");
   if (dossier) noteParts.push(`Dossier: ${dossier}`);
   const explicitNote = pick(row, "status_note");
@@ -175,32 +189,54 @@ export function rowToVacancy(row: RawRow): NewVacancy | null {
   };
 }
 
-export function parseCsv(text: string): RawRow[] {
-  const result = Papa.parse<RawRow>(text.replace(/^﻿/, ""), {
+export type ParsedCsv = { rows: RawRow[]; problems: string[] };
+
+// A broken quote swallows every line after it into one field, so the file is
+// refused as a whole instead of half-imported. Rows with more or fewer cells
+// than the header are common in hand-kept sheets and still come through.
+export function parseCsv(text: string): ParsedCsv {
+  const result = Papa.parse<RawRow>(text.replace(/^\uFEFF/, ""), {
     header: true,
     skipEmptyLines: true,
     transformHeader: (h) => h.trim().toLowerCase(),
   });
-  return result.data;
+  const problems = result.errors
+    .filter((e) => e.type === "Quotes")
+    .map((e) => (e.row !== undefined ? `row ${e.row + 2}: ${e.message}` : e.message));
+  return { rows: result.data, problems };
 }
 
-export type ImportResult = { added: number; skipped: number; errors: string[] };
+// rejected: the file itself couldn't be read safely and nothing was added.
+export type ImportResult = { added: number; skipped: number; errors: string[]; rejected?: boolean };
+
+// Why a row wasn't added, or undefined when it can go in.
+export type Duplicate = (vacancy: NewVacancy) => string | undefined;
 
 export function importRows(
   rows: RawRow[],
-  exists: (employer: string, title: string) => boolean,
+  duplicate: Duplicate,
   insert: (vacancy: NewVacancy) => void,
+  validate: (vacancy: NewVacancy) => string | undefined = () => undefined,
 ): ImportResult {
   const result: ImportResult = { added: 0, skipped: 0, errors: [] };
   rows.forEach((row, index) => {
+    const line = `row ${index + 2}`;
     const vacancy = rowToVacancy(row);
     if (!vacancy) {
       result.skipped += 1;
-      result.errors.push(`row ${index + 2}: missing employer or title`);
+      result.errors.push(`${line}: missing employer or title`);
       return;
     }
-    if (exists(vacancy.employer, vacancy.title)) {
+    const invalid = validate(vacancy);
+    if (invalid) {
       result.skipped += 1;
+      result.errors.push(`${line}: ${invalid}`);
+      return;
+    }
+    const existing = duplicate(vacancy);
+    if (existing) {
+      result.skipped += 1;
+      result.errors.push(`${line}: ${existing}`);
       return;
     }
     insert(vacancy);

@@ -12,7 +12,7 @@ const PASSWORD_MESSAGES = ["changed", "wrong", "rate", "short", "mismatch"] as c
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ import?: string; added?: string; skipped?: string; password?: string }>;
+  searchParams: Promise<{ import?: string; added?: string; skipped?: string; why?: string | string[]; password?: string }>;
 }) {
   const session = await requireSession();
   const { t } = await getT();
@@ -22,6 +22,8 @@ export default async function SettingsPage({
 
   // A plain object lookup would also hit inherited names ("constructor",
   // "__proto__") and try to render them; only the known codes get a message.
+  const reasons = ([] as string[]).concat(params.why ?? []).slice(0, 5);
+
   const passwordCode = PASSWORD_MESSAGES.find((code) => code === params.password);
   const passwordMessage = passwordCode
     ? {
@@ -62,12 +64,31 @@ export default async function SettingsPage({
         <p className="text-sm text-muted">{t("settings.importHelp")}</p>
         <p className="text-xs text-muted">{t("settings.importLegacyHelp")}</p>
         {params.import === "done" ? (
-          <p className="notice">
-            {t("settings.importResult", { added: params.added ?? "0", skipped: params.skipped ?? "0" })}
-          </p>
+          <div className="notice">
+            <p>{t("settings.importResult", { added: params.added ?? "0", skipped: params.skipped ?? "0" })}</p>
+            {reasons.length ? (
+              <ul className="mt-1 list-disc pl-5 text-[13px] text-muted">
+                {reasons.map((reason, i) => (
+                  <li key={i}>{reason}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
+        {params.import === "invalid" ? (
+          <div className="notice notice-error" role="alert">
+            <p>{t("settings.import_invalid")}</p>
+            {reasons.length ? (
+              <ul className="mt-1 list-disc pl-5 text-[13px]">
+                {reasons.map((reason, i) => (
+                  <li key={i}>{reason}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
         ) : null}
         {params.import === "empty" || params.import === "toolarge" ? (
-          <p className="notice">{t(`settings.import_${params.import}`)}</p>
+          <p className="notice notice-error" role="alert">{t(`settings.import_${params.import}`)}</p>
         ) : null}
         <form action={importCsvAction} className="flex flex-wrap items-end gap-3">
           <Field label={t("settings.file")} className="min-w-[16rem]">

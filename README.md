@@ -99,7 +99,13 @@ Drie manieren, die je kunt combineren:
   source, found_on, layer, verdict, verdict_reason, status, applied_on, closed_on`, of de
   Nederlandse namen `werkgever, titel, bron, datum_gevonden, laag, oordeel, reden_kort,
   gesolliciteerd, datum_sollicitatie, vervallen_op`. Vrije tekst in de statuskolom blijft
-  bewaard als toelichting. Dezelfde import kan via `POST /api/v1/import`.
+  bewaard als toelichting. Een vacature die er al is (zelfde link, of zonder link zelfde
+  werkgever en functie) wordt overgeslagen, met de reden erbij. Dezelfde import kan via
+  `POST /api/v1/import`.
+
+De CSV-import is om een bestaande spreadsheet binnen te halen, niet om een back-up terug te
+zetten: de export is om je vacatures in een spreadsheet te openen. Een back-up is de map
+`data/`, daar staat de hele database in.
 - **Door de assistent.** Geef 'm je oude lijst, of laat 'm de bronnen aflopen — hij vult
   vacatures, profiel, criteria en bronnen via MCP. Hoe je dat opzet staat hieronder.
 

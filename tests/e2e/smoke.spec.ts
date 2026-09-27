@@ -192,6 +192,24 @@ test("deleting a source asks first", async ({ page }, testInfo) => {
   await expect(page.getByText(label, { exact: true })).toHaveCount(0);
 });
 
+test("imports a spreadsheet and says which rows it skipped", async ({ page }, testInfo) => {
+  await signIn(page);
+  const employer = `Import ${testInfo.project.name} ${testInfo.retry}`;
+  // Over 1 MB on purpose: the default Server Action limit is 1 MB, and the
+  // import promises 10. The padding sits in a column the import ignores.
+  const padding = "x".repeat(1_500_000);
+  const csv = [
+    "werkgever,titel,url,opmerking",
+    `${employer},Jurist,https://careers.import.example/${testInfo.project.name}/${testInfo.retry}/1,${padding}`,
+    `${employer},Jurist,https://careers.import.example/${testInfo.project.name}/${testInfo.retry}/1/,`,
+  ].join("\n");
+  await page.goto("/settings");
+  await page.getByLabel("CSV-bestand").setInputFiles({ name: "vacatures.csv", mimeType: "text/csv", buffer: Buffer.from(csv) });
+  await page.getByRole("button", { name: "Importeren" }).click();
+  await expect(page.getByText("1 toegevoegd, 1 overgeslagen")).toBeVisible();
+  await expect(page.getByText(/row 3: already there as #\d+/)).toBeVisible();
+});
+
 test("table on desktop, cards on mobile", async ({ page, isMobile }) => {
   await signIn(page);
   await page.goto("/vacancies?closed=1");

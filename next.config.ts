@@ -28,6 +28,13 @@ const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["better-sqlite3"],
   poweredByHeader: false,
+  // The CSV import takes up to 10 MB (lib/import.ts). Server Actions stop at
+  // 1 MB by default and proxy.ts caps request bodies at 10 MB, so a file near
+  // the limit plus the multipart overhead needs a little more room than that.
+  experimental: {
+    serverActions: { bodySizeLimit: "11mb" },
+    proxyClientMaxBodySize: "11mb",
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
