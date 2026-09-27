@@ -70,7 +70,8 @@ describe("GET /api/v1/vacancies/:id/context", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
 
-    expect(Object.keys(body).sort()).toEqual(["assessment", "cv", "policy", "profile", "untrusted", "vacancy"]);
+    expect(Object.keys(body).sort()).toEqual(["application", "assessment", "cv", "policy", "profile", "untrusted", "vacancy"]);
+    expect(body.application).toEqual({ coverLetter: null });
     expect(body.vacancy.employer).toBe("Acme");
     expect(body.assessment).toMatchObject({ verdict: "possible", matchLevel: "near", analysis: null });
     expect(body.cv).toBeNull();

@@ -114,6 +114,11 @@ export const vacancies = sqliteTable("vacancies", {
   cvUrl: text("cv_url"),
   cvLinkedAt: text("cv_linked_at"),
 
+  // The motivation letter as it was sent, so it can be reused for the next
+  // application. The letter body only: the sender's name and contact details
+  // live in the CV builder, not here (see AGENTS.md, no personal-data fields).
+  coverLetter: text("cover_letter"),
+
   vacancyText: text("vacancy_text"),
   ...timestamps,
 });

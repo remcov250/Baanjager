@@ -29,3 +29,10 @@ describe("MCP vacancy schema: officeDays", () => {
     expect(description).toMatch(/remote/i);
   });
 });
+
+describe("MCP vacancy schema: coverLetter", () => {
+  it("accepts the letter text and says contact details don't belong in it", () => {
+    expect(patch.parse({ coverLetter: "Dear hiring team, …" }).coverLetter).toBe("Dear hiring team, …");
+    expect(vacancyFields.coverLetter.description ?? "").toMatch(/no name, address, phone or email/i);
+  });
+});

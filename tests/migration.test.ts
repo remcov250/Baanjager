@@ -38,13 +38,17 @@ describe("migrations", () => {
   it("upgrade an existing database in place, keeping its rows", () => {
     const sqlite = new Database(path.join(tmp, "existing.db"));
     const db = drizzle(sqlite);
-    const last = journal.entries.length - 1;
-
-    migrate(db, { migrationsFolder: folderUpTo(last - 1) });
+    
+    // Stop before 0003 so both data migrations since then are exercised: 0003
+    // rewrites office_days, 0004 adds cover_letter.
+    const officeDaysIdx = journal.entries.findIndex((e: { tag: string }) => e.tag.startsWith("0003_"));
+    expect(officeDaysIdx).toBeGreaterThan(0);
+    migrate(db, { migrationsFolder: folderUpTo(officeDaysIdx - 1) });
     const before = columns(sqlite, "vacancies");
     expect(before).toEqual(expect.arrayContaining(["analysis", "cv_resume_id", "company_summary"]));
+    expect(before).not.toContain("cover_letter");
 
-    // Three shapes of office_days that the newest migration has to tell apart:
+    // Three shapes of office_days that migration 0003 has to tell apart:
     // a 0 nobody chose (an import default), a 0 that means fully remote, and
     // a real number.
     const insert = sqlite.prepare(
@@ -56,7 +60,9 @@ describe("migrations", () => {
     insert.run("Delta", "Officer", "weak", "dropped", 0, null);
 
     migrate(db, { migrationsFolder });
-    expect(columns(sqlite, "vacancies")).toEqual(before);
+    const after = columns(sqlite, "vacancies");
+    // Additive only: every column that was there stays, the letter is new.
+    expect(after).toEqual([...before, "cover_letter"]);
 
     const rows = sqlite
       .prepare("SELECT employer, office_days AS officeDays, status FROM vacancies ORDER BY id")
@@ -69,9 +75,13 @@ describe("migrations", () => {
       { employer: "Delta", officeDays: null, status: "dropped" },
     ]);
 
+    // Existing rows have no letter yet.
+    const letters = sqlite.prepare("SELECT cover_letter AS coverLetter FROM vacancies").all() as { coverLetter: string | null }[];
+    expect(letters.every((r) => r.coverLetter === null)).toBe(true);
+
     // Running it again is a no-op.
     migrate(db, { migrationsFolder });
-    expect(columns(sqlite, "vacancies")).toEqual(before);
+    expect(columns(sqlite, "vacancies")).toEqual(after);
     sqlite.close();
   });
 

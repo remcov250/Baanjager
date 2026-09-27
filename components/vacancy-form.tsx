@@ -114,6 +114,7 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
     : undefined;
 
   const textSummary = v?.vacancyText ? v.vacancyText.replace(/\s+/g, " ").slice(0, 90) : t("vacancy.textEmpty");
+  const letterSummary = v?.coverLetter ? v.coverLetter.replace(/\s+/g, " ").slice(0, 90) : t("vacancy.coverLetterEmpty");
   const feedbackSummary = v?.feedbackCorrect
     ? `${t("vacancy.feedbackCorrect")}: ${t(`feedback.${v.feedbackCorrect}`)}`
     : t("vacancy.feedbackEmpty");
@@ -237,6 +238,12 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
         <Fold title={t("vacancy.text")} summary={textSummary}>
           <Field label="" help={t("vacancy.vacancyTextHelp")}>
             <textarea name="vacancyText" aria-label={t("vacancy.text")} defaultValue={v?.vacancyText ?? ""} maxLength={100000} className="min-h-[12rem] font-mono text-base sm:text-[13px]" />
+          </Field>
+        </Fold>
+
+        <Fold title={t("vacancy.coverLetter")} summary={letterSummary}>
+          <Field label="" help={t("vacancy.coverLetterHelp")}>
+            <textarea name="coverLetter" aria-label={t("vacancy.coverLetter")} defaultValue={v?.coverLetter ?? ""} maxLength={20000} className="min-h-[12rem] text-base sm:text-sm" />
           </Field>
         </Fold>
       </div>

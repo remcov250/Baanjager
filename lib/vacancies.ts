@@ -63,7 +63,7 @@ function whereFor(filters: VacancyFilters): SQL | undefined {
 
   if (filters.q) {
     const needle = `%${filters.q.replace(/[%_]/g, "")}%`;
-    where.push(or(like(vacancies.employer, needle), like(vacancies.title, needle))!);
+    where.push(or(like(vacancies.employer, needle), like(vacancies.title, needle), like(vacancies.url, needle))!);
   }
   if (filters.layer && (LAYERS as readonly string[]).includes(filters.layer)) {
     where.push(eq(vacancies.layer, filters.layer as Layer));
@@ -135,6 +135,42 @@ export function setCvLink(
     cvUrl: url,
     cvLinkedAt: current.cvResumeId === link.resumeId ? current.cvLinkedAt : new Date().toISOString(),
   });
+}
+
+// Two links point at the same posting when their normalised keys match. A
+// LinkedIn job has one numeric id behind many URLs (nl./de./www., with or
+// without the slug, with tracking parameters), so the id is the key. Any other
+// URL is compared without scheme, "www.", query, fragment and trailing slash.
+export function postingKey(url: string | null | undefined): string | null {
+  if (!url) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(url.trim());
+  } catch {
+    return null;
+  }
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+  if (host === "linkedin.com" || host.endsWith(".linkedin.com")) {
+    const id = parsed.pathname.match(/\/jobs\/view\/(?:[^/]*?-)?(\d{6,})\/?$/)?.[1];
+    if (id) return `linkedin:${id}`;
+  }
+  return `${host}${parsed.pathname.replace(/\/+$/, "").toLowerCase()}`;
+}
+
+// The vacancy that already holds this posting, if any. Used to refuse a second
+// row for the same link; the caller can override when two roles really share
+// one page.
+export function findVacancyByPosting(url: string | null | undefined): { id: number; employer: string; title: string } | undefined {
+  const key = postingKey(url);
+  if (!key) return undefined;
+  const numeric = key.startsWith("linkedin:") ? key.slice("linkedin:".length) : null;
+  const candidates = getDb()
+    .select({ id: vacancies.id, employer: vacancies.employer, title: vacancies.title, url: vacancies.url })
+    .from(vacancies)
+    .where(numeric ? like(vacancies.url, `%${numeric}%`) : sql`${vacancies.url} IS NOT NULL`)
+    .all();
+  const hit = candidates.find((row) => postingKey(row.url) === key);
+  return hit ? { id: hit.id, employer: hit.employer, title: hit.title } : undefined;
 }
 
 export function vacancyExists(employer: string, title: string): boolean {

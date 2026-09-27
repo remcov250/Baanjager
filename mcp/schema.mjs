@@ -77,4 +77,8 @@ export const vacancyFields = {
   feedbackMissed: z.string().optional().describe("What was missed or weighed wrongly"),
   feedbackInsight: z.string().optional().describe("The lesson for the criteria; turn it into a rule with add_rule"),
   vacancyText: z.string().optional().describe("Full posting text"),
+  coverLetter: z
+    .string()
+    .optional()
+    .describe("The motivation letter as sent, body only: no name, address, phone or email (those live in the CV builder)"),
 };

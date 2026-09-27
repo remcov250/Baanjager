@@ -202,6 +202,45 @@ test("evidence from the assistant and a linked CV show on the detail page", asyn
   expect(context.policy).toContain("never invent");
 });
 
+test("keeps a cover letter with the vacancy and hands it to the CV builder", async ({ page, request }, testInfo) => {
+  const headers = { Authorization: "Bearer e2e-token" };
+  const employer = `Acme ${testInfo.project.name}`;
+  const list = await (await request.get(`/api/v1/vacancies?q=${encodeURIComponent(employer)}&closed=1`, { headers })).json();
+  const id = list[0].id;
+  const letter = `Geachte heer/mevrouw, graag solliciteer ik (${testInfo.project.name}).`;
+
+  await signIn(page);
+  await page.goto(`/vacancies/${id}`);
+  await page.getByText("Motivatiebrief", { exact: true }).click();
+  await page.getByLabel("Motivatiebrief").fill(letter);
+  await page.getByRole("button", { name: "Opslaan" }).first().click();
+  await expect(page).toHaveURL(/\/vacancies\/\d+\?saved=1/);
+
+  await page.reload();
+  await page.getByText("Motivatiebrief", { exact: true }).click();
+  await expect(page.getByLabel("Motivatiebrief")).toHaveValue(letter);
+
+  const context = await (await request.get(`/api/v1/vacancies/${id}/context`, { headers })).json();
+  expect(context.application.coverLetter).toBe(letter);
+  expect(context.untrusted).toContain("application.coverLetter");
+});
+
+test("refuses the same posting twice", async ({ request }, testInfo) => {
+  const headers = { Authorization: "Bearer e2e-token" };
+  const jobId = testInfo.project.name === "mobile" ? "4400000101" : "4400000102";
+  const first = await request.post("/api/v1/vacancies", {
+    headers,
+    data: { employer: "Beta", title: "Counsel", url: `https://nl.linkedin.com/jobs/view/counsel-at-beta-${jobId}` },
+  });
+  expect(first.status()).toBe(201);
+  const again = await request.post("/api/v1/vacancies", {
+    headers,
+    data: { employer: "Beta", title: "Counsel", url: `https://www.linkedin.com/jobs/view/${jobId}/` },
+  });
+  expect(again.status()).toBe(409);
+  expect((await again.json()).existing.id).toBe((await first.json()).id);
+});
+
 test("API needs the token and has no delete", async ({ request }) => {
   const denied = await request.get("/api/v1/summary");
   expect(denied.status()).toBe(401);

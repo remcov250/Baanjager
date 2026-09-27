@@ -9,6 +9,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { LAYERS, PROFILE_KEYS, RULE_KINDS, STATUSES, VERDICTS, date, vacancyFields } from "./schema.mjs";
+import { prependCheck } from "./notes.mjs";
 import { wrapPaths } from "./untrusted.mjs";
 
 const BASE = (process.env.BAANJAGER_URL || "http://localhost:3000").replace(/\/+$/, "");
@@ -44,9 +45,9 @@ const text = (data) => ({ content: [{ type: "text", text: JSON.stringify(data, n
 
 // Free text in a vacancy row is internet content. Fence it before it reaches the
 // assistant so an instruction hidden in a posting reads as data.
-const VACANCY_UNTRUSTED = ["vacancyText", "verdictReason", "fits", "fitsNot", "doubts", "companySummary", "statusNote", "feedbackMissed", "feedbackInsight", "analysis"];
+const VACANCY_UNTRUSTED = ["vacancyText", "verdictReason", "fits", "fitsNot", "doubts", "companySummary", "statusNote", "feedbackMissed", "feedbackInsight", "analysis", "coverLetter"];
 
-const server = new McpServer({ name: "baanjager", version: "0.2.0" });
+const server = new McpServer({ name: "baanjager", version: "0.3.0" });
 
 server.registerTool(
   "get_summary",
@@ -64,7 +65,7 @@ server.registerTool(
     description:
       "List vacancies without their long text fields. By default excludes dropped and rejected ones; pass closed=true to include them. Use get_vacancy for the full posting text.",
     inputSchema: {
-      q: z.string().optional().describe("Search employer or title"),
+      q: z.string().optional().describe("Search employer, title or URL (a LinkedIn job id works too)"),
       layer: z.enum(LAYERS).optional(),
       verdict: z.enum(VERDICTS).optional(),
       status: z.enum(STATUSES).optional(),
@@ -93,10 +94,17 @@ server.registerTool(
   "add_vacancy",
   {
     description:
-      "Add a vacancy. Check list_vacancies first so the same posting isn't added twice. A verdict without a verdictReason is not useful — always explain what clashes.",
-    inputSchema: { ...vacancyFields, employer: z.string(), title: z.string() },
+      "Add a vacancy. A second row for the same posting (same URL, or the same LinkedIn job id behind a different URL) is refused with the id of the existing row; update that one instead. " +
+      "Set allowDuplicate only when one page really lists two roles. A verdict without a verdictReason is not useful — always explain what clashes.",
+    inputSchema: {
+      ...vacancyFields,
+      employer: z.string(),
+      title: z.string(),
+      allowDuplicate: z.boolean().optional().describe("Create even if a row with the same posting exists"),
+    },
   },
-  async (args) => text(await api("POST", "/vacancies", args)),
+  async ({ allowDuplicate, ...fields }) =>
+    text(await api("POST", `/vacancies${allowDuplicate ? "?allowDuplicate=1" : ""}`, fields)),
 );
 
 server.registerTool(
@@ -128,6 +136,26 @@ server.registerTool(
       ? [current.statusNote, `${stamp}: ${note}`].filter(Boolean).join("\n")
       : current.statusNote;
     return text(await api("PATCH", `/vacancies/${id}`, { status, statusNote, appliedOn, closedOn }));
+  },
+);
+
+server.registerTool(
+  "add_check_note",
+  {
+    description:
+      "Record a dated check on a vacancy (still open, closed, applicant count, no reply yet) without resending the whole status note. " +
+      "Puts 'Check YYYY-MM-DD: <note>' on top and keeps everything below. Changes nothing else; use set_status when the status itself changes.",
+    inputSchema: {
+      id: z.number().int().positive(),
+      note: z.string().min(1).max(1000).describe("What you observed, and where"),
+    },
+  },
+  async ({ id, note }) => {
+    const current = await api("GET", `/vacancies/${id}`);
+    const day = new Date().toISOString().slice(0, 10);
+    const statusNote = prependCheck(current.statusNote, note, day);
+    if (statusNote === current.statusNote) return text(current);
+    return text(await api("PATCH", `/vacancies/${id}`, { statusNote }));
   },
 );
 

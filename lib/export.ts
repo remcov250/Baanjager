@@ -37,6 +37,7 @@ export const EXPORT_COLUMNS = [
   "cv_url",
   "cv_linked_at",
   "vacancy_text",
+  "cover_letter",
   "created_at",
   "updated_at",
 ] as const;
@@ -78,6 +79,7 @@ export function vacanciesToCsv(rows: Vacancy[]): string {
     cv_url: v.cvUrl ?? "",
     cv_linked_at: v.cvLinkedAt ?? "",
     vacancy_text: v.vacancyText ?? "",
+    cover_letter: v.coverLetter ?? "",
     created_at: v.createdAt,
     updated_at: v.updatedAt,
   }));

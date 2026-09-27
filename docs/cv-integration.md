@@ -47,6 +47,7 @@ Eén leesbaar object met alles wat een CV nodig heeft, en niets meer:
                   "contractType", "languageRequirement", "salary", "url", "text" },
   "assessment": { "verdict", "matchLevel", "reason", "fits", "fitsNot", "doubts", "analysis" },
   "profile":    { "skills", "experience", "education" },
+  "application": { "coverLetter" },               // de verstuurde brief, of null
   "cv":         { "resumeId", "url", "linkedAt" }  // of null
   "untrusted":  ["vacancy.text", "assessment.reason", "..."],
   "policy":     "Evidence only. …"
@@ -57,6 +58,10 @@ Eén leesbaar object met alles wat een CV nodig heeft, en niets meer:
   `uncertain`, `poor`, `excluded`, `unassessed`. Een *near* of *uncertain* match mag gewoon
   een CV krijgen — dat is vaak juist het moment.
 - `analysis` is het gestructureerde bewijs achter het oordeel (zie hieronder).
+- `application.coverLetter` is de motivatiebrief zoals die bij deze vacature is verstuurd
+  (alleen de brief zelf, zonder naam of contactgegevens). Een CV-bouwer met een
+  motivatiebrief-sectie kan daarmee beginnen in plaats van bij niets. Het veld staat op de
+  `untrusted`-lijst, net als alle andere vrije tekst.
 - Status-notities, terugkoppeling, bronnen en criteria zitten er **niet** in; die heeft een
   CV niet nodig. Van het profiel gaan alleen vaardigheden, ervaring en opleiding mee.
 - `policy` reist mee met de data, zodat elke ontvanger de regels ziet: alleen bewijs, niets
@@ -226,7 +231,8 @@ Baanjager, no outbound requests.
 
 - `GET /api/v1/vacancies/:id/context` / MCP `get_cv_context` — vacancy, assessment
   (`matchLevel`: strong/near/uncertain/poor/excluded/unassessed, structured `analysis`),
-  the candidate's skills/experience/education, an existing `cv` link, an `untrusted` list
+  the candidate's skills/experience/education, the cover letter already sent for this
+  vacancy (`application.coverLetter`), an existing `cv` link, an `untrusted` list
   and a `policy` (evidence only, never invent, unknown is not a gap).
 - `PUT /api/v1/vacancies/:id/cv` / MCP `link_cv` — stores `resumeId`, `url`, `linkedAt`;
   idempotent; `resumeId: null` clears.

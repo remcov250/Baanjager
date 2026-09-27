@@ -124,6 +124,7 @@ export const vacancyInput = z.object({
   feedbackInsight: text(5000),
 
   vacancyText: text(100_000),
+  coverLetter: text(20_000),
 });
 
 export type VacancyInput = z.infer<typeof vacancyInput>;

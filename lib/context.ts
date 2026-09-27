@@ -58,6 +58,7 @@ export const UNTRUSTED_PATHS = [
   "profile.skills",
   "profile.experience",
   "profile.education",
+  "application.coverLetter",
 ] as const;
 
 export const CONTEXT_PROFILE_KEYS = ["skills", "experience", "education"] as const satisfies readonly ProfileKey[];
@@ -87,6 +88,9 @@ export type CvContext = {
     analysis: Analysis | null;
   };
   profile: Record<(typeof CONTEXT_PROFILE_KEYS)[number], string>;
+  // What was already written for this application: a CV builder with a cover
+  // letter (Reactive Resume) can start from it instead of from nothing.
+  application: { coverLetter: string | null };
   cv: { resumeId: string; url: string | null; linkedAt: string | null } | null;
   untrusted: readonly string[];
   policy: string;
@@ -122,6 +126,7 @@ export function buildCvContext(vacancy: Vacancy, profile: Record<ProfileKey, str
       experience: profile.experience,
       education: profile.education,
     },
+    application: { coverLetter: vacancy.coverLetter },
     cv: vacancy.cvResumeId
       ? { resumeId: vacancy.cvResumeId, url: vacancy.cvUrl, linkedAt: vacancy.cvLinkedAt }
       : null,

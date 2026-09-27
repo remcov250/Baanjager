@@ -29,6 +29,13 @@
       "when": 1789735864557,
       "tag": "0003_null_unstated_office_days",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1790525963688,
+      "tag": "0004_cover_letter",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ### Toegevoegd
 
+- **Motivatiebrief bij de vacature.** Een nieuw veld `coverLetter` (migratie `0004`, alleen
+  een kolom erbij) voor de brief zoals je hem verstuurde, zodat je hem de volgende keer kunt
+  hergebruiken. In het formulier, in de export (`cover_letter`), in de MCP-tools en in
+  `get_cv_context` als `application.coverLetter`. Alleen de brief zelf: naam en
+  contactgegevens horen er niet in.
+- **Geen dubbele vacatures meer.** `POST /api/v1/vacancies` (MCP `add_vacancy`) weigert een
+  tweede rij voor dezelfde vacature met `409` en het id van de bestaande. Een LinkedIn-job
+  telt als dezelfde bij hetzelfde job-id, welke URL-variant er ook gebruikt wordt;
+  andere links worden vergeleken zonder query, `www.` en afsluitende `/`.
+  `?allowDuplicate=1` (MCP `allowDuplicate`) voor een pagina die echt twee rollen noemt.
+  Zoeken (`q`) vindt nu ook op URL of LinkedIn-job-id.
+- **MCP `add_check_note`.** Zet "Check JJJJ-MM-DD: …" bovenaan de statusnotitie en laat de
+  rest staan, zodat een assistent bij een controle niet de hele notitie hoeft terug te
+  sturen. Dezelfde controle op dezelfde dag twee keer verandert niets.
+
 - **Een CV uit een match.** `GET /api/v1/vacancies/:id/context` (MCP `get_cv_context`)
   geeft alles wat een CV-bouwer nodig heeft: vacature, oordeel als `matchLevel`, bewijs
   per eis, de drie profielsecties, een eventueel al gekoppeld CV, een `untrusted`-lijst en
