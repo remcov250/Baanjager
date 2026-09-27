@@ -227,7 +227,9 @@ test("keeps a cover letter with the vacancy and hands it to the CV builder", asy
 
 test("refuses the same posting twice", async ({ request }, testInfo) => {
   const headers = { Authorization: "Bearer e2e-token" };
-  const jobId = testInfo.project.name === "mobile" ? "4400000101" : "4400000102";
+  // Unique per project and per attempt: CI runs mobile, iphone and desktop
+  // against one database, and a retry must not trip over the first attempt.
+  const jobId = `44${Date.now()}${testInfo.retry}`;
   const first = await request.post("/api/v1/vacancies", {
     headers,
     data: { employer: "Beta", title: "Counsel", url: `https://nl.linkedin.com/jobs/view/counsel-at-beta-${jobId}` },
