@@ -2,11 +2,29 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { postingKey } from "@/lib/vacancies";
 
 // The same posting reaches Baanjager under many URLs. A second row for it
 // splits the history of one vacancy over two, so the API refuses it and says
 // which row already has it.
+
+const TOKEN = "test-token";
+
+// lib/db reads DATA_DIR when it is first imported, so everything that reaches
+// it is imported only after the temp directory is set. A static import would
+// write into ./data and collide with itself on the next run.
+let dataDir: string;
+let postingKey: typeof import("@/lib/vacancies").postingKey;
+let route: typeof import("@/app/api/v1/vacancies/route");
+
+beforeAll(async () => {
+  dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "baanjager-dupes-"));
+  process.env.DATA_DIR = dataDir;
+  process.env.API_TOKEN = TOKEN;
+  ({ postingKey } = await import("@/lib/vacancies"));
+  route = await import("@/app/api/v1/vacancies/route");
+});
+
+afterAll(() => fs.rmSync(dataDir, { recursive: true, force: true }));
 
 describe("postingKey", () => {
   it("reduces every LinkedIn URL for one job to its numeric id", () => {
@@ -37,7 +55,6 @@ describe("postingKey", () => {
   });
 });
 
-const TOKEN = "test-token";
 const auth = { Authorization: `Bearer ${TOKEN}` };
 const post = (query: string, body: unknown) =>
   new Request(`http://app.test/api/v1/vacancies${query}`, {
@@ -46,17 +63,6 @@ const post = (query: string, body: unknown) =>
     body: JSON.stringify(body),
   });
 
-let dataDir: string;
-let route: typeof import("@/app/api/v1/vacancies/route");
-
-beforeAll(async () => {
-  dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "baanjager-dupes-"));
-  process.env.DATA_DIR = dataDir;
-  process.env.API_TOKEN = TOKEN;
-  route = await import("@/app/api/v1/vacancies/route");
-});
-
-afterAll(() => fs.rmSync(dataDir, { recursive: true, force: true }));
 
 describe("POST /api/v1/vacancies with a posting that is already there", () => {
   it("refuses the second row and names the first", async () => {
