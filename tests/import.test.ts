@@ -140,7 +140,7 @@ describe("rowToVacancy", () => {
 });
 
 describe("importRows + parseCsv", () => {
-  it("skips duplicates and counts what it added", () => {
+  it("skips duplicates, says why, and counts what it added", () => {
     const csv = [
       '"werkgever","titel","laag","oordeel","status"',
       '"Acme","Analyst","Lokaal (Zwolle)","Match","Nieuw"',
@@ -151,8 +151,8 @@ describe("importRows + parseCsv", () => {
     const inserted: string[] = [];
     const seen = new Set<string>();
     const result = importRows(
-      parseCsv(csv),
-      (e, t) => seen.has(`${e}|${t}`),
+      parseCsv(csv).rows,
+      (v) => (seen.has(`${v.employer}|${v.title}`) ? "already there" : undefined),
       (v) => {
         seen.add(`${v.employer}|${v.title}`);
         inserted.push(v.employer);
@@ -161,10 +161,48 @@ describe("importRows + parseCsv", () => {
     expect(inserted).toEqual(["Acme", "Beta"]);
     expect(result.added).toBe(2);
     expect(result.skipped).toBe(2);
-    expect(result.errors).toHaveLength(1);
+    expect(result.errors).toEqual(["row 3: already there", "row 5: missing employer or title"]);
   });
+
+  it("skips a row that fails validation and names the field", () => {
+    const { rows } = parseCsv(`employer,title\nAcme,${"x".repeat(301)}\n`);
+    const result = importRows(rows, () => undefined, () => {}, (v) => (v.title.length > 300 ? "title: too long" : undefined));
+    expect(result).toMatchObject({ added: 0, skipped: 1, errors: ["row 2: title: too long"] });
+  });
+
   it("strips a BOM and lowercases headers", () => {
-    const rows = parseCsv("﻿Employer,Title\nAcme,Analyst\n");
+    const { rows } = parseCsv("\uFEFFEmployer,Title\nAcme,Analyst\n");
     expect(rows[0]).toEqual({ employer: "Acme", title: "Analyst" });
+  });
+
+  it("reports a broken quote instead of swallowing the rest of the file", () => {
+    const { problems } = parseCsv('employer,title\n"Acme,Analyst\nBeta,Planner\n');
+    expect(problems.length).toBeGreaterThan(0);
+  });
+
+  it("lets rows with a missing or extra cell through", () => {
+    const { rows, problems } = parseCsv("employer,title,url\nAcme,Analyst\nBeta,Planner,https://x.example,extra\n");
+    expect(problems).toEqual([]);
+    expect(rows.map((r) => r.employer)).toEqual(["Acme", "Beta"]);
+  });
+});
+
+describe("reading the app's own export back in", () => {
+  it("drops the ' the export put before a formula", () => {
+    const v = rowToVacancy({ employer: "'=Acme", title: "'-Counsel", verdict_reason: "'@team" });
+    expect(v).toMatchObject({ employer: "=Acme", title: "-Counsel", verdictReason: "@team" });
+  });
+
+  it("doesn't copy an app status value into the note", () => {
+    expect(rowToVacancy({ employer: "Acme", title: "Analyst", status: "applied", status_note: "x" })).toMatchObject({
+      status: "applied",
+      statusNote: "x",
+    });
+  });
+
+  it("drops a date that doesn't exist", () => {
+    expect(normalizeDate("2024-13-45")).toBeNull();
+    expect(normalizeDate("31/02/2024")).toBeNull();
+    expect(normalizeDate("29-02-2024")).toBe("2024-02-29");
   });
 });

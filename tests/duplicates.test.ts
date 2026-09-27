@@ -125,3 +125,30 @@ describe("search", () => {
     expect(titles).toEqual(["senior_dev"]);
   });
 });
+
+describe("CSV import against the database", () => {
+  it("keeps two postings with the same title apart by link and skips a repeat", async () => {
+    const { importVacanciesCsv } = await import("@/lib/vacancies");
+    const csv = [
+      "employer,title,url",
+      "Gamma,Jurist,https://careers.gamma.example/jobs/1",
+      "Gamma,Jurist,https://careers.gamma.example/jobs/2",
+      "Gamma,Jurist,https://careers.gamma.example/jobs/1/",
+      "Gamma,Paralegal,",
+      "Gamma,Paralegal,",
+    ].join("\n");
+    const result = importVacanciesCsv(csv);
+    expect(result.added).toBe(3);
+    expect(result.skipped).toBe(2);
+    expect(result.errors).toHaveLength(2);
+    expect(result.errors[0]).toMatch(/^row 4: already there as #\d+$/);
+  });
+
+  it("refuses a file with a broken quote and adds nothing", async () => {
+    const { importVacanciesCsv, listVacancySummaries } = await import("@/lib/vacancies");
+    const before = listVacancySummaries({ closed: true }).length;
+    const result = importVacanciesCsv('employer,title\n"Delta,Jurist\nEpsilon,Jurist\n');
+    expect(result).toMatchObject({ added: 0, rejected: true });
+    expect(listVacancySummaries({ closed: true })).toHaveLength(before);
+  });
+});

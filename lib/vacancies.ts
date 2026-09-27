@@ -11,6 +11,7 @@ import {
 } from "@/db/schema";
 import { getDb, schema } from "@/lib/db";
 import { importRows, parseCsv, type ImportResult } from "@/lib/import";
+import { vacancyInput } from "@/lib/validation";
 
 const { vacancies } = schema;
 
@@ -208,12 +209,32 @@ export function vacancyExists(employer: string, title: string): boolean {
 // One transaction for the whole file: a thousand rows is one commit instead of a
 // thousand, and a failure halfway leaves nothing behind. Shared by the settings
 // page and the API so both import exactly the same way.
+//
+// A row with a link is a duplicate when that posting is already there (the same
+// check the API uses); a row without one when employer and title match. Two
+// real postings with the same title at one employer, on different links, both
+// come in. Every row goes through the same validation as the form and the API.
 export function importVacanciesCsv(text: string): ImportResult {
-  const rows = parseCsv(text);
+  const { rows, problems } = parseCsv(text);
+  if (problems.length) return { added: 0, skipped: 0, errors: problems, rejected: true };
   return getDb().transaction(() =>
-    importRows(rows, vacancyExists, (v) => {
-      createVacancy(v);
-    }),
+    importRows(
+      rows,
+      (v) => {
+        const existing = v.url ? findVacancyByPosting(v.url) : vacancyExists(v.employer, v.title);
+        if (!existing) return undefined;
+        return typeof existing === "object" ? `already there as #${existing.id}` : "already there";
+      },
+      (v) => {
+        createVacancy(v);
+      },
+      (v) => {
+        const parsed = vacancyInput.safeParse(v);
+        if (parsed.success) return undefined;
+        const issue = parsed.error.issues[0];
+        return `${issue.path.join(".") || "row"}: ${issue.message}`;
+      },
+    ),
   );
 }
 

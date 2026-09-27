@@ -24,6 +24,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ### Verbeterd
 
+- **CSV-import.** Bestanden tot 10 MB komen nu echt door (Next weigerde alles boven 1 MB).
+  Een open aanhalingsteken breekt de import af in plaats van de rest van het bestand in één
+  veld te stoppen; er wordt dan niets toegevoegd. Dubbelen worden herkend zoals bij de API:
+  op link, en zonder link op werkgever + functie, dus twee echte vacatures met dezelfde titel
+  komen allebei binnen. Elke rij gaat door dezelfde validatie als het formulier, datums die
+  niet bestaan vallen weg, en de pagina zegt per overgeslagen rij waarom. De `'` die de
+  export voor een formule zet, gaat er bij het inlezen weer af. `POST /api/v1/import` leest
+  nooit meer dan 10 MB in. De import is voor een bestaande spreadsheet; een back-up is de map
+  `data/` (README).
+
 - **Dubbele-vacaturecheck houdt de job-id in de query aan.** `viewjob?jk=…` (Indeed en
   vergelijkbare sites) telde als één vacature voor de hele site. Alleen trackingparameters
   (`utm_*`, `trk`, `refId`, …) vallen weg; LinkedIn-links met `?currentJobId=` worden
