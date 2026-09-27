@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, like, notInArray, or, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, inArray, notInArray, or, sql, type AnyColumn, type SQL } from "drizzle-orm";
 import {
   LAYERS,
   STATUSES,
@@ -58,12 +58,18 @@ const summaryColumns = {
 
 export type VacancySummary = Pick<Vacancy, keyof typeof summaryColumns>;
 
+// A substring match where % and _ in the text are just characters, not LIKE
+// wildcards: "senior_dev" finds "senior_dev", not "seniordev".
+function contains(column: AnyColumn, text: string): SQL {
+  const needle = `%${text.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+  return sql`${column} LIKE ${needle} ESCAPE '\\'`;
+}
+
 function whereFor(filters: VacancyFilters): SQL | undefined {
   const where: SQL[] = [];
 
   if (filters.q) {
-    const needle = `%${filters.q.replace(/[%_]/g, "")}%`;
-    where.push(or(like(vacancies.employer, needle), like(vacancies.title, needle), like(vacancies.url, needle))!);
+    where.push(or(contains(vacancies.employer, filters.q), contains(vacancies.title, filters.q), contains(vacancies.url, filters.q))!);
   }
   if (filters.layer && (LAYERS as readonly string[]).includes(filters.layer)) {
     where.push(eq(vacancies.layer, filters.layer as Layer));
@@ -139,8 +145,13 @@ export function setCvLink(
 
 // Two links point at the same posting when their normalised keys match. A
 // LinkedIn job has one numeric id behind many URLs (nl./de./www., with or
-// without the slug, with tracking parameters), so the id is the key. Any other
-// URL is compared without scheme, "www.", query, fragment and trailing slash.
+// without the slug, /jobs/view/<id> or ?currentJobId=<id>), so the id is the
+// key. Any other URL is compared without scheme, "www.", fragment, trailing
+// slash and tracking parameters. The rest of the query stays: on many boards
+// it is the job id (Indeed's viewjob?jk=…), and dropping it made every job on
+// such a board look like the first one.
+const TRACKING_PARAM = /^(utm(_.*)?|trk.*|refid|ref|src|fbclid|gclid|msclkid|mc_[a-z]+|_hs[a-z]+|sessionid|originalsubdomain)$/i;
+
 export function postingKey(url: string | null | undefined): string | null {
   if (!url) return null;
   let parsed: URL;
@@ -151,10 +162,17 @@ export function postingKey(url: string | null | undefined): string | null {
   }
   const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
   if (host === "linkedin.com" || host.endsWith(".linkedin.com")) {
-    const id = parsed.pathname.match(/\/jobs\/view\/(?:[^/]*?-)?(\d{6,})\/?$/)?.[1];
+    const id =
+      parsed.pathname.match(/\/jobs\/view\/(?:[^/]*?-)?(\d{6,})\/?$/)?.[1] ??
+      parsed.searchParams.get("currentJobId")?.match(/^\d{6,}$/)?.[0];
     if (id) return `linkedin:${id}`;
   }
-  return `${host}${parsed.pathname.replace(/\/+$/, "").toLowerCase()}`;
+  const query = [...parsed.searchParams]
+    .filter(([name, value]) => value !== "" && !TRACKING_PARAM.test(name))
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([name, value]) => `${name}=${value}`)
+    .join("&");
+  return `${host}${parsed.pathname.replace(/\/+$/, "").toLowerCase()}${query ? `?${query}` : ""}`;
 }
 
 // The vacancy that already holds this posting, if any. Used to refuse a second
@@ -167,7 +185,7 @@ export function findVacancyByPosting(url: string | null | undefined): { id: numb
   const candidates = getDb()
     .select({ id: vacancies.id, employer: vacancies.employer, title: vacancies.title, url: vacancies.url })
     .from(vacancies)
-    .where(numeric ? like(vacancies.url, `%${numeric}%`) : sql`${vacancies.url} IS NOT NULL`)
+    .where(contains(vacancies.url, numeric ?? key.split(/[/?]/)[0]))
     .all();
   const hit = candidates.find((row) => postingKey(row.url) === key);
   return hit ? { id: hit.id, employer: hit.employer, title: hit.title } : undefined;
@@ -199,11 +217,17 @@ export function importVacanciesCsv(text: string): ImportResult {
   );
 }
 
+// The picker on the criteria page. Vacancies are never deleted, so "all of
+// them" grows forever; the most recently touched ones are the ones a new rule
+// comes from. An older one is still reachable via "make a rule" on its page.
+export const VACANCY_OPTIONS_LIMIT = 200;
+
 export function vacancyOptions(): { id: number; employer: string; title: string }[] {
   return getDb()
     .select({ id: vacancies.id, employer: vacancies.employer, title: vacancies.title })
     .from(vacancies)
-    .orderBy(desc(vacancies.id))
+    .orderBy(desc(vacancies.updatedAt), desc(vacancies.id))
+    .limit(VACANCY_OPTIONS_LIMIT)
     .all();
 }
 

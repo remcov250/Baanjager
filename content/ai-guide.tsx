@@ -36,7 +36,7 @@ claude mcp add baanjager \\
   "mcpServers": {
     "baanjager": {
       "command": "node",
-      "args": ["/pad/naar/Baanjager/mcp/server.mjs"],
+      "args": ["${nl ? "/pad/naar" : "/path/to"}/Baanjager/mcp/server.mjs"],
       "env": { "BAANJAGER_URL": "${origin}", "BAANJAGER_TOKEN": "<API_TOKEN>" }
     }
   }

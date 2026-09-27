@@ -10,7 +10,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { LAYERS, PROFILE_KEYS, RULE_KINDS, STATUSES, VERDICTS, date, vacancyFields } from "./schema.mjs";
 import { prependCheck } from "./notes.mjs";
-import { wrapPaths } from "./untrusted.mjs";
+import { CONTEXT_UNTRUSTED, SUMMARY_UNTRUSTED, VACANCY_LIST_UNTRUSTED, VACANCY_UNTRUSTED, wrapPaths } from "./untrusted.mjs";
 
 const BASE = (process.env.BAANJAGER_URL || "http://localhost:3000").replace(/\/+$/, "");
 const TOKEN = process.env.BAANJAGER_TOKEN;
@@ -44,8 +44,9 @@ async function api(method, path, body) {
 const text = (data) => ({ content: [{ type: "text", text: JSON.stringify(data, null, 2) }] });
 
 // Free text in a vacancy row is internet content. Fence it before it reaches the
-// assistant so an instruction hidden in a posting reads as data.
-const VACANCY_UNTRUSTED = ["vacancyText", "verdictReason", "fits", "fitsNot", "doubts", "companySummary", "statusNote", "feedbackMissed", "feedbackInsight", "analysis", "coverLetter"];
+// assistant so an instruction hidden in a posting reads as data. Every tool that
+// returns vacancy data goes through one of these.
+const vacancy = (data) => text(wrapPaths(data, VACANCY_UNTRUSTED));
 
 const server = new McpServer({ name: "baanjager", version: "0.3.0" });
 
@@ -56,7 +57,7 @@ server.registerTool(
       "Start here. Counts per status, vacancies still awaiting a verdict, open applications, on-hold items and the most recently updated rows.",
     inputSchema: {},
   },
-  async () => text(await api("GET", "/summary")),
+  async () => text(wrapPaths(await api("GET", "/summary"), SUMMARY_UNTRUSTED)),
 );
 
 server.registerTool(
@@ -77,7 +78,7 @@ server.registerTool(
     for (const [k, v] of Object.entries(args)) {
       if (v !== undefined && v !== "") params.set(k, String(v === true ? 1 : v));
     }
-    return text(await api("GET", `/vacancies?${params}`));
+    return text(wrapPaths(await api("GET", `/vacancies?${params}`), VACANCY_LIST_UNTRUSTED));
   },
 );
 
@@ -87,7 +88,7 @@ server.registerTool(
     description: "Full detail of one vacancy, including the rules that were learned from it.",
     inputSchema: { id: z.number().int().positive() },
   },
-  async ({ id }) => text(wrapPaths(await api("GET", `/vacancies/${id}`), VACANCY_UNTRUSTED)),
+  async ({ id }) => vacancy(await api("GET", `/vacancies/${id}`)),
 );
 
 server.registerTool(
@@ -104,7 +105,7 @@ server.registerTool(
     },
   },
   async ({ allowDuplicate, ...fields }) =>
-    text(await api("POST", `/vacancies${allowDuplicate ? "?allowDuplicate=1" : ""}`, fields)),
+    vacancy(await api("POST", `/vacancies${allowDuplicate ? "?allowDuplicate=1" : ""}`, fields)),
 );
 
 server.registerTool(
@@ -113,7 +114,7 @@ server.registerTool(
     description: "Update any fields of a vacancy. Use set_status for plain status changes.",
     inputSchema: { id: z.number().int().positive(), ...vacancyFields },
   },
-  async ({ id, ...fields }) => text(await api("PATCH", `/vacancies/${id}`, fields)),
+  async ({ id, ...fields }) => vacancy(await api("PATCH", `/vacancies/${id}`, fields)),
 );
 
 server.registerTool(
@@ -135,7 +136,7 @@ server.registerTool(
     const statusNote = note
       ? [current.statusNote, `${stamp}: ${note}`].filter(Boolean).join("\n")
       : current.statusNote;
-    return text(await api("PATCH", `/vacancies/${id}`, { status, statusNote, appliedOn, closedOn }));
+    return vacancy(await api("PATCH", `/vacancies/${id}`, { status, statusNote, appliedOn, closedOn }));
   },
 );
 
@@ -154,8 +155,8 @@ server.registerTool(
     const current = await api("GET", `/vacancies/${id}`);
     const day = new Date().toISOString().slice(0, 10);
     const statusNote = prependCheck(current.statusNote, note, day);
-    if (statusNote === current.statusNote) return text(current);
-    return text(await api("PATCH", `/vacancies/${id}`, { statusNote }));
+    if (statusNote === current.statusNote) return vacancy(current);
+    return vacancy(await api("PATCH", `/vacancies/${id}`, { statusNote }));
   },
 );
 
@@ -222,7 +223,8 @@ server.registerTool(
   },
   async ({ id }) => {
     const context = await api("GET", `/vacancies/${id}/context`);
-    return text(wrapPaths(context, context.untrusted ?? []));
+    // The fixed list decides; whatever the response adds is fenced as well.
+    return text(wrapPaths(context, [...CONTEXT_UNTRUSTED, ...(context.untrusted ?? [])]));
   },
 );
 

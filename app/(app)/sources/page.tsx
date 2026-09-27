@@ -1,7 +1,8 @@
 import { LAYERS } from "@/db/schema";
 import { createSourceAction, deleteSourceAction, toggleSourceAction, updateSourceAction } from "@/app/(app)/sources/actions";
 import { Icon } from "@/components/icons";
-import { Field, Select } from "@/components/ui";
+import { ConfirmButton } from "@/components/confirm-button";
+import { Field, HTTP_URL_PATTERN, NOT_BLANK_PATTERN, Select } from "@/components/ui";
 import { getT } from "@/lib/i18n";
 import { listSources } from "@/lib/sources";
 
@@ -23,9 +24,10 @@ export default async function SourcesPage({
       </div>
 
       {params.saved ? <p className="notice">{t("common.saved")}</p> : null}
-      {params.error ? <p className="notice">{t("common.validationError")}</p> : null}
+      {params.error ? <p className="notice notice-error" role="alert">{t("common.validationError")}</p> : null}
 
-      <details className="fold card py-3" open={Boolean(params.error)}>
+      {/* A failed edit comes back with open=<id>: that source opens, not this fold. */}
+      <details className="fold card py-3" open={Boolean(params.error) && !openId}>
         <summary>
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white">
             <Icon.plus className="h-4 w-4" />
@@ -39,14 +41,14 @@ export default async function SourcesPage({
               <Select name="layer" defaultValue="local" options={LAYERS} t={t} prefix="layer" />
             </Field>
             <Field label={t("sources.label")}>
-              <input type="text" name="label" required maxLength={200} />
+              <input type="text" name="label" required pattern={NOT_BLANK_PATTERN} maxLength={200} />
             </Field>
             <Field label={t("sources.cadence")} help={t("sources.cadenceHelp")}>
               <input type="text" name="cadence" maxLength={100} />
             </Field>
           </div>
           <Field label={t("sources.url")} help={t("sources.urlHelp")}>
-            <input type="url" name="url" maxLength={2000} />
+            <input type="url" name="url" pattern={HTTP_URL_PATTERN} maxLength={2000} />
           </Field>
           <Field label={t("sources.note")} help={t("sources.noteHelp")}>
             <input type="text" name="note" maxLength={2000} />
@@ -93,14 +95,14 @@ export default async function SourcesPage({
                           <Select name="layer" defaultValue={s.layer} options={LAYERS} t={t} prefix="layer" />
                         </Field>
                         <Field label={t("sources.label")}>
-                          <input type="text" name="label" defaultValue={s.label} required maxLength={200} />
+                          <input type="text" name="label" defaultValue={s.label} required pattern={NOT_BLANK_PATTERN} maxLength={200} />
                         </Field>
                         <Field label={t("sources.cadence")}>
                           <input type="text" name="cadence" defaultValue={s.cadence ?? ""} maxLength={100} />
                         </Field>
                       </div>
                       <Field label={t("sources.url")}>
-                        <input type="url" name="url" defaultValue={s.url ?? ""} maxLength={2000} />
+                        <input type="url" name="url" defaultValue={s.url ?? ""} pattern={HTTP_URL_PATTERN} maxLength={2000} />
                       </Field>
                       <Field label={t("sources.note")}>
                         <input type="text" name="note" defaultValue={s.note ?? ""} maxLength={2000} />
@@ -110,9 +112,13 @@ export default async function SourcesPage({
                         <button formAction={toggleSourceAction} name="active" value={s.active ? "0" : "1"} className="btn btn-sm">
                           {s.active ? t("sources.deactivate") : t("sources.activate")}
                         </button>
-                        <button formAction={deleteSourceAction} className="btn btn-sm ml-auto text-rose-700 dark:text-rose-300">
+                        <ConfirmButton
+                          formAction={deleteSourceAction}
+                          message={t("sources.deleteConfirm", { label: s.label })}
+                          className="btn btn-sm ml-auto text-rose-700 dark:text-rose-300"
+                        >
                           {t("common.delete")}
-                        </button>
+                        </ConfirmButton>
                       </div>
                     </form>
                   </div>

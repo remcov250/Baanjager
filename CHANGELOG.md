@@ -5,6 +5,44 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ## [Unreleased]
 
+### Beveiliging
+
+- **Alles wat een MCP-tool over een vacature teruggeeft is nu omheind.** Voorheen alleen
+  `get_vacancy`; nu ook `add_vacancy`, `update_vacancy`, `set_status`, `add_check_note`,
+  `list_vacancies` en `get_summary`. Titel, werkgever, locatie en de remote-notitie staan
+  voortaan ook op de lijst. `get_cv_context` gebruikt een vaste lijst aan de MCP-kant en
+  vertrouwt niet meer alleen op de lijst die de server meestuurt.
+- **CSV-export ontsmet ook formules in teksten van meerdere regels.** Papaparse' eigen
+  controle sloeg elke waarde met een regeleinde over, dus een vacaturetekst die met `=`
+  begon, ging ongewijzigd de spreadsheet in.
+- **Login-rate-limiting per gebruikersnaam.** Eén gedeelde teller liet iedereen die `/login`
+  kon bereiken de eigenaar buitensluiten. Achter een proxy (`TRUST_PROXY=true`) telt nu het
+  adres dat de proxy zelf toevoegde, niet het eerste dat de client kan verzinnen; verlopen
+  tellers worden opgeruimd. Wachtwoord wijzigen heeft dezelfde grens.
+- Het eerste account aanmaken is één transactie: twee gelijktijdige `/setup`-posts maken
+  niet meer twee accounts. De API-token-vergelijking lekt de lengte van het token niet meer.
+
+### Verbeterd
+
+- **Dubbele-vacaturecheck houdt de job-id in de query aan.** `viewjob?jk=…` (Indeed en
+  vergelijkbare sites) telde als één vacature voor de hele site. Alleen trackingparameters
+  (`utm_*`, `trk`, `refId`, …) vallen weg; LinkedIn-links met `?currentJobId=` worden
+  herkend.
+- **Filters op de vacaturelijst volgen de URL.** Na Terug of een tik op "Vacatures" toonden
+  de keuzelijsten nog het oude filter terwijl de lijst ongefilterd was.
+- **De vacaturelijst toont 100 rijen per keer** met "Toon meer"; de teller blijft het totaal.
+  De bronvacature-keuze bij criteria toont de 200 laatst bijgewerkte.
+- **Formulieren houden je invoer vast.** Een link die niet met http(s) begint of een veld met
+  alleen spaties wordt in de browser al tegengehouden, in plaats van na versturen alles te
+  wissen. Foutmeldingen zien er anders uit dan "Opgeslagen".
+- Een bron verwijderen vraagt eerst om bevestiging. Een mislukte bewerking van een bron opent
+  die bron weer, niet het toevoegformulier.
+- Zoeken behandelt `%` en `_` als gewone tekens. Een regel koppelen aan een vacature-id dat
+  niet bestaat geeft een melding (API: `400`) in plaats van een serverfout.
+- Taalknoppen zijn op de telefoon een volwaardig tikdoel en melden welke taal actief is; het
+  tabblad "Meer" licht op bij Instellingen, Bronnen en AI. Hulpteksten zijn aan hun veld
+  gekoppeld voor schermlezers. De paginabeschrijving volgt de taal.
+
 ### Toegevoegd
 
 - **Motivatiebrief bij de vacature.** Een nieuw veld `coverLetter` (migratie `0004`, alleen
@@ -15,7 +53,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 - **Geen dubbele vacatures meer.** `POST /api/v1/vacancies` (MCP `add_vacancy`) weigert een
   tweede rij voor dezelfde vacature met `409` en het id van de bestaande. Een LinkedIn-job
   telt als dezelfde bij hetzelfde job-id, welke URL-variant er ook gebruikt wordt;
-  andere links worden vergeleken zonder query, `www.` en afsluitende `/`.
+  andere links worden vergeleken zonder trackingparameters, `www.` en afsluitende `/`.
   `?allowDuplicate=1` (MCP `allowDuplicate`) voor een pagina die echt twee rollen noemt.
   Zoeken (`q`) vindt nu ook op URL of LinkedIn-job-id.
 - **MCP `add_check_note`.** Zet "Check JJJJ-MM-DD: …" bovenaan de statusnotitie en laat de

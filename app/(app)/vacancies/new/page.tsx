@@ -21,7 +21,7 @@ export default async function NewVacancyPage({
         <h1>{t("vacancies.new")}</h1>
         <button form="vacancy-form" className="btn btn-primary ml-auto hidden lg:inline-flex">{t("common.save")}</button>
       </header>
-      {error ? <p className="notice">{t("common.validationError")}</p> : null}
+      {error ? <p className="notice notice-error" role="alert">{t("common.validationError")}</p> : null}
       <VacancyForm t={t} locale={locale} action={createVacancyAction} />
     </div>
   );

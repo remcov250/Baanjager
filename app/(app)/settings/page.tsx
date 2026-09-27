@@ -7,7 +7,7 @@ import { MIN_PASSWORD_LENGTH, requireSession } from "@/lib/auth";
 import { getTheme } from "@/lib/theme";
 import { getT } from "@/lib/i18n";
 
-const PASSWORD_MESSAGES = ["changed", "wrong", "short", "mismatch"] as const;
+const PASSWORD_MESSAGES = ["changed", "wrong", "rate", "short", "mismatch"] as const;
 
 export default async function SettingsPage({
   searchParams,
@@ -27,6 +27,7 @@ export default async function SettingsPage({
     ? {
         changed: t("settings.passwordChanged"),
         wrong: t("settings.passwordWrong"),
+        rate: t("settings.passwordRate"),
         short: t("settings.passwordShort"),
         mismatch: t("settings.passwordMismatch"),
       }[passwordCode]

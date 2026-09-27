@@ -4,6 +4,8 @@ import { APP_NAME } from "@/lib/app";
 import { MIN_PASSWORD_LENGTH, userCount } from "@/lib/auth";
 import { getT } from "@/lib/i18n";
 
+const SETUP_ERRORS = ["username", "short", "mismatch"] as const;
+
 export default async function SetupPage({
   searchParams,
 }: {
@@ -11,7 +13,10 @@ export default async function SetupPage({
 }) {
   if (userCount() > 0) redirect("/login");
   const { t } = await getT();
-  const { error } = await searchParams;
+  // Only the codes the setup action sends get a message; anything else in the
+  // URL would otherwise show up as a raw key.
+  const { error: code } = await searchParams;
+  const error = SETUP_ERRORS.find((known) => known === code);
 
   return (
     <div className="card">
@@ -32,7 +37,7 @@ export default async function SetupPage({
           <label htmlFor="password_repeat">{t("setup.passwordRepeat")}</label>
           <input id="password_repeat" type="password" name="password_repeat" autoComplete="new-password" required />
         </div>
-        {error ? <p className="text-sm text-rose-700 dark:text-rose-300">{t(`setup.error.${error}`)}</p> : null}
+        {error ? <p className="text-sm text-rose-700 dark:text-rose-300" role="alert">{t(`setup.error.${error}`)}</p> : null}
         <button className="btn btn-primary w-full justify-center">{t("setup.submit")}</button>
       </form>
     </div>

@@ -14,8 +14,9 @@ reporting on this repository instead.
 - **Eén account**, aangemaakt bij de eerste start. Wachtwoord gehasht met scrypt
   (N=16384). Sessies zijn rijen in de database met een vervaldatum; wachtwoord wijzigen
   verwijdert ze allemaal.
-- **Login rate-limiting**: 10 pogingen per 15 minuten, per IP als `TRUST_PROXY=true`,
-  anders globaal. In-memory, dus per container.
+- **Login rate-limiting**: 10 pogingen per 15 minuten per gebruikersnaam, en per IP als
+  `TRUST_PROXY=true` (het laatste adres in `X-Forwarded-For`, het adres dat je eigen proxy
+  toevoegde). Wachtwoord wijzigen valt onder dezelfde grens. In-memory, dus per container.
 - **Cookies**: `HttpOnly`, `SameSite=Lax`, `Secure` als de proxy `X-Forwarded-Proto: https`
   meestuurt of `COOKIE_SECURE=true` gezet is.
 - **Security-headers** op elke response: CSP (alleen eigen origin, `frame-ancestors 'none'`),

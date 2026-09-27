@@ -43,7 +43,19 @@ describe("postingKey", () => {
     );
   });
 
-  it("compares other URLs without scheme, www, query, fragment or trailing slash", () => {
+  it("reads the job id from a LinkedIn search or collection link", () => {
+    expect(postingKey("https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4467292898&trk=x")).toBe(
+      "linkedin:4467292898",
+    );
+  });
+
+  it("keeps a job id that lives in the query, so two jobs on one board stay apart", () => {
+    const first = postingKey("https://nl.indeed.com/viewjob?jk=abc123&from=serp");
+    expect(first).not.toBe(postingKey("https://nl.indeed.com/viewjob?jk=def456&from=serp"));
+    expect(first).toBe(postingKey("https://nl.indeed.com/viewjob?from=serp&jk=abc123&utm_source=mail"));
+  });
+
+  it("compares other URLs without scheme, www, tracking parameters, fragment or trailing slash", () => {
     expect(postingKey("https://www.example.com/careers/Legal-Counsel/?utm=x#apply")).toBe("example.com/careers/legal-counsel");
     expect(postingKey("http://example.com/careers/legal-counsel")).toBe("example.com/careers/legal-counsel");
   });
@@ -91,5 +103,25 @@ describe("POST /api/v1/vacancies with a posting that is already there", () => {
     const res = await route.GET(new Request("http://app.test/api/v1/vacancies?q=4400000001", { headers: auth }));
     const rows = await res.json();
     expect(rows.map((r: { employer: string }) => r.employer)).toEqual(["Acme"]);
+  });
+});
+
+describe("two jobs on a board that keeps the id in the query", () => {
+  it("are two vacancies, and the same one again is refused", async () => {
+    const a = "https://nl.indeed.example/viewjob?jk=aaa111";
+    const b = "https://nl.indeed.example/viewjob?jk=bbb222";
+    expect((await route.POST(post("", { employer: "Acme", title: "Paralegal", url: a }))).status).toBe(201);
+    expect((await route.POST(post("", { employer: "Acme", title: "Paralegal", url: b }))).status).toBe(201);
+    expect((await route.POST(post("", { employer: "Acme", title: "Paralegal", url: `${a}&utm_source=mail` }))).status).toBe(409);
+  });
+});
+
+describe("search", () => {
+  it("treats % and _ as plain characters", async () => {
+    const { listVacancySummaries } = await import("@/lib/vacancies");
+    await route.POST(post("", { employer: "Beta", title: "senior_dev" }));
+    await route.POST(post("", { employer: "Beta", title: "seniorXdev" }));
+    const titles = listVacancySummaries({ q: "senior_dev" }).map((v) => v.title);
+    expect(titles).toEqual(["senior_dev"]);
   });
 });

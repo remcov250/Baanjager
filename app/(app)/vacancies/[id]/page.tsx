@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { RULE_KINDS, type Status } from "@/db/schema";
 import { createRuleFromVacancyAction, updateVacancyAction } from "@/app/(app)/vacancies/actions";
 import { Icon } from "@/components/icons";
-import { Field, RuleKindBadge, Select, StatusBadge, VerdictBadge, shortDate } from "@/components/ui";
+import { Field, NOT_BLANK_PATTERN, RuleKindBadge, Select, StatusBadge, VerdictBadge, shortDate } from "@/components/ui";
 import { VacancyForm } from "@/components/vacancy-form";
 import { getT } from "@/lib/i18n";
 import { rulesForVacancy } from "@/lib/rules";
@@ -98,7 +98,7 @@ export default async function VacancyPage({
 
       {flags.saved ? <p className="notice">{t("common.saved")}</p> : null}
       {flags.rule ? <p className="notice">{t("criteria.ruleAdded")}</p> : null}
-      {flags.error ? <p className="notice">{t("common.validationError")}</p> : null}
+      {flags.error ? <p className="notice notice-error" role="alert">{t("common.validationError")}</p> : null}
 
       <VacancyForm t={t} locale={locale} action={updateVacancyAction} vacancy={vacancy} />
 
@@ -125,7 +125,7 @@ export default async function VacancyPage({
               <Select name="kind" defaultValue="knockout" options={RULE_KINDS} t={t} prefix="ruleKind" />
             </Field>
             <Field label={t("criteria.text")}>
-              <input type="text" name="text" required maxLength={1000} defaultValue={vacancy.feedbackInsight ?? ""} />
+              <input type="text" name="text" required pattern={NOT_BLANK_PATTERN} maxLength={1000} defaultValue={vacancy.feedbackInsight ?? ""} />
             </Field>
           </div>
           <Field label={t("criteria.rationale")} help={t("criteria.rationaleHelp")}>

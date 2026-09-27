@@ -160,6 +160,10 @@
   .notice {
     @apply rounded-lg border border-accent-line bg-accent-tint px-4 py-3 text-sm text-fg;
   }
+  /* Same shape, different colour: an error must not look like "Opgeslagen". */
+  .notice-error {
+    @apply border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200;
+  }
   .badge {
     @apply inline-flex h-[22px] items-center whitespace-nowrap rounded-full px-2.5 text-xs font-medium;
   }

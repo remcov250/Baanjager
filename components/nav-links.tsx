@@ -32,6 +32,18 @@ export function SidebarLinks({ items }: { items: NavItem[] }) {
   );
 }
 
+// The last tab stands for several pages; it lights up on any of them.
+export function MoreTab({ label, href, covers }: { label: string; href: string; covers: string[] }) {
+  const pathname = usePathname();
+  const on = covers.some((path) => isActive(pathname, path));
+  return (
+    <Link href={href} className={`tab ${on ? "tab-on" : ""}`} aria-current={on ? "page" : undefined}>
+      <Icon.more className="h-[22px] w-[22px]" />
+      {label}
+    </Link>
+  );
+}
+
 export function TabLinks({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   return (

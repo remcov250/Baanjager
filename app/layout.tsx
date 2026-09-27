@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import { APP_NAME } from "@/lib/app";
-import { getLocale } from "@/lib/i18n";
+import { getLocale, getT } from "@/lib/i18n";
 import { getTheme } from "@/lib/theme";
 import "./globals.css";
 
@@ -19,12 +19,15 @@ const sans = Instrument_Sans({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: APP_NAME,
-  description: "Vacatures beoordelen, criteria aanscherpen.",
-  applicationName: APP_NAME,
-  appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return {
+    title: APP_NAME,
+    description: t("meta.description"),
+    applicationName: APP_NAME,
+    appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [

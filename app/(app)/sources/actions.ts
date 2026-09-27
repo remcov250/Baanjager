@@ -49,7 +49,7 @@ export async function updateSourceAction(formData: FormData) {
     note: formData.get("note"),
     cadence: formData.get("cadence"),
   });
-  if (!parsed.success) redirect("/sources?error=validation");
+  if (!parsed.success) redirect(`/sources?error=validation&open=${id}`);
   updateSource(id, parsed.data);
   revalidatePath("/sources");
   redirect(`/sources?saved=1&open=${id}`);

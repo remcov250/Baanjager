@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ANALYSIS_GROUPS, CONTRACT_TYPES, FEEDBACK, LAYERS, STATUSES, VERDICTS, type Analysis, type Vacancy } from "@/db/schema";
 import { Icon } from "@/components/icons";
-import { Field, Select, shortDate } from "@/components/ui";
+import { Field, HTTP_URL_PATTERN, NOT_BLANK_PATTERN, Select, shortDate } from "@/components/ui";
 import { officeDaysLabel } from "@/lib/office-days";
 import type { Locale, Translate } from "@/lib/i18n";
 
@@ -144,13 +144,13 @@ export function VacancyForm({ t, locale, action, vacancy }: Props) {
         <Fold title={t("vacancy.basics")} summary={basicsSummary} open={isNew}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("vacancy.employer")}>
-              <input type="text" name="employer" defaultValue={v?.employer ?? ""} required maxLength={200} autoFocus={isNew} />
+              <input type="text" name="employer" defaultValue={v?.employer ?? ""} required pattern={NOT_BLANK_PATTERN} maxLength={200} autoFocus={isNew} />
             </Field>
             <Field label={t("vacancy.title")}>
-              <input type="text" name="title" defaultValue={v?.title ?? ""} required maxLength={300} />
+              <input type="text" name="title" defaultValue={v?.title ?? ""} required pattern={NOT_BLANK_PATTERN} maxLength={300} />
             </Field>
             <Field label={t("vacancy.url")} className="sm:col-span-2">
-              <input type="url" name="url" defaultValue={v?.url ?? ""} maxLength={2000} />
+              <input type="url" name="url" defaultValue={v?.url ?? ""} pattern={HTTP_URL_PATTERN} maxLength={2000} />
             </Field>
             <Field label={t("vacancy.source")} help={t("vacancy.sourceHelp")}>
               <input type="text" name="source" defaultValue={v?.source ?? ""} maxLength={200} />
