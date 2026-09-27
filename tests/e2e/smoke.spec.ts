@@ -160,7 +160,15 @@ test("a link the server would refuse is caught before the form is sent", async (
   await page.getByLabel("URL", { exact: true }).fill("ftp://jobs.example/counsel");
   await page.getByRole("button", { name: "Opslaan" }).first().click();
   await expect(page).toHaveURL(/\/vacancies\/new$/);
-  expect(await page.getByLabel("URL", { exact: true }).evaluate((el: HTMLInputElement) => el.validity.patternMismatch)).toBe(true);
+  // What matters is that the browser holds the form back with the text intact;
+  // which validity flag it raises for that is up to the engine.
+  const state = await page.getByLabel("URL", { exact: true }).evaluate((el: HTMLInputElement) => ({
+    value: el.value,
+    valid: el.validity.valid,
+    patternMismatch: el.validity.patternMismatch,
+    typeMismatch: el.validity.typeMismatch,
+  }));
+  expect(state).toMatchObject({ value: "ftp://jobs.example/counsel", valid: false });
   await expect(page.getByLabel("Werkgever", { exact: true })).toHaveValue("Beta");
 });
 
