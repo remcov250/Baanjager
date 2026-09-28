@@ -1,4 +1,4 @@
-import { apiTokenMatches } from "@/lib/auth";
+import { apiAccess } from "@/lib/auth";
 
 export function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -7,13 +7,18 @@ export function json(data: unknown, status = 200): Response {
   });
 }
 
-// Returns a Response when the request must be rejected, otherwise null.
+const READ_METHODS = new Set(["GET", "HEAD"]);
+
+// Returns a Response when the request must be rejected, otherwise null. The
+// read-only token passes for GET and HEAD and nothing else, whatever the route.
 export function requireApi(request: Request): Response | null {
   if (!process.env.API_TOKEN) {
     return json({ error: "API is disabled; set API_TOKEN to enable it" }, 503);
   }
-  if (!apiTokenMatches(request.headers.get("authorization"))) {
-    return json({ error: "unauthorized" }, 401);
+  const access = apiAccess(request.headers.get("authorization"));
+  if (!access) return json({ error: "unauthorized" }, 401);
+  if (access === "readonly" && !READ_METHODS.has(request.method.toUpperCase())) {
+    return json({ error: "read-only token" }, 403);
   }
   return null;
 }

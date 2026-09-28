@@ -175,12 +175,26 @@ async function clientKey(): Promise<string> {
 
 // ------------------------------------------------------------------ API token
 
-export function apiTokenMatches(header: string | null): boolean {
-  const token = process.env.API_TOKEN;
+function bearerEquals(header: string | null, token: string | undefined): boolean {
   if (!token || !header?.startsWith("Bearer ")) return false;
   // Compare digests: equal length always, so the time taken says nothing about
   // how long the real token is.
   const given = createHash("sha256").update(header.slice("Bearer ".length).trim()).digest();
   const expected = createHash("sha256").update(token).digest();
   return timingSafeEqual(given, expected);
+}
+
+export function apiTokenMatches(header: string | null): boolean {
+  return bearerEquals(header, process.env.API_TOKEN);
+}
+
+// Two tokens: API_TOKEN can do everything, API_TOKEN_READONLY (optional) only
+// reads. The full token is checked first, so setting both to the same value
+// can never downgrade it.
+export type ApiAccess = "full" | "readonly";
+
+export function apiAccess(header: string | null): ApiAccess | null {
+  if (bearerEquals(header, process.env.API_TOKEN)) return "full";
+  if (bearerEquals(header, process.env.API_TOKEN_READONLY)) return "readonly";
+  return null;
 }

@@ -24,7 +24,8 @@ reporting on this repository instead.
   `script-src` staat `'unsafe-inline'` toe omdat Next.js dat nodig heeft voor hydratie.
 - **API** staat uit tenzij `API_TOKEN` gezet is. Bearer-token, vergelijking in constante
   tijd. Wie het token heeft, kan alles wat de UI kan, behalve accounts beheren. Behandel het
-  als een wachtwoord.
+  als een wachtwoord. Een optioneel tweede token, `API_TOKEN_READONLY`, mag alleen `GET` en
+  `HEAD`; elke andere methode krijgt `403`. Ook dat token leest alles, de export inbegrepen.
 - **Geen delete** op vacatures, niet in de UI en niet in de API. Wat je kwijt wilt, krijgt
   status *Afgevallen*.
 - **Invoer** wordt server-side gevalideerd met zod; formulierdata en API-body's gaan door

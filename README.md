@@ -190,6 +190,9 @@ praat alleen met de app-URL die je opgeeft, dus de app hoeft niet op internet te
 - Rate-limiting op de login, security-headers op elke pagina, container zonder root.
 - De API staat uit tot je `API_TOKEN` zet. Wie het token heeft, kan alles wat de app kan:
   behandel het als een wachtwoord.
+- Wil je een dashboard of rapport alleen laten meekijken, zet dan ook `API_TOKEN_READONLY`.
+  Dat token mag alleen lezen (`GET`/`HEAD`); schrijven, wijzigen en importeren geven `403`.
+  Let op: lezen omvat ook de export, dus ook dit token geeft toegang tot al je vacatures.
 - Er is bewust geen delete, ook niet via de API.
 - Vacatureteksten komen van internet. De MCP-server markeert ze als *untrusted data*
   voordat de assistent ze ziet, zodat een instructie die in een vacature verstopt zit,
