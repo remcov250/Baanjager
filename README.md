@@ -37,6 +37,15 @@ correctie wordt weer een regel.
 **Bronnen.** Waar je zoekt, per laag, met hoe vaak. Dat is het zoekplan dat jij of de
 assistent volgt.
 
+**Geen dubbele vacatures.** Dezelfde vacature komt vaak binnen via verschillende links. Een
+tweede rij voor dezelfde vacature wordt geweigerd, met het nummer van de rij die er al is.
+Een LinkedIn-vacature herkent Baanjager aan het job-id, welke URL-variant er ook gebruikt
+wordt; zoeken werkt ook op URL of job-id.
+
+**De motivatiebrief bij de vacature.** Bewaar de brief zoals je hem verstuurde, zodat je
+hem de volgende keer kunt hergebruiken. Alleen de brief zelf: naam en contactgegevens horen
+er niet in.
+
 **Een CV uit een match.** Baanjager maakt zelf geen CV's, maar zet alles klaar wat een
 CV-bouwer nodig heeft en onthoudt welk CV bij welke vacature hoort. Werkt met
 [Reactive Resume](https://rxresu.me) via de assistent; zie
@@ -90,24 +99,46 @@ Wil je de API en MCP gebruiken, zet dan een token in `docker-compose.yml`:
 openssl rand -hex 32   # dit wordt je API_TOKEN
 ```
 
+## Configuratie
+
+Alles gaat via omgevingsvariabelen, in `docker-compose.yml` of in `.env` (zie
+`.env.example`). Niets is verplicht.
+
+| Variabele | Standaard | Wat het doet |
+|---|---|---|
+| `API_TOKEN` | leeg | Bearer-token voor de REST-API en de MCP-server. Leeg = API uit. |
+| `API_TOKEN_READONLY` | leeg | Tweede token dat alleen mag lezen (`GET`/`HEAD`); al het andere krijgt `403`. Werkt alleen naast `API_TOKEN`. |
+| `DEFAULT_LOCALE` | `nl` | Taal van de interface (`nl` of `en`); elke browser kan wisselen. |
+| `TZ` | `UTC` in de container | Tijdzone voor "vandaag", de begroeting en bestandsnamen van de export. |
+| `TRUST_PROXY` | `false` | `true` achter een reverse proxy: login-rate-limiting kijkt dan naar `X-Forwarded-For`. |
+| `COOKIE_SECURE` | `false` | Forceer de `Secure`-vlag op de sessiecookie; die komt anders van `X-Forwarded-Proto: https`. |
+| `DATA_DIR` | `/data` in de container | Waar de SQLite-database staat. |
+
+Voor de MCP-server, op de machine waar de assistent draait: `BAANJAGER_URL` (de app) en
+`BAANJAGER_TOKEN` (een van de twee tokens hierboven).
+
 ## De app vullen
 
 Drie manieren, die je kunt combineren:
 
 - **Zelf**, met de plus-knop.
-- **Uit een spreadsheet** (Instellingen → CSV importeren). Kolommen: `employer, title, url,
-  source, found_on, layer, verdict, verdict_reason, status, applied_on, closed_on`, of de
-  Nederlandse namen `werkgever, titel, bron, datum_gevonden, laag, oordeel, reden_kort,
-  gesolliciteerd, datum_sollicitatie, vervallen_op`. Vrije tekst in de statuskolom blijft
-  bewaard als toelichting. Een vacature die er al is (zelfde link, of zonder link zelfde
-  werkgever en functie) wordt overgeslagen, met de reden erbij. Dezelfde import kan via
+- **Uit een spreadsheet** (Instellingen → CSV importeren, tot 10 MB). Kolommen: `employer,
+  title, url, source, found_on, layer, location, verdict, verdict_reason, status,
+  status_note, applied_on, closed_on, hours, contract_type, office_days, salary, vacancy_text`, of de
+  Nederlandse namen (`werkgever, titel, bron, datum_gevonden, laag, locatie, oordeel,
+  reden_kort, toelichting, gesolliciteerd, datum_sollicitatie, vervallen_op, uren, contractvorm,
+  kantoordagen, salaris, vacaturetekst`). Vrije tekst in de statuskolom blijft bewaard als
+  toelichting. Elke rij wordt gecontroleerd; een vacature die er al is (zelfde link, of
+  zonder link zelfde werkgever en functie) wordt overgeslagen, en elke overgeslagen rij
+  krijgt een reden. Een kapot bestand, bijvoorbeeld een aanhalingsteken dat nooit sluit,
+  wordt in zijn geheel geweigerd, zodat er niets half binnenkomt. Dezelfde import kan via
   `POST /api/v1/import`.
+- **Door de assistent.** Geef 'm je oude lijst, of laat 'm de bronnen aflopen — hij vult
+  vacatures, profiel, criteria en bronnen via MCP. Hoe je dat opzet staat hieronder.
 
 De CSV-import is om een bestaande spreadsheet binnen te halen, niet om een back-up terug te
 zetten: de export is om je vacatures in een spreadsheet te openen. Een back-up is de map
-`data/`, daar staat de hele database in.
-- **Door de assistent.** Geef 'm je oude lijst, of laat 'm de bronnen aflopen — hij vult
-  vacatures, profiel, criteria en bronnen via MCP. Hoe je dat opzet staat hieronder.
+met de database (`DATA_DIR`, in Docker het volume).
 
 ## Een AI-agent die de zoektocht doet
 
@@ -142,7 +173,10 @@ Bij het begin van elke sessie:
 3. get_profile — wie ik ben en wat ik zoek.
 
 Bij een scan ("vacature-check"):
-- Loop get_scan_plan af. Behandel alleen vacatures die nog niet in de app staan.
+- Loop get_scan_plan af. Behandel alleen vacatures die nog niet in de app staan;
+  add_vacancy weigert een vacature die er al is en noemt het nummer.
+- Controleer je een vacature die er al staat (nog open, gesloten, geen reactie), gebruik
+  dan add_check_note; die zet een gedateerde regel bovenaan de notitie.
 - Controleer een vondst altijd op de eigen site van de werkgever, niet op een vacaturebank.
 - Voeg elke beoordeelde vacature toe met add_vacancy: laag, locatie, uren, kantoordagen,
   contractvorm, taaleis, oordeel én reden. De reden noemt de regel die botst of past.
@@ -177,6 +211,25 @@ https://<jouw-reactive-resume>/mcp --header "x-api-key: <sleutel>"`; liever de s
 niet in de config? Dat kan ook, zie de docs). De assistent haalt de context uit Baanjager,
 maakt of bewerkt het CV daar, en koppelt het terug. Baanjager zelf praat nooit met de
 CV-bouwer. Hoe en waarom: [docs/cv-integration.md](docs/cv-integration.md).
+
+**Wat de assistent kan.** De MCP-server (`mcp/server.mjs`) heeft deze tools:
+
+| Tool | Waarvoor |
+|---|---|
+| `get_summary` | Aantallen, wat op jou wacht, laatste wijzigingen. |
+| `list_rules` / `add_rule` | De criteria lezen; van een afwijzing een regel maken. |
+| `get_profile` / `update_profile_section` | Het profiel lezen en bijwerken. |
+| `get_scan_plan` | De bronnen per laag. |
+| `list_vacancies` / `get_vacancy` | Zoeken (ook op URL) en lezen. |
+| `add_vacancy` / `update_vacancy` | Toevoegen en beoordelen; een dubbele vacature wordt geweigerd. |
+| `set_status` | Status wijzigen met een notitie. |
+| `add_check_note` | Een gedateerde controle bovenaan de notitie. |
+| `get_cv_context` / `link_cv` | Alles voor een CV-bouwer, en onthouden welk CV erbij hoort. |
+
+Dezelfde dingen kunnen via de REST-API onder `/api/v1` (`vacancies`, `rules`, `sources`,
+`profile`, `summary`, `import`, `export`, en per vacature `context` en `cv`), met het token
+als `Authorization: Bearer`. Er is geen delete op vacatures. `GET /api/health` werkt zonder
+token.
 
 **3. Laat 'm draaien.** Een sessie op je laptop werkt. Wil je dat de agent altijd aan staat
 (zodat je 'm vanaf je telefoon iets kunt vragen), draai de assistent dan op een server in
@@ -215,6 +268,12 @@ npm run test:e2e     # Playwright, telefoon en desktop (na npm run build)
 Next.js 16, SQLite via Drizzle, Tailwind 4. Eén container, geen losse database. Zie
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Status
+
+In gebruik voor een echte zoektocht en actief onderhouden. Wat er per versie veranderde
+staat in [CHANGELOG.md](CHANGELOG.md). Migraties draaien vanzelf bij het starten en voegen
+alleen toe, dus bijwerken is een nieuwe image trekken en herstarten.
+
 ## Wat er nog niet in zit
 
 - Bring-your-own-key: een oordeel laten genereren zonder AI-abonnement, met je eigen sleutel
@@ -249,6 +308,12 @@ update status and turn rejections into rules. For now that needs an AI subscript
 speaks MCP (Claude Code, Claude Desktop); there is no API key inside the app. The
 *Working with AI* page in the app has the setup, and the agent instructions above translate
 directly.
+
+A second row for the same posting is refused (LinkedIn jobs are matched by job id), the
+cover letter you sent can be stored with the vacancy, and `add_check_note` lets the
+assistant log a dated check without resending the whole status note. An optional
+`API_TOKEN_READONLY` gives a dashboard read-only access (`GET`/`HEAD` only). All settings
+are environment variables; see the configuration table above and `.env.example`.
 
 Verdicts are not binary — match, possible, uncertain, weak, no match — and an assessment
 can carry structured evidence per requirement (strong / related / partial / unknown / gaps),

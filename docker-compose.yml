@@ -23,6 +23,8 @@ services:
       # Leave empty to keep the REST API and MCP off. Generate one with:
       #   openssl rand -hex 32
       API_TOKEN: ${API_TOKEN:-}
+      # Optional second token that can only read (GET/HEAD). For a dashboard.
+      API_TOKEN_READONLY: ${API_TOKEN_READONLY:-}
 
 volumes:
   baanjager-data:
