@@ -7,6 +7,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versies volgen
 
 ### Beveiliging
 
+- **Alleen-lezen API-token.** Optioneel `API_TOKEN_READONLY` naast `API_TOKEN`: mag `GET`
+  en `HEAD` op elke `/api/v1`-route, elke andere methode krijgt `403`. Bedoeld voor een
+  dashboard dat de tellingen wil zien zonder iets te kunnen wijzigen. Zonder de variabele
+  verandert er niets; het volle token wordt eerst gecontroleerd. Let op: lezen omvat de
+  export.
+
 - **Alles wat een MCP-tool over een vacature teruggeeft is nu omheind.** Voorheen alleen
   `get_vacancy`; nu ook `add_vacancy`, `update_vacancy`, `set_status`, `add_check_note`,
   `list_vacancies` en `get_summary`. Titel, werkgever, locatie en de remote-notitie staan
