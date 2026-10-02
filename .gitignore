@@ -28,3 +28,6 @@ CLAUDE.local.md
 
 # brievenbus (Codex -> Claude briefs, lokaal werkverkeer)
 briefs/
+
+# Live work status (Daria's search): local only, never in the public repo
+STATUS.md
