@@ -1,4 +1,28 @@
 {
   "model": "sonnet",
-  "effortLevel": "medium"
+  "effortLevel": "medium",
+  "permissions": {
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.bws_env)",
+      "Read(~/.bashrc)",
+      "Read(//home/remco/.config/**/*.env)",
+      "Read(//home/remco/.config/session-control.env)",
+      "Bash(cat ~/.config/*)",
+      "Bash(cat /home/remco/.config/*)",
+      "Edit(///home/remco/ai_workspace/projects/always-on-agent-starter-kit/**)",
+      "Edit(///home/remco/ai_workspace/projects/budget/**)",
+      "Edit(///home/remco/ai_workspace/projects/ere-thuisladen/**)",
+      "Edit(///home/remco/ai_workspace/projects/homelab/**)",
+      "Edit(///home/remco/ai_workspace/projects/homelabhaven/**)",
+      "Edit(///home/remco/ai_workspace/projects/hoofdkwartier/**)",
+      "Edit(///home/remco/ai_workspace/projects/perch/**)",
+      "Edit(///home/remco/ai_workspace/projects/synology/**)",
+      "Edit(///home/remco/ai_workspace/projects/vacature-tracker/**)",
+      "Edit(///home/remco/ai_workspace/projects/workspace-manager/**)"
+    ]
+  }
 }
